@@ -1,3 +1,11 @@
-## 0.0.1
+## 0.9.1
 
-* TODO: Describe initial release.
+Initial Release
+
+- Android Autofill
+  - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
+  - SMS User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+- Showing Hint Dialog
+- Getting Saved Credential
+- Saving Credential
+- Deleting Credential

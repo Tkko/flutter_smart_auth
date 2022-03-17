@@ -30,14 +30,14 @@ class Credential {
   });
 
   Map<String, dynamic> toJson() => {
-    'accountType': accountType,
-    'id': id,
-    'familyName': familyName,
-    'givenName': givenName,
-    'name': name,
-    'password': password,
-    'profilePictureUri': profilePictureUri,
-  };
+        'accountType': accountType,
+        'id': id,
+        'familyName': familyName,
+        'givenName': givenName,
+        'name': name,
+        'password': password,
+        'profilePictureUri': profilePictureUri,
+      };
 
   factory Credential.fromJson(Map<String, dynamic> map) {
     return Credential(

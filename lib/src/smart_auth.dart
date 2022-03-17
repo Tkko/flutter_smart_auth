@@ -34,11 +34,13 @@ class SmartAuth {
     bool useUserConsntApi = false,
   }) async {
     if (senderPhoneNumber != null) {
-      assert(useUserConsntApi == true, 'senderPhoneNumber is only supported if useUserConsntApi is true');
+      assert(useUserConsntApi == true,
+          'senderPhoneNumber is only supported if useUserConsntApi is true');
     }
 
     final String? sms = useUserConsntApi
-        ? await _channel.invokeMethod('startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
+        ? await _channel.invokeMethod(
+            'startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
         : await _channel.invokeMethod('startSmsRetriever');
 
     return SmsCodeResult.fromSms(sms, matcher);
@@ -105,7 +107,8 @@ class SmartAuth {
     if (res == null) return null;
 
     try {
-      final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+      final Map<String, dynamic> map =
+          jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
       return Credential.fromJson(map);
     } catch (e) {
       debugPrint('$e');
@@ -139,7 +142,8 @@ class SmartAuth {
     if (res == null) return null;
 
     try {
-      final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+      final Map<String, dynamic> map =
+          jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
       return Credential.fromJson(map);
     } catch (e) {
       debugPrint('$e');

@@ -31,6 +31,7 @@ class SmsCodeResult {
       return null;
     }
 
-    return SmsCodeResult(sms: sms, succeed: sms != null, code: _extractCode(sms));
+    return SmsCodeResult(
+        sms: sms, succeed: sms != null, code: _extractCode(sms));
   }
 }
