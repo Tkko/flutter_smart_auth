@@ -57,9 +57,12 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
     override fun onDetachedFromActivityForConfigChanges() = dispose()
 
+
     private fun dispose() {
         unregisterReceiver(smsReceiver)
         unregisterReceiver(consentReceiver)
+        smsReceiver = null
+        consentReceiver = null
         ignoreIllegalState { pendingResult?.success(null) }
         mActivity = null
         mBinding?.removeActivityResultListener(this)
@@ -265,11 +268,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun startSmsRetriever(result: MethodChannel.Result) {
-        Log.d(TAG, "startSmsRetriever  $smsReceiver")
-        if (smsReceiver != null) {
-            result.error("1001", "Already listening", "")
-            return
-        }
+        if (smsReceiver != null) unregisterReceiver(smsReceiver)
         pendingResult = result
         smsReceiver = SmsBroadcastReceiver()
         mContext.registerReceiver(
@@ -282,7 +281,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun stopSmsRetriever(result: MethodChannel.Result) {
-        Log.d(TAG, "stopSmsRetriever  $smsReceiver")
         if (smsReceiver == null) {
             result.success(false)
             return
@@ -297,10 +295,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun startSmsUserConsent(call: MethodCall, result: MethodChannel.Result) {
-        if (consentReceiver != null) {
-            result.error("1001", "Already listening", "")
-            return
-        }
+        if (consentReceiver != null) unregisterReceiver(consentReceiver)
         pendingResult = result
         consentReceiver = ConsentBroadcastReceiver()
         mContext.registerReceiver(
@@ -418,7 +413,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         try {
             fn()
         } catch (e: IllegalStateException) {
-            Log.d(TAG, "ignoring exception: $e.")
+            Log.e(TAG, "ignoring exception: $e")
         }
     }
 
@@ -470,11 +465,13 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                                 USER_CONSENT_REQUEST
                             )
                         } catch (e: ActivityNotFoundException) {
+                            Log.e(TAG, "ConsentBroadcastReceiver $e")
                             ignoreIllegalState { pendingResult?.success(null) }
                         }
 
                     }
                     CommonStatusCodes.TIMEOUT -> {
+                        Log.e(TAG, "ConsentBroadcastReceiver Timeout")
                         ignoreIllegalState { pendingResult?.success(null) }
                     }
                 }

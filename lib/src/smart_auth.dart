@@ -11,6 +11,14 @@ const _defaultCodeMatcher = '\\d{4,7}';
 
 class SmartAuth {
   static const MethodChannel _channel = MethodChannel('fman.smart_auth');
+  SmartAuth() {
+    _channel.setMethodCallHandler(_didReceive);
+  }
+
+  Future<void> _didReceive(MethodCall method) async {
+    print('HII ${method.arguments}');
+  }
+
 
   /// This method outputs hash that is required for SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
   /// SMS must contain this hash at the end of the text

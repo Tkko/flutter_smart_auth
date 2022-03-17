@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 import 'package:smart_auth/smart_auth.dart';
 
 void main() {
@@ -14,14 +15,23 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final smartAuth = SmartAuth();
+  final pinputController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getAppSignatue();
+    getAppSignature();
+    getSmsCode();
   }
 
-  void getAppSignatue() async {
+  @override
+  void dispose() {
+    smartAuth.removeSmsListener();
+    pinputController.dispose();
+    super.dispose();
+  }
+
+  void getAppSignature() async {
     final res = await smartAuth.getAppSignature();
     debugPrint('Signature: $res');
   }
@@ -38,9 +48,10 @@ class _MyAppState extends State<MyApp> {
   void getSmsCode() async {
     final res = await smartAuth.getSmsCode();
     if (res.succeed) {
+      pinputController.setText(res.code!);
       debugPrint('SMS: ${res.code}');
     } else {
-      debugPrint('SMS Failure:');
+      debugPrint('SMS Failure: ${res.sms}');
     }
   }
 
@@ -50,6 +61,7 @@ class _MyAppState extends State<MyApp> {
 
   // identifier Url
   final accountType = 'https://developers.google.com';
+
   // Value you want to save, phone number or email for example
   final credentialId = 'Credential Id';
   final credentialName = 'Credential Name';
@@ -89,6 +101,7 @@ class _MyAppState extends State<MyApp> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Pinput(controller: pinputController),
             TextButton(
               onPressed: requestHint,
               child: const Text('Request Hint'),
@@ -104,19 +117,6 @@ class _MyAppState extends State<MyApp> {
             TextButton(
               onPressed: deleteCredential,
               child: const Text('Delete Credential'),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: getSmsCode,
-                  child: const Text('Get SMS Code'),
-                ),
-                TextButton(
-                  onPressed: removeSmsListener,
-                  child: const Text('Remove Listener'),
-                ),
-              ],
             ),
           ],
         ),
