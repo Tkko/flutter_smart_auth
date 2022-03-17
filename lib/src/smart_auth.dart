@@ -21,14 +21,16 @@ class SmartAuth {
 
   /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
   /// returns code if it macthes with matcher
-  /// More about SMS Retriever API  [https://developers.google.com/identity/sms-retriever/overview?hl=en]
+  /// More about SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
   ///
   /// If useUserConsntApi is true SMS User Consent API will be used [https://developers.google.com/identity/sms-retriever/user-consent/overview]
   /// Which shows confirmations dialog to user to confiirm reading the SMS content
   Future<SmsCodeResult> getSmsCode({
-    bool getPlainSms = false,
+    // used to extract code from SMS
     String matcher = _defaultCodeMatcher,
+    // Optional parameter for User Consnt API
     String? senderPhoneNumber,
+    // if true SMS User Consent API will be used otherwise plugin will use SMS Retriever API
     bool useUserConsntApi = false,
   }) async {
     if (senderPhoneNumber != null) {
@@ -111,53 +113,11 @@ class SmartAuth {
     }
   }
 
-  /// Saves a credential that was used to sign in to the app. If disableAutoSignIn was previously called and the save operation succeeds,
-  /// auto sign-in will be re-enabled if the user's settings permit this.
-  ///
-  /// Note: On Android O and above devices save requests that require showing a save confirmation may be cancelled
-  /// in favor of the active Autofill service's save dialog.
-  /// This behavior may be overridden by using Auth.AuthCredentialsOptions.Builder.forceEnableSaveDialog().
-  /// Please see the overview documentation for more details on providing the best user experience when targeting Android O and above.
-  /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
-  Future<bool> saveCredential({
-    required String id,
-    String? accountType,
-    String? name,
-    String? password,
-    String? profilePictureUri,
-  }) async {
-    final res = await _channel.invokeMethod('saveCredential', {
-      'id': id,
-      'accountType': accountType,
-      'name': name,
-      'password': password,
-      'profilePictureUri': profilePictureUri,
-    });
-    return res == true;
-  }
-
-  /// Deletes a credential that is no longer valid for signing into the app.
-  Future<bool> deleteCredential({
-    required String id,
-    String? accountType,
-    String? name,
-    String? password,
-    String? profilePictureUri,
-  }) async {
-    final res = await _channel.invokeMethod('deleteCredential', {
-      'id': id,
-      'accountType': accountType,
-      'name': name,
-      'password': password,
-      'profilePictureUri': profilePictureUri,
-    });
-    return res == true;
-  }
-
   /// Tries to suggest a zero-click sign-in account. Only call this if your app does not currently know who is signed in.
   /// If zero-click suggestion fails app show dialog of credentials to chooze from
   /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
   Future<Credential?> getCredential({
+    // Identifier url, should be you App's website url
     String? accountType,
     String? serverClientId,
     String? idTokenNonce,
@@ -183,5 +143,52 @@ class SmartAuth {
       debugPrint('$e');
       return null;
     }
+  }
+
+  /// Saves a credential that was used to sign in to the app. If disableAutoSignIn was previously called and the save operation succeeds,
+  /// auto sign-in will be re-enabled if the user's settings permit this.
+  ///
+  /// Note: On Android O and above devices save requests that require showing a save confirmation may be cancelled
+  /// in favor of the active Autofill service's save dialog.
+  /// This behavior may be overridden by using Auth.AuthCredentialsOptions.Builder.forceEnableSaveDialog().
+  /// Please see the overview documentation for more details on providing the best user experience when targeting Android O and above.
+  /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
+  Future<bool> saveCredential({
+    // Value you want to save
+    required String id,
+    // Identifier url, should be you App's website url
+    String? accountType,
+    String? name,
+    String? password,
+    String? profilePictureUri,
+  }) async {
+    final res = await _channel.invokeMethod('saveCredential', {
+      'id': id,
+      'accountType': accountType,
+      'name': name,
+      'password': password,
+      'profilePictureUri': profilePictureUri,
+    });
+    return res == true;
+  }
+
+  /// Deletes a credential that is no longer valid for signing into the app.
+  Future<bool> deleteCredential({
+    // Value you want to save
+    required String id,
+    // Identifier url, should be you App's website url
+    String? accountType,
+    String? name,
+    String? password,
+    String? profilePictureUri,
+  }) async {
+    final res = await _channel.invokeMethod('deleteCredential', {
+      'id': id,
+      'accountType': accountType,
+      'name': name,
+      'password': password,
+      'profilePictureUri': profilePictureUri,
+    });
+    return res == true;
   }
 }

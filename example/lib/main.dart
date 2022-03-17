@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     debugPrint('requestHint: $res');
   }
 
-  void getSms() async {
+  void getSmsCode() async {
     final res = await smartAuth.getSmsCode();
     if (res.succeed) {
       debugPrint('SMS: ${res.code}');
@@ -48,7 +48,9 @@ class _MyAppState extends State<MyApp> {
     smartAuth.removeSmsListener();
   }
 
+  // identifier Url
   final accountType = 'https://developers.google.com';
+  // Value you want to save, phone number or email for example
   final credentialId = 'Credential Id';
   final credentialName = 'Credential Name';
   final profilePictureUri = 'https://profilePictureUri.com';
@@ -57,6 +59,7 @@ class _MyAppState extends State<MyApp> {
     final res = await smartAuth.saveCredential(
       id: credentialId,
       name: credentialName,
+      accountType: accountType,
       profilePictureUri: profilePictureUri,
     );
     debugPrint('saveCredentials: $res');
@@ -74,8 +77,6 @@ class _MyAppState extends State<MyApp> {
     final res = await smartAuth.deleteCredential(
       id: credentialId,
       accountType: accountType,
-      name: credentialName,
-      profilePictureUri: profilePictureUri,
     );
     debugPrint('removeCredentials: $res');
   }
@@ -108,7 +109,7 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: getSms,
+                  onPressed: getSmsCode,
                   child: const Text('Get SMS Code'),
                 ),
                 TextButton(
