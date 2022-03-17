@@ -78,7 +78,7 @@ Request hints to the user
     debugPrint('requestHint: $res');
   }
 ```
-<img src="https://user-images.githubusercontent.com/26390946/158823942-3f0a1d6f-c669-4517-978d-25fea38a871e.png" width="300" alt="Request Hint" />
+<img src="https://user-images.githubusercontent.com/26390946/158823942-3f0a1d6f-c669-4517-978d-25fea38a871e.png" width="400px" alt="Request Hint" />
 
 
 Get saved credential
@@ -100,7 +100,7 @@ Get saved credential
     debugPrint('getCredentials: $res');
   }
 ```
-<img src="https://user-images.githubusercontent.com/26390946/158823952-90db7d68-b1f1-4110-82b3-4ba69306e95a.png" width="300" alt="Get Credential" />
+<img src="https://user-images.githubusercontent.com/26390946/158823952-90db7d68-b1f1-4110-82b3-4ba69306e95a.png" width="400px" alt="Get Credential" />
 
 
 Save credential
@@ -115,7 +115,7 @@ Save credential
     debugPrint('saveCredentials: $res');
   }
 ```
-<img src="https://user-images.githubusercontent.com/26390946/158823965-f8a70d11-3a10-4270-bcd1-66e53c05d2e1.png" width="300" alt="Save Credential" />
+<img src="https://user-images.githubusercontent.com/26390946/158823965-f8a70d11-3a10-4270-bcd1-66e53c05d2e1.png" width="400px" alt="Save Credential" />
 
 Delete credential
 ```dart
@@ -221,6 +221,8 @@ Delete credential
     String? idTokenNonce,
     bool? isIdTokenRequested,
     bool? isPasswordLoginSupported,
+    // If we can't get credential without user interaction,
+    // we can show dialog to prompt user to choose credential
     bool showResolveDialog = false,
   })
 ```
