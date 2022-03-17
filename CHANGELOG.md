@@ -1,5 +1,8 @@
-## 0.9.1
+## 1.0.0
+Fixed Reinitializing listeners
 
+
+## 0.9.1
 Initial Release
 
 - Android Autofill
