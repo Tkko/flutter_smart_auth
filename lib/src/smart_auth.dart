@@ -7,7 +7,7 @@ part 'sms_code_result.dart';
 
 part 'credential.dart';
 
-const _defaultCodeMatcher = '\\d{4,6}';
+const _defaultCodeMatcher = '\\d{4,7}';
 
 class SmartAuth {
   static const MethodChannel _channel = MethodChannel('fman.smart_auth');
@@ -123,6 +123,8 @@ class SmartAuth {
     String? idTokenNonce,
     bool? isIdTokenRequested,
     bool? isPasswordLoginSupported,
+    // If we can't get credential without user interaction,
+    // we can show dialog to prompt user to choose credential
     bool showResolveDialog = false,
   }) async {
     final res = await _channel.invokeMethod('getCredential', {
@@ -173,6 +175,7 @@ class SmartAuth {
   }
 
   /// Deletes a credential that is no longer valid for signing into the app.
+  /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
   Future<bool> deleteCredential({
     // Value you want to save
     required String id,
