@@ -11,14 +11,6 @@ const _defaultCodeMatcher = '\\d{4,7}';
 
 class SmartAuth {
   static const MethodChannel _channel = MethodChannel('fman.smart_auth');
-  SmartAuth() {
-    _channel.setMethodCallHandler(_didReceive);
-  }
-
-  Future<void> _didReceive(MethodCall method) async {
-    print('HII ${method.arguments}');
-  }
-
 
   /// This method outputs hash that is required for SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
   /// SMS must contain this hash at the end of the text
@@ -28,25 +20,25 @@ class SmartAuth {
   }
 
   /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
-  /// returns code if it macthes with matcher
+  /// returns code if it matches with matcher
   /// More about SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
   ///
-  /// If useUserConsntApi is true SMS User Consent API will be used [https://developers.google.com/identity/sms-retriever/user-consent/overview]
-  /// Which shows confirmations dialog to user to confiirm reading the SMS content
+  /// If useUserConsentApi is true SMS User Consent API will be used [https://developers.google.com/identity/sms-retriever/user-consent/overview]
+  /// Which shows confirmations dialog to user to confirm reading the SMS content
   Future<SmsCodeResult> getSmsCode({
     // used to extract code from SMS
     String matcher = _defaultCodeMatcher,
-    // Optional parameter for User Consnt API
+    // Optional parameter for User Consent API
     String? senderPhoneNumber,
     // if true SMS User Consent API will be used otherwise plugin will use SMS Retriever API
-    bool useUserConsntApi = false,
+    bool useUserConsentApi = false,
   }) async {
     if (senderPhoneNumber != null) {
-      assert(useUserConsntApi == true,
-          'senderPhoneNumber is only supported if useUserConsntApi is true');
+      assert(useUserConsentApi == true,
+          'senderPhoneNumber is only supported if useUserConsentApi is true');
     }
 
-    final String? sms = useUserConsntApi
+    final String? sms = useUserConsentApi
         ? await _channel.invokeMethod(
             'startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
         : await _channel.invokeMethod('startSmsRetriever');

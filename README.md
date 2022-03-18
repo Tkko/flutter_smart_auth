@@ -1,13 +1,19 @@
 
 <div align="center">
- <h1 align="center" style="font-size: 70px;">Flutter Pinput From <a href="https://www.linkedin.com/in/thornike/" target="_blank">Tornike </a> & Great <a href="https://github.com/Tkko/Flutter_Pinput/graphs/contributors" target="_blank">Contributors</a> </h1>
+ <h1 align="center" style="font-size: 70px;">Flutter Smart Auth From <a href="https://www.linkedin.com/in/thornike/" target="_blank">Tornike </a> & Great <a href="https://github.com/Tkko/Flutter_Pinput/graphs/contributors" target="_blank">Contributors</a> </h1>
 
 <a href="https://www.buymeacoffee.com/fman" target="_blank"><img src="https://img.buymeacoffee.com/button-api/?text=Thank me with a coffee&emoji=&slug=fman&button_colour=40DCA5&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00"></a>
 
 </div>
 
 
-Flutter for listening SMS code on Android, suggesting phone number, email, saving credential
+Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
+
+If you need pin code input like shown below, take a look at [Pinput](https://github.com/Tkko/Flutter_Pinput) package, SmartAuth is already integrated into it and you can build highly customizable input, that your designers can't even draw in Figma 🤭
+
+Bonus tip: 🤫 Tell your PM that you need a week to implement the feature and chill with your friends meanwhile.
+
+<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" style="height: 500px"/>
 
 ## Features:
 - Android Autofill
@@ -40,7 +46,7 @@ Create instance of SmartAuth
 
 Get the App signature
 ```dart
-  void getAppSignatue() async {
+  void getAppSignature() async {
     final res = await smartAuth.getAppSignature();
     debugPrint('Signature: $res');
   }
@@ -58,7 +64,7 @@ Get SMS code
     }
   }
 ```
-Plugin automatically removes listeners after recieving the code, if not you can remove by calling `removeSmsListener` method
+The plugin automatically removes listeners after receiving the code, if not you can remove them by calling the `removeSmsListener` method
 
 ```dart
   void removeSmsListener() {
@@ -144,18 +150,18 @@ Delete credential
 
 ```dart
   /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
-  /// returns code if it macthes with matcher
-  /// More about SMS Retriever API  [https://developers.google.com/identity/sms-retriever/overview?hl=en]
+  /// returns code if it matches with matcher
+  /// More about SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
   ///
-  /// If useUserConsntApi is true SMS User Consent API will be used [https://developers.google.com/identity/sms-retriever/user-consent/overview]
-  /// Which shows confirmations dialog to user to confiirm reading the SMS content
+  /// If useUserConsentApi is true SMS User Consent API will be used [https://developers.google.com/identity/sms-retriever/user-consent/overview]
+  /// Which shows confirmations dialog to user to confirm reading the SMS content
   Future<SmsCodeResult> getSmsCode({
     // used to extract code from SMS
     String matcher = _defaultCodeMatcher,
-    // Optional parameter for User Consnt API
+    // Optional parameter for User Consent API
     String? senderPhoneNumber,
     // if true SMS User Consent API will be used otherwise plugin will use SMS Retriever API
-    bool useUserConsntApi = false,
+    bool useUserConsentApi = false,
   })
 ```
 
@@ -166,10 +172,10 @@ Delete credential
   /// Removes listener for [getSmsCode]
   Future<void> removeSmsListener()
 
-  /// Disposes [getSmsCode] if useUserConsntApi is false listener
+  /// Disposes [getSmsCode] if useUserConsentApi is false listener
   Future<bool> removeSmsRetrieverListener()
 
-  /// Disposes [getSmsCode] if useUserConsntApi is true listener
+  /// Disposes [getSmsCode] if useUserConsentApi is true listener
   Future<bool> removeSmsUserConsentListener()
 ```
 
@@ -212,7 +218,7 @@ Delete credential
 
 ```dart
   /// Tries to suggest a zero-click sign-in account. Only call this if your app does not currently know who is signed in.
-  /// If zero-click suggestion fails app show dialog of credentials to chooze from
+  /// If zero-click suggestion fails app show dialog of credentials to choose from
   /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
   Future<Credential?> getCredential({
     // Identifier url, should be you App's website url
@@ -256,6 +262,7 @@ Delete credential
 
 ```dart
   /// Deletes a credential that is no longer valid for signing into the app.
+  /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
   Future<bool> deleteCredential({
     // Value you want to save
     required String id,

@@ -1,5 +1,6 @@
-## 1.0.0
-Fixed Reinitializing listeners
+## 1.0.1
+- Fixed Reinitializing listeners
+- Fixed Typos
 
 
 ## 0.9.1
