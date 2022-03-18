@@ -1,4 +1,8 @@
 ## 1.0.2
+- Fake support of all operating systems, because other packages is depended on this one
+
+
+## 1.0.1
 - Fixed Reinitializing listeners
 - Fixed Typos
 

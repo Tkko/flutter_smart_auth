@@ -1,11 +1,9 @@
-
 <div align="center">
  <h1 align="center" style="font-size: 70px;">Flutter Smart Auth From <a href="https://www.linkedin.com/in/thornike/" target="_blank">Tornike </a> & Great <a href="https://github.com/Tkko/Flutter_Pinput/graphs/contributors" target="_blank">Contributors</a> </h1>
 
 <a href="https://www.buymeacoffee.com/fman" target="_blank"><img src="https://img.buymeacoffee.com/button-api/?text=Thank me with a coffee&emoji=&slug=fman&button_colour=40DCA5&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00"></a>
 
 </div>
-
 
 Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
 
@@ -15,9 +13,10 @@ Bonus tip: 🤫 Tell your PM that you need a week to implement the feature and c
 
 `Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
 
-<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" style="height: 500px"/>
+<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="600"/>
 
 ## Features:
+
 - Android Autofill
   - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
   - SMS User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
@@ -26,8 +25,8 @@ Bonus tip: 🤫 Tell your PM that you need a week to implement the feature and c
 - Saving Credential
 - Deleting Credential
 
-
 ## Support
+
 PRs Welcome
 
 Discord [Channel](https://rebrand.ly/qwc3s0d)
@@ -38,15 +37,16 @@ Don't forget to give it a star ⭐
 
 ## Demo
 
-
 ## Getting Started
 
 Create instance of SmartAuth
+
 ```dart
   final smartAuth = SmartAuth();
 ```
 
 Get the App signature
+
 ```dart
   void getAppSignature() async {
     final res = await smartAuth.getAppSignature();
@@ -54,8 +54,8 @@ Get the App signature
   }
 ```
 
-
 Get SMS code
+
 ```dart
   void getSmsCode() async {
     final res = await smartAuth.getSmsCode();
@@ -66,6 +66,7 @@ Get SMS code
     }
   }
 ```
+
 The plugin automatically removes listeners after receiving the code, if not you can remove them by calling the `removeSmsListener` method
 
 ```dart
@@ -74,8 +75,8 @@ The plugin automatically removes listeners after receiving the code, if not you 
   }
 ```
 
-
 Request hints to the user
+
 ```dart
   void requestHint() async {
     final res = await smartAuth.requestHint(
@@ -86,10 +87,11 @@ Request hints to the user
     debugPrint('requestHint: $res');
   }
 ```
-<img src="https://user-images.githubusercontent.com/26390946/158823942-3f0a1d6f-c669-4517-978d-25fea38a871e.png" style="height: 800px; width: auto; image-rendering: pixelated;" alt="Request Hint" />
 
+<img src="https://user-images.githubusercontent.com/26390946/158823942-3f0a1d6f-c669-4517-978d-25fea38a871e.png" height="600" alt="Request Hint" />
 
 Get saved credential
+
 ```dart
   // identifier Url
   final accountType = 'https://developers.google.com';
@@ -108,10 +110,11 @@ Get saved credential
     debugPrint('getCredentials: $res');
   }
 ```
-<img src="https://user-images.githubusercontent.com/26390946/158823952-90db7d68-b1f1-4110-82b3-4ba69306e95a.png"  style="height: 800px; width: auto; image-rendering: pixelated;" alt="Get Credential" />
 
+<img src="https://user-images.githubusercontent.com/26390946/158823952-90db7d68-b1f1-4110-82b3-4ba69306e95a.png"  height="600" alt="Get Credential" />
 
 Save credential
+
 ```dart
   void saveCredential() async {
     final res = await smartAuth.saveCredential(
@@ -123,9 +126,11 @@ Save credential
     debugPrint('saveCredentials: $res');
   }
 ```
-<img src="https://user-images.githubusercontent.com/26390946/158823965-f8a70d11-3a10-4270-bcd1-66e53c05d2e1.png" style="height: 800px; width: auto; image-rendering: pixelated;" alt="Save Credential" />
+
+<img src="https://user-images.githubusercontent.com/26390946/158823965-f8a70d11-3a10-4270-bcd1-66e53c05d2e1.png" height="600" alt="Save Credential" />
 
 Delete credential
+
 ```dart
   void deleteCredential() async {
     final res = await smartAuth.deleteCredential(
@@ -135,7 +140,6 @@ Delete credential
     debugPrint('removeCredentials: $res');
   }
 ```
-
 
 ## API
 
@@ -166,7 +170,6 @@ Delete credential
     bool useUserConsentApi = false,
   })
 ```
-
 
 #### removeSmsListener
 
@@ -215,7 +218,6 @@ Delete credential
   })
 ```
 
-
 #### getCredential
 
 ```dart
@@ -234,7 +236,6 @@ Delete credential
     bool showResolveDialog = false,
   })
 ```
-
 
 #### saveCredential
 
@@ -258,8 +259,6 @@ Delete credential
   })
 ```
 
-
-
 #### deleteCredential
 
 ```dart
@@ -275,4 +274,3 @@ Delete credential
     String? profilePictureUri,
   })
 ```
-
