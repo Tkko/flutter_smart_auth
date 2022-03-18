@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'dart:io' show Platform;
 
 part 'sms_code_result.dart';
 
@@ -16,7 +17,10 @@ class SmartAuth {
   /// SMS must contain this hash at the end of the text
   /// Note that hash for debug and release if different
   Future<String?> getAppSignature() async {
-    return await _channel.invokeMethod('getAppSignature');
+    if (_isAndroid('getAppSignature')) {
+      return _channel.invokeMethod('getAppSignature');
+    }
+    return null;
   }
 
   /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
@@ -34,35 +38,43 @@ class SmartAuth {
     bool useUserConsentApi = false,
   }) async {
     if (senderPhoneNumber != null) {
-      assert(useUserConsentApi == true,
-          'senderPhoneNumber is only supported if useUserConsentApi is true');
+      assert(useUserConsentApi == true, 'senderPhoneNumber is only supported if useUserConsentApi is true');
     }
 
-    final String? sms = useUserConsentApi
-        ? await _channel.invokeMethod(
-            'startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
-        : await _channel.invokeMethod('startSmsRetriever');
-
-    return SmsCodeResult.fromSms(sms, matcher);
+    if (_isAndroid('getSmsCode')) {
+      final String? sms = useUserConsentApi
+          ? await _channel.invokeMethod('startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
+          : await _channel.invokeMethod('startSmsRetriever');
+      return SmsCodeResult.fromSms(sms, matcher);
+    }
+    return SmsCodeResult.fromSms(null, matcher);
   }
 
   /// Removes listener for [getSmsCode]
   Future<void> removeSmsListener() async {
-    await _channel.invokeMethod('stopSmsRetriever');
-    await _channel.invokeMethod('stopSmsUserConsent');
-    return;
+    if (_isAndroid('removeSmsListener')) {
+      await _channel.invokeMethod('stopSmsRetriever');
+      await _channel.invokeMethod('stopSmsUserConsent');
+      return;
+    }
   }
 
   /// Disposes [getSmsCode] if useUserConsntApi is false listener
   Future<bool> removeSmsRetrieverListener() async {
-    final res = await _channel.invokeMethod('stopSmsRetriever');
-    return res == true;
+    if (_isAndroid('removeSmsRetrieverListener')) {
+      final res = await _channel.invokeMethod('stopSmsRetriever');
+      return res == true;
+    }
+    return false;
   }
 
   /// Disposes [getSmsCode] if useUserConsntApi is true listener
   Future<bool> removeSmsUserConsentListener() async {
-    final res = await _channel.invokeMethod('stopSmsUserConsent');
-    return res == true;
+    if (_isAndroid('removeSmsUserConsentListener')) {
+      final res = await _channel.invokeMethod('stopSmsUserConsent');
+      return res == true;
+    }
+    return false;
   }
 
   /// Opens dialog of user emails and/or phone numbers
@@ -94,26 +106,28 @@ class SmartAuth {
     // the default audience will be used for the generated ID token.
     String? serverClientId,
   }) async {
-    final res = await _channel.invokeMethod('requestHint', {
-      'isEmailAddressIdentifierSupported': isEmailAddressIdentifierSupported,
-      'isPhoneNumberIdentifierSupported': isPhoneNumberIdentifierSupported,
-      'accountTypes': accountTypes,
-      'isIdTokenRequested': isIdTokenRequested,
-      'showAddAccountButton': showAddAccountButton,
-      'showCancelButton': showCancelButton,
-      'idTokenNonce': idTokenNonce,
-      'serverClientId': serverClientId,
-    });
-    if (res == null) return null;
+    if (_isAndroid('requestHint')) {
+      final res = await _channel.invokeMethod('requestHint', {
+        'isEmailAddressIdentifierSupported': isEmailAddressIdentifierSupported,
+        'isPhoneNumberIdentifierSupported': isPhoneNumberIdentifierSupported,
+        'accountTypes': accountTypes,
+        'isIdTokenRequested': isIdTokenRequested,
+        'showAddAccountButton': showAddAccountButton,
+        'showCancelButton': showCancelButton,
+        'idTokenNonce': idTokenNonce,
+        'serverClientId': serverClientId,
+      });
+      if (res == null) return null;
 
-    try {
-      final Map<String, dynamic> map =
-          jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
-      return Credential.fromJson(map);
-    } catch (e) {
-      debugPrint('$e');
-      return null;
+      try {
+        final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+        return Credential.fromJson(map);
+      } catch (e) {
+        debugPrint('$e');
+        return null;
+      }
     }
+    return null;
   }
 
   /// Tries to suggest a zero-click sign-in account. Only call this if your app does not currently know who is signed in.
@@ -130,25 +144,27 @@ class SmartAuth {
     // we can show dialog to prompt user to choose credential
     bool showResolveDialog = false,
   }) async {
-    final res = await _channel.invokeMethod('getCredential', {
-      'accountType': accountType,
-      'serverClientId': serverClientId,
-      'idTokenNonce': idTokenNonce,
-      'isIdTokenRequested': isIdTokenRequested,
-      'isPasswordLoginSupported': isPasswordLoginSupported,
-      'showResolveDialog': showResolveDialog,
-    });
+    if (_isAndroid('getCredential')) {
+      final res = await _channel.invokeMethod('getCredential', {
+        'accountType': accountType,
+        'serverClientId': serverClientId,
+        'idTokenNonce': idTokenNonce,
+        'isIdTokenRequested': isIdTokenRequested,
+        'isPasswordLoginSupported': isPasswordLoginSupported,
+        'showResolveDialog': showResolveDialog,
+      });
 
-    if (res == null) return null;
+      if (res == null) return null;
 
-    try {
-      final Map<String, dynamic> map =
-          jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
-      return Credential.fromJson(map);
-    } catch (e) {
-      debugPrint('$e');
-      return null;
+      try {
+        final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+        return Credential.fromJson(map);
+      } catch (e) {
+        debugPrint('$e');
+        return null;
+      }
     }
+    return null;
   }
 
   /// Saves a credential that was used to sign in to the app. If disableAutoSignIn was previously called and the save operation succeeds,
@@ -168,14 +184,17 @@ class SmartAuth {
     String? password,
     String? profilePictureUri,
   }) async {
-    final res = await _channel.invokeMethod('saveCredential', {
-      'id': id,
-      'accountType': accountType,
-      'name': name,
-      'password': password,
-      'profilePictureUri': profilePictureUri,
-    });
-    return res == true;
+    if (_isAndroid('saveCredential')) {
+      final res = await _channel.invokeMethod('saveCredential', {
+        'id': id,
+        'accountType': accountType,
+        'name': name,
+        'password': password,
+        'profilePictureUri': profilePictureUri,
+      });
+      return res == true;
+    }
+    return false;
   }
 
   /// Deletes a credential that is no longer valid for signing into the app.
@@ -189,13 +208,27 @@ class SmartAuth {
     String? password,
     String? profilePictureUri,
   }) async {
-    final res = await _channel.invokeMethod('deleteCredential', {
-      'id': id,
-      'accountType': accountType,
-      'name': name,
-      'password': password,
-      'profilePictureUri': profilePictureUri,
-    });
-    return res == true;
+    if (_isAndroid('deleteCredential')) {
+      final res = await _channel.invokeMethod('deleteCredential', {
+        'id': id,
+        'accountType': accountType,
+        'name': name,
+        'password': password,
+        'profilePictureUri': profilePictureUri,
+      });
+      return res == true;
+    }
+    return false;
+  }
+
+  bool _isAndroid(String method) {
+    try {
+      if (Platform.isAndroid) return true;
+      debugPrint('SmartAuth $method is supported only on Android');
+      return false;
+    } catch (e) {
+      debugPrint('SmartAuth $method is supported only on Android');
+      return false;
+    }
   }
 }

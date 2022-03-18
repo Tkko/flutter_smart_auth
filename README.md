@@ -13,6 +13,8 @@ If you need pin code input like shown below, take a look at [Pinput](https://git
 
 Bonus tip: 🤫 Tell your PM that you need a week to implement the feature and chill with your friends meanwhile.
 
+`Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
+
 <img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" style="height: 500px"/>
 
 ## Features:
