@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 
 part 'sms_code_result.dart';
 
@@ -38,14 +37,12 @@ class SmartAuth {
     bool useUserConsentApi = false,
   }) async {
     if (senderPhoneNumber != null) {
-      assert(useUserConsentApi == true,
-          'senderPhoneNumber is only supported if useUserConsentApi is true');
+      assert(useUserConsentApi == true, 'senderPhoneNumber is only supported if useUserConsentApi is true');
     }
 
     if (_isAndroid('getSmsCode')) {
       final String? sms = useUserConsentApi
-          ? await _channel.invokeMethod(
-              'startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
+          ? await _channel.invokeMethod('startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
           : await _channel.invokeMethod('startSmsRetriever');
       return SmsCodeResult.fromSms(sms, matcher);
     }
@@ -122,8 +119,7 @@ class SmartAuth {
       if (res == null) return null;
 
       try {
-        final Map<String, dynamic> map =
-            jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+        final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
         return Credential.fromJson(map);
       } catch (e) {
         debugPrint('$e');
@@ -160,8 +156,7 @@ class SmartAuth {
       if (res == null) return null;
 
       try {
-        final Map<String, dynamic> map =
-            jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+        final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
         return Credential.fromJson(map);
       } catch (e) {
         debugPrint('$e');
@@ -226,13 +221,8 @@ class SmartAuth {
   }
 
   bool _isAndroid(String method) {
-    try {
-      if (Platform.isAndroid) return true;
-      debugPrint('SmartAuth $method is supported only on Android');
-      return false;
-    } catch (e) {
-      debugPrint('SmartAuth $method is supported only on Android');
-      return false;
-    }
+    if (defaultTargetPlatform == TargetPlatform.android) return true;
+    debugPrint('SmartAuth $method is not supported on $defaultTargetPlatform');
+    return false;
   }
 }
