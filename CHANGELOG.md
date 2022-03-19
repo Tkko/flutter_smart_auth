@@ -1,3 +1,7 @@
+## 1.0.4
+- Replaced dart.io with foundation.dart
+
+
 ## 1.0.3
 - Fake support of all operating systems, because other packages is depended on this one
 
