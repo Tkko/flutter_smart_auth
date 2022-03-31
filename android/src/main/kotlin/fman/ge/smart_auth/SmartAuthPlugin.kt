@@ -18,7 +18,6 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.OnCompleteListener
-import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -34,7 +33,7 @@ import kotlin.collections.HashMap
 class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     PluginRegistry.ActivityResultListener {
     private lateinit var mContext: Context
-    private var mActivity: FlutterActivity? = null
+    private var mActivity: Activity? = null
     private var mBinding: ActivityPluginBinding? = null
     private var mChannel: MethodChannel? = null
     private var pendingResult: MethodChannel.Result? = null
@@ -70,13 +69,13 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        mActivity = binding.activity as FlutterActivity
+        mActivity = binding.activity
         mBinding = binding
         binding.addActivityResultListener(this)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        mActivity = binding.activity as FlutterActivity
+        mActivity = binding.activity
         mBinding = binding
         binding.addActivityResultListener(this)
     }
