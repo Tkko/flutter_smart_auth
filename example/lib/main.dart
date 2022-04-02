@@ -21,7 +21,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     getAppSignature();
-    getSmsCode();
   }
 
   @override
@@ -36,6 +35,27 @@ class _MyAppState extends State<MyApp> {
     debugPrint('Signature: $res');
   }
 
+  void userConsent() async {
+    debugPrint('userConsent: ');
+    final res = await smartAuth.getSmsCode(useUserConsentApi: true);
+    if (res.codeFound) {
+      pinputController.setText(res.code!);
+    } else {
+      debugPrint('userConsent failed: $res');
+    }
+    debugPrint('userConsent: $res');
+  }
+
+  void smsRetriever() async {
+    final res = await smartAuth.getSmsCode();
+    if (res.codeFound) {
+      pinputController.setText(res.code!);
+    } else {
+      debugPrint('smsRetriever failed: $res');
+    }
+    debugPrint('smsRetriever: $res');
+  }
+
   void requestHint() async {
     final res = await smartAuth.requestHint(
       isPhoneNumberIdentifierSupported: true,
@@ -43,16 +63,6 @@ class _MyAppState extends State<MyApp> {
       showCancelButton: true,
     );
     debugPrint('requestHint: $res');
-  }
-
-  void getSmsCode() async {
-    final res = await smartAuth.getSmsCode();
-    if (res.succeed) {
-      pinputController.setText(res.code!);
-      debugPrint('SMS: ${res.code}');
-    } else {
-      debugPrint('SMS Failure: ${res.sms}');
-    }
   }
 
   void removeSmsListener() {
@@ -103,21 +113,21 @@ class _MyAppState extends State<MyApp> {
           children: [
             Pinput(controller: pinputController),
             TextButton(
-              onPressed: requestHint,
-              child: const Text('Request Hint'),
-            ),
+                onPressed: userConsent,
+                child: const Text('Sms User Consent API')),
             TextButton(
-              onPressed: getCredential,
-              child: const Text('Get Credential'),
-            ),
+                onPressed: smsRetriever,
+                child: const Text('Sms Retriever API')),
             TextButton(
-              onPressed: saveCredential,
-              child: const Text('Save Credential'),
-            ),
+                onPressed: requestHint, child: const Text('Request Hint')),
             TextButton(
-              onPressed: deleteCredential,
-              child: const Text('Delete Credential'),
-            ),
+                onPressed: getCredential, child: const Text('Get Credential')),
+            TextButton(
+                onPressed: saveCredential,
+                child: const Text('Save Credential')),
+            TextButton(
+                onPressed: deleteCredential,
+                child: const Text('Delete Credential')),
           ],
         ),
       ),

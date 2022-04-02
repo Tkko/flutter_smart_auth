@@ -2,7 +2,7 @@ name: smart_auth
 description: Wrapper of Android SMS User Consent API, SMS Retriever API to read one time sms code, get/save/delete user phone number, OTP, OTC, sms autofill, android autofill
 homepage: https://github.com/Tkko/flutter_smart_auth
 repository: https://github.com/Tkko/flutter_smart_auth
-version: 1.0.4
+version: 1.0.5
 
 
 environment:

@@ -1,3 +1,7 @@
+## 1.0.5
+- Remove downcast of Activity => FlutterActivity
+
+
 ## 1.0.4
 - Replaced dart.io with foundation.dart
 

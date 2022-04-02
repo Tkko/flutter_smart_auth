@@ -106,7 +106,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             SAVE_CREDENTIAL_REQUEST -> onSaveCredentialRequest(resultCode)
             GET_CREDENTIAL_REQUEST -> onGetCredentialRequest(resultCode, data)
         }
-        return false
+        return true
     }
 
 
@@ -456,9 +456,9 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
                 when (smsRetrieverStatus.statusCode) {
                     CommonStatusCodes.SUCCESS -> {
-                        val consentIntent =
-                            extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
                         try {
+                            val consentIntent =
+                                extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
                             this@SmartAuthPlugin.mActivity?.startActivityForResult(
                                 consentIntent,
                                 USER_CONSENT_REQUEST

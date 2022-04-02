@@ -34,4 +34,9 @@ class SmsCodeResult {
     return SmsCodeResult(
         sms: sms, succeed: sms != null, code: _extractCode(sms));
   }
+
+  @override
+  String toString() {
+    return 'SmsCodeResult{sms: $sms, code: $code, succeed: $succeed}';
+  }
 }

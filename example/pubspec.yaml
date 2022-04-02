@@ -11,7 +11,7 @@ dependencies:
 
   smart_auth:
     path: ../
-  pinput: ^2.1.4
+  pinput: 2.1.4
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
