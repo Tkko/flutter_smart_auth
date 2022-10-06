@@ -9,24 +9,51 @@ part 'credential.dart';
 
 const _defaultCodeMatcher = '\\d{4,7}';
 
+class Methods {
+  static const getAppSignature = 'getAppSignature';
+  static const startSmsRetriever = 'startSmsRetriever';
+  static const stopSmsRetriever = 'stopSmsRetriever';
+  static const startSmsUserConsent = 'startSmsUserConsent';
+  static const stopSmsUserConsent = 'stopSmsUserConsent';
+  static const requestHint = 'requestHint';
+  static const getCredential = 'getCredential';
+  static const saveCredential = 'saveCredential';
+  static const deleteCredential = 'deleteCredential';
+}
+
+/// Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
+///
+/// If you need pin code input like shown below, take a look at [Pinput](https:///github.com/Tkko/Flutter_Pinput) package, SmartAuth is already integrated into it and you can build highly customizable input, that your designers can't even draw in Figma 🤭
+/// `Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
+///
+/// <img src="https:///user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="600"/>
+///
+/// ## Features:
+/// - Android Autofill
+///   - SMS Retriever [API](https:///developers.google.com/identity/sms-retriever/overview?hl=en)
+///   - SMS User Consent [API](https:///developers.google.com/identity/sms-retriever/user-consent/overview)
+/// - Showing Hint Dialog
+/// - Getting Saved Credential
+/// - Saving Credential
+/// - Deleting Credential
 class SmartAuth {
   static const MethodChannel _channel = MethodChannel('fman.smart_auth');
 
-  /// This method outputs hash that is required for SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
+  /// This method outputs hash that is required for SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
   /// SMS must contain this hash at the end of the text
   /// Note that hash for debug and release if different
   Future<String?> getAppSignature() async {
-    if (_isAndroid('getAppSignature')) {
-      return _channel.invokeMethod('getAppSignature');
+    if (_isAndroid(Methods.getAppSignature)) {
+      return _channel.invokeMethod(Methods.getAppSignature);
     }
     return null;
   }
 
   /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
   /// returns code if it matches with matcher
-  /// More about SMS Retriever API [https://developers.google.com/identity/sms-retriever/overview?hl=en]
+  /// More about SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
   ///
-  /// If useUserConsentApi is true SMS User Consent API will be used [https://developers.google.com/identity/sms-retriever/user-consent/overview]
+  /// If useUserConsentApi is true SMS User Consent API will be used https://developers.google.com/identity/sms-retriever/user-consent/overview
   /// Which shows confirmations dialog to user to confirm reading the SMS content
   Future<SmsCodeResult> getSmsCode({
     // used to extract code from SMS
@@ -37,15 +64,18 @@ class SmartAuth {
     bool useUserConsentApi = false,
   }) async {
     if (senderPhoneNumber != null) {
-      assert(useUserConsentApi == true,
-          'senderPhoneNumber is only supported if useUserConsentApi is true');
+      assert(
+        useUserConsentApi == true,
+        'senderPhoneNumber is only supported if useUserConsentApi is true',
+      );
     }
 
     if (_isAndroid('getSmsCode')) {
       final String? sms = useUserConsentApi
-          ? await _channel.invokeMethod(
-              'startSmsUserConsent', {'senderPhoneNumber': senderPhoneNumber})
-          : await _channel.invokeMethod('startSmsRetriever');
+          ? await _channel.invokeMethod(Methods.startSmsUserConsent, {
+              'senderPhoneNumber': senderPhoneNumber,
+            })
+          : await _channel.invokeMethod(Methods.startSmsRetriever);
       return SmsCodeResult.fromSms(sms, matcher);
     }
     return SmsCodeResult.fromSms(null, matcher);
@@ -54,8 +84,8 @@ class SmartAuth {
   /// Removes listener for [getSmsCode]
   Future<void> removeSmsListener() async {
     if (_isAndroid('removeSmsListener')) {
-      await _channel.invokeMethod('stopSmsRetriever');
-      await _channel.invokeMethod('stopSmsUserConsent');
+      await _channel.invokeMethod(Methods.stopSmsRetriever);
+      await _channel.invokeMethod(Methods.stopSmsUserConsent);
       return;
     }
   }
@@ -63,7 +93,7 @@ class SmartAuth {
   /// Disposes [getSmsCode] if useUserConsntApi is false listener
   Future<bool> removeSmsRetrieverListener() async {
     if (_isAndroid('removeSmsRetrieverListener')) {
-      final res = await _channel.invokeMethod('stopSmsRetriever');
+      final res = await _channel.invokeMethod(Methods.stopSmsRetriever);
       return res == true;
     }
     return false;
@@ -72,15 +102,15 @@ class SmartAuth {
   /// Disposes [getSmsCode] if useUserConsntApi is true listener
   Future<bool> removeSmsUserConsentListener() async {
     if (_isAndroid('removeSmsUserConsentListener')) {
-      final res = await _channel.invokeMethod('stopSmsUserConsent');
+      final res = await _channel.invokeMethod(Methods.stopSmsUserConsent);
       return res == true;
     }
     return false;
   }
 
   /// Opens dialog of user emails and/or phone numbers
-  /// More about hint request [https://developers.google.com/identity/smartlock-passwords/android/retrieve-hints]
-  /// More about parameters [https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/HintRequest.Builder]
+  /// More about hint request https://developers.google.com/identity/smartlock-passwords/android/retrieve-hints
+  /// More about parameters https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/HintRequest.Builder
   Future<Credential?> requestHint({
     // Enables returning credential hints where the identifier is an email address,
     // intended for use with a password chosen by the user.
@@ -107,8 +137,8 @@ class SmartAuth {
     // the default audience will be used for the generated ID token.
     String? serverClientId,
   }) async {
-    if (_isAndroid('requestHint')) {
-      final res = await _channel.invokeMethod('requestHint', {
+    if (_isAndroid(Methods.requestHint)) {
+      final res = await _channel.invokeMethod(Methods.requestHint, {
         'isEmailAddressIdentifierSupported': isEmailAddressIdentifierSupported,
         'isPhoneNumberIdentifierSupported': isPhoneNumberIdentifierSupported,
         'accountTypes': accountTypes,
@@ -146,8 +176,8 @@ class SmartAuth {
     // we can show dialog to prompt user to choose credential
     bool showResolveDialog = false,
   }) async {
-    if (_isAndroid('getCredential')) {
-      final res = await _channel.invokeMethod('getCredential', {
+    if (_isAndroid(Methods.getCredential)) {
+      final res = await _channel.invokeMethod(Methods.getCredential, {
         'accountType': accountType,
         'serverClientId': serverClientId,
         'idTokenNonce': idTokenNonce,
@@ -187,8 +217,8 @@ class SmartAuth {
     String? password,
     String? profilePictureUri,
   }) async {
-    if (_isAndroid('saveCredential')) {
-      final res = await _channel.invokeMethod('saveCredential', {
+    if (_isAndroid(Methods.saveCredential)) {
+      final res = await _channel.invokeMethod(Methods.saveCredential, {
         'id': id,
         'accountType': accountType,
         'name': name,
@@ -211,8 +241,8 @@ class SmartAuth {
     String? password,
     String? profilePictureUri,
   }) async {
-    if (_isAndroid('deleteCredential')) {
-      final res = await _channel.invokeMethod('deleteCredential', {
+    if (_isAndroid(Methods.deleteCredential)) {
+      final res = await _channel.invokeMethod(Methods.deleteCredential, {
         'id': id,
         'accountType': accountType,
         'name': name,

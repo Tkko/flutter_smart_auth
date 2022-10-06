@@ -5,10 +5,14 @@ import android.app.Activity.RESULT_OK
 import android.app.PendingIntent
 import android.content.*
 import android.content.ContentValues.TAG
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import com.google.android.gms.auth.api.credentials.*
 import com.google.android.gms.auth.api.credentials.HintRequest.Builder
@@ -25,7 +29,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry
-import kotlin.collections.HashMap
+import java.util.*
 
 
 /** SmartAuthPlugin */
@@ -294,6 +298,9 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun startSmsUserConsent(call: MethodCall, result: MethodChannel.Result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            setAppLocale("ka", mActivity!!)
+        }
         if (consentReceiver != null) unregisterReceiver(consentReceiver)
         pendingResult = result
         consentReceiver = ConsentBroadcastReceiver()
@@ -304,6 +311,26 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             null,
         )
         SmsRetriever.getClient(mContext).startSmsUserConsent(call.argument("senderPhoneNumber"))
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    fun setAppLocale(language: String?, activity: Activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            val resources: Resources = activity.resources
+            val configuration: Configuration = resources.getConfiguration()
+            configuration.setLocale(Locale(language))
+            activity.applicationContext.createConfigurationContext(configuration)
+        } else {
+            val locale = Locale(language)
+            Locale.setDefault(locale)
+            val config = activity.resources.configuration
+            config.setLocale(locale)
+            activity.resources.updateConfiguration(
+                config,
+                activity.resources.displayMetrics
+            )
+        }
     }
 
 

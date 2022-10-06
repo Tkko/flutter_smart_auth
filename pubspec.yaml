@@ -28,12 +28,12 @@ flutter:
         pluginClass: SmartAuthPlugin
       ios:
         pluginClass: SmartAuthPlugin
-      linux:
-        pluginClass: SmartAuthPlugin
-      macos:
-        pluginClass: SmartAuthPlugin
-      windows:
-        pluginClass: SmartAuthPlugin
-      web:
-        pluginClass: SmartAuthWeb
-        fileName: smart_auth_web.dart
+#      linux:
+#        pluginClass: SmartAuthPlugin
+#      macos:
+#        pluginClass: SmartAuthPlugin
+#      windows:
+#        pluginClass: SmartAuthPlugin
+#      web:
+#        pluginClass: SmartAuthWeb
+#        fileName: smart_auth_web.dart

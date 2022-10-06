@@ -1,4 +1,31 @@
 include: package:flutter_lints/flutter.yaml
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+analyzer:
+  strong-mode:
+    implicit-dynamic: true
+  errors:
+    missing_required_param: warning
+    missing_return: warning
+    todo: ignore
+  exclude:
+    - flutter/**
+    - lib/api/*.dart
+
+linter:
+  rules:
+    unnecessary_this: false
+    always_declare_return_types: true
+    camel_case_types: true
+    empty_constructor_bodies: true
+    annotate_overrides: true
+    avoid_init_to_null: true
+    constant_identifier_names: true
+    one_member_abstracts: true
+    slash_for_doc_comments: true
+    unnecessary_brace_in_string_interps: true
+    cancel_subscriptions: true
+    close_sinks: true
+    unnecessary_const: true
+    unnecessary_new: true
+    prefer_single_quotes: true
+    require_trailing_commas: true

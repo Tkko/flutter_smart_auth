@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pinput/pinput.dart';
 import 'package:smart_auth/smart_auth.dart';
 
@@ -38,6 +39,7 @@ class _MyAppState extends State<MyApp> {
   void userConsent() async {
     debugPrint('userConsent: ');
     final res = await smartAuth.getSmsCode(useUserConsentApi: true);
+    userConsent();
     if (res.codeFound) {
       pinputController.setText(res.code!);
     } else {
@@ -48,6 +50,7 @@ class _MyAppState extends State<MyApp> {
 
   void smsRetriever() async {
     final res = await smartAuth.getSmsCode();
+    smsRetriever();
     if (res.codeFound) {
       pinputController.setText(res.code!);
     } else {
@@ -106,31 +109,33 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Pinput(controller: pinputController),
-            TextButton(
-                onPressed: userConsent,
-                child: const Text('Sms User Consent API')),
-            TextButton(
-                onPressed: smsRetriever,
-                child: const Text('Sms Retriever API')),
-            TextButton(
-                onPressed: requestHint, child: const Text('Request Hint')),
-            TextButton(
-                onPressed: getCredential, child: const Text('Get Credential')),
-            TextButton(
-                onPressed: saveCredential,
-                child: const Text('Save Credential')),
-            TextButton(
-                onPressed: deleteCredential,
-                child: const Text('Delete Credential')),
-          ],
-        ),
-      ),
+      locale: const Locale('es', ''),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('es', ''),
+      ],
+      builder: (_, __) {
+        return Scaffold(
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Pinput(controller: pinputController),
+              TextButton(onPressed: userConsent, child: const Text('Sms User Consent API')),
+              TextButton(onPressed: smsRetriever, child: const Text('Sms Retriever API')),
+              TextButton(onPressed: requestHint, child: const Text('Request Hint')),
+              TextButton(onPressed: getCredential, child: const Text('Get Credential')),
+              TextButton(onPressed: saveCredential, child: const Text('Save Credential')),
+              TextButton(onPressed: deleteCredential, child: const Text('Delete Credential')),
+            ],
+          ),
+        );
+      },
     );
   }
 }

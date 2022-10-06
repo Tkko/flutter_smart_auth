@@ -1,6 +1,11 @@
 part of 'smart_auth.dart';
 
-/// More about Credential [https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/Credential?hl=en]
+/// A credential that can be used to authenticate a user,
+/// with additional user information used to distinguish this credential from other available credentials.
+/// Credentials can be constructed using Credential.Builder.
+/// This is typically required when a credential is to be saved using [SmartAuth.saveCredential]
+/// for future retrieval after a new account is created, or the user changes their password.
+/// More about Credential https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/Credential?hl=en
 class Credential {
   /// Returns the type of federated identity account used to sign in the user.
   final String? accountType;

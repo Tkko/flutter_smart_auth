@@ -1,10 +1,18 @@
 part of 'smart_auth.dart';
 
+/// The returned value from [SmartAuth.getSmsCode]
+/// Contains the whole sms and the OTP code itself
 class SmsCodeResult {
+  /// The SMS text received from your OTP sender
   final String? sms;
+
+  /// The actual code retrieved from SMS
   final String? code;
 
+  /// Returns true if OTP code was found in the SMS content
   bool get codeFound => code != null;
+
+  /// Returns true sms content != null
   final bool succeed;
 
   SmsCodeResult({
@@ -32,7 +40,10 @@ class SmsCodeResult {
     }
 
     return SmsCodeResult(
-        sms: sms, succeed: sms != null, code: _extractCode(sms));
+      sms: sms,
+      succeed: sms != null,
+      code: _extractCode(sms),
+    );
   }
 
   @override
