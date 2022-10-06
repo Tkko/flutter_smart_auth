@@ -1,3 +1,7 @@
+## 1.0.6
+- Improved docs
+
+
 ## 1.0.5
 - Remove downcast of Activity => FlutterActivity
 
