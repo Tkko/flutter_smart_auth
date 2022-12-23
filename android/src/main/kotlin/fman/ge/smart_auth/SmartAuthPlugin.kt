@@ -5,14 +5,8 @@ import android.app.Activity.RESULT_OK
 import android.app.PendingIntent
 import android.content.*
 import android.content.ContentValues.TAG
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import com.google.android.gms.auth.api.credentials.*
 import com.google.android.gms.auth.api.credentials.HintRequest.Builder
@@ -44,13 +38,13 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private var smsReceiver: SmsBroadcastReceiver? = null
     private var consentReceiver: ConsentBroadcastReceiver? = null
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         mChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "fman.smart_auth")
         mContext = flutterPluginBinding.applicationContext
         mChannel?.setMethodCallHandler(this)
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         dispose()
         mChannel?.setMethodCallHandler(null)
         mChannel = null
@@ -102,7 +96,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
-        @Nullable data: Intent?
+        data: Intent?
     ): Boolean {
         when (requestCode) {
             HINT_REQUEST -> onHintRequest(resultCode, data)
@@ -298,9 +292,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun startSmsUserConsent(call: MethodCall, result: MethodChannel.Result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            setAppLocale("ka", mActivity!!)
-        }
         if (consentReceiver != null) unregisterReceiver(consentReceiver)
         pendingResult = result
         consentReceiver = ConsentBroadcastReceiver()
@@ -311,26 +302,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             null,
         )
         SmsRetriever.getClient(mContext).startSmsUserConsent(call.argument("senderPhoneNumber"))
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    fun setAppLocale(language: String?, activity: Activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            val resources: Resources = activity.resources
-            val configuration: Configuration = resources.getConfiguration()
-            configuration.setLocale(Locale(language))
-            activity.applicationContext.createConfigurationContext(configuration)
-        } else {
-            val locale = Locale(language)
-            Locale.setDefault(locale)
-            val config = activity.resources.configuration
-            config.setLocale(locale)
-            activity.resources.updateConfiguration(
-                config,
-                activity.resources.displayMetrics
-            )
-        }
     }
 
 
@@ -507,9 +478,9 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
 
     companion object {
-        private const val HINT_REQUEST = 110101
-        private const val USER_CONSENT_REQUEST = 110102
-        private const val SAVE_CREDENTIAL_REQUEST = 110103
-        private const val GET_CREDENTIAL_REQUEST = 110104
+        private const val HINT_REQUEST = 11100
+        private const val USER_CONSENT_REQUEST = 11101
+        private const val SAVE_CREDENTIAL_REQUEST = 11102
+        private const val GET_CREDENTIAL_REQUEST = 11103
     }
 }
