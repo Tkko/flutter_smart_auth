@@ -1,4 +1,4 @@
-#### 1.0.7 · 19/12/2022
+#### 1.0.8 · 29/12/2022
 - Fixed Error receiving broadcast Intent
 
 

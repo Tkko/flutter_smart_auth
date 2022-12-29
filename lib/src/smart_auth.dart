@@ -121,7 +121,9 @@ class SmartAuth {
         return res == true;
       }
     } catch (error) {
-      debugPrint('Pinput/SmartAuth: removeSmsUserConsentListener failed: $error');
+      debugPrint(
+        'Pinput/SmartAuth: removeSmsUserConsentListener failed: $error',
+      );
     }
     return false;
   }
@@ -158,7 +160,8 @@ class SmartAuth {
     if (_isAndroid(Methods.requestHint)) {
       try {
         final res = await _channel.invokeMethod(Methods.requestHint, {
-          'isEmailAddressIdentifierSupported': isEmailAddressIdentifierSupported,
+          'isEmailAddressIdentifierSupported':
+              isEmailAddressIdentifierSupported,
           'isPhoneNumberIdentifierSupported': isPhoneNumberIdentifierSupported,
           'accountTypes': accountTypes,
           'isIdTokenRequested': isIdTokenRequested,
@@ -168,7 +171,8 @@ class SmartAuth {
           'serverClientId': serverClientId,
         });
         if (res == null) return null;
-        final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+        final Map<String, dynamic> map =
+            jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
         return Credential.fromJson(map);
       } catch (error) {
         debugPrint('Pinput/SmartAuth: requestHint failed: $error');
@@ -205,7 +209,8 @@ class SmartAuth {
 
         if (res == null) return null;
 
-        final Map<String, dynamic> map = jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
+        final Map<String, dynamic> map =
+            jsonDecode(jsonEncode(res)) as Map<String, dynamic>;
         return Credential.fromJson(map);
       } catch (error) {
         debugPrint('Pinput/SmartAuth: getCredential failed: $error');
