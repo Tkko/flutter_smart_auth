@@ -74,7 +74,6 @@ class _MyAppState extends State<MyApp> {
 
   // identifier Url
   final accountType = 'https://developers.google.com';
-
   // Value you want to save, phone number or email for example
   final credentialId = 'Credential Id';
   final credentialName = 'Credential Name';
@@ -126,23 +125,12 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Pinput(controller: pinputController),
-              TextButton(
-                  onPressed: userConsent,
-                  child: const Text('Sms User Consent API')),
-              TextButton(
-                  onPressed: smsRetriever,
-                  child: const Text('Sms Retriever API')),
-              TextButton(
-                  onPressed: requestHint, child: const Text('Request Hint')),
-              TextButton(
-                  onPressed: getCredential,
-                  child: const Text('Get Credential')),
-              TextButton(
-                  onPressed: saveCredential,
-                  child: const Text('Save Credential')),
-              TextButton(
-                  onPressed: deleteCredential,
-                  child: const Text('Delete Credential')),
+              TextButton(onPressed: userConsent, child: const Text('Sms User Consent API')),
+              TextButton(onPressed: smsRetriever, child: const Text('Sms Retriever API')),
+              TextButton(onPressed: requestHint, child: const Text('Request Hint')),
+              TextButton(onPressed: getCredential, child: const Text('Get Credential')),
+              TextButton(onPressed: saveCredential, child: const Text('Save Credential')),
+              TextButton(onPressed: deleteCredential, child: const Text('Delete Credential')),
             ],
           ),
         );

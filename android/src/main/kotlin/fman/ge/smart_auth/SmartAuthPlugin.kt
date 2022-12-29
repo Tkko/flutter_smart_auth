@@ -23,7 +23,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry
-import java.util.*
 
 
 /** SmartAuthPlugin */
@@ -55,17 +54,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     override fun onDetachedFromActivityForConfigChanges() = dispose()
 
 
-    private fun dispose() {
-        unregisterReceiver(smsReceiver)
-        unregisterReceiver(consentReceiver)
-        smsReceiver = null
-        consentReceiver = null
-        ignoreIllegalState { pendingResult?.success(null) }
-        mActivity = null
-        mBinding?.removeActivityResultListener(this)
-        mBinding = null
-    }
-
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         mActivity = binding.activity
         mBinding = binding
@@ -94,9 +82,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
+        requestCode: Int, resultCode: Int, data: Intent?
     ): Boolean {
         when (requestCode) {
             HINT_REQUEST -> onHintRequest(resultCode, data)
@@ -116,7 +102,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
     private fun requestHint(call: MethodCall, result: MethodChannel.Result) {
         pendingResult = result
-
         val showAddAccountButton = call.argument<Boolean?>("showAddAccountButton")
         val showCancelButton = call.argument<Boolean?>("showCancelButton")
         val isPhoneNumberIdentifierSupported =
@@ -131,31 +116,27 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         val hintRequest = Builder()
         val config = CredentialPickerConfig.Builder()
 
-        if (showAddAccountButton != null)
-            config.setShowAddAccountButton(showAddAccountButton)
+        if (showAddAccountButton != null) config.setShowAddAccountButton(showAddAccountButton)
 
-        if (showCancelButton != null)
-            config.setShowCancelButton(showCancelButton)
+        if (showCancelButton != null) config.setShowCancelButton(showCancelButton)
 
         hintRequest.setHintPickerConfig(config.build())
 
-        if (isPhoneNumberIdentifierSupported != null)
-            hintRequest.setPhoneNumberIdentifierSupported(isPhoneNumberIdentifierSupported)
+        if (isPhoneNumberIdentifierSupported != null) hintRequest.setPhoneNumberIdentifierSupported(
+            isPhoneNumberIdentifierSupported
+        )
 
-        if (isEmailAddressIdentifierSupported != null)
-            hintRequest.setEmailAddressIdentifierSupported(isEmailAddressIdentifierSupported)
+        if (isEmailAddressIdentifierSupported != null) hintRequest.setEmailAddressIdentifierSupported(
+            isEmailAddressIdentifierSupported
+        )
 
-        if (accountTypes != null)
-            hintRequest.setAccountTypes(accountTypes)
+        if (accountTypes != null) hintRequest.setAccountTypes(accountTypes)
 
-        if (idTokenNonce != null)
-            hintRequest.setIdTokenNonce(idTokenNonce)
+        if (idTokenNonce != null) hintRequest.setIdTokenNonce(idTokenNonce)
 
-        if (isIdTokenRequested != null)
-            hintRequest.setIdTokenRequested(isIdTokenRequested)
+        if (isIdTokenRequested != null) hintRequest.setIdTokenRequested(isIdTokenRequested)
 
-        if (serverClientId != null)
-            hintRequest.setServerClientId(serverClientId)
+        if (serverClientId != null) hintRequest.setServerClientId(serverClientId)
 
 
         val intent: PendingIntent =
@@ -163,14 +144,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
         if (mActivity != null) {
             startIntentSenderForResult(
-                mActivity!!,
-                intent.intentSender,
-                HINT_REQUEST,
-                null,
-                0,
-                0,
-                0,
-                null
+                mActivity!!, intent.intentSender, HINT_REQUEST, null, 0, 0, 0, null
             )
         }
     }
@@ -190,12 +164,11 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 try {
                     pendingResult = result
                     exception.startResolutionForResult(
-                        mActivity as Activity,
-                        SAVE_CREDENTIAL_REQUEST
+                        mActivity as Activity, SAVE_CREDENTIAL_REQUEST
                     )
                     return@addOnCompleteListener
                 } catch (exception: IntentSender.SendIntentException) {
-                    Log.e(TAG, "Failed to send resolution.", exception)
+                    Log.e(PLUGIN_TAG, "Failed to send resolution.", exception)
                 }
             }
             result.success(false)
@@ -213,21 +186,18 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
 
         val credentialRequest = CredentialRequest.Builder().setAccountTypes(accountType)
-        if (accountType != null)
-            credentialRequest.setAccountTypes(accountType)
-        if (idTokenNonce != null)
-            credentialRequest.setIdTokenNonce(idTokenNonce)
-        if (isIdTokenRequested != null)
-            credentialRequest.setIdTokenRequested(isIdTokenRequested)
-        if (isPasswordLoginSupported != null)
-            credentialRequest.setPasswordLoginSupported(isPasswordLoginSupported)
-        if (serverClientId != null)
-            credentialRequest.setServerClientId(serverClientId)
+        if (accountType != null) credentialRequest.setAccountTypes(accountType)
+        if (idTokenNonce != null) credentialRequest.setIdTokenNonce(idTokenNonce)
+        if (isIdTokenRequested != null) credentialRequest.setIdTokenRequested(isIdTokenRequested)
+        if (isPasswordLoginSupported != null) credentialRequest.setPasswordLoginSupported(
+            isPasswordLoginSupported
+        )
+        if (serverClientId != null) credentialRequest.setServerClientId(serverClientId)
 
 
         val credentialsClient: CredentialsClient = Credentials.getClient(mContext)
-        credentialsClient.request(credentialRequest.build()).addOnCompleteListener(
-            OnCompleteListener { task ->
+        credentialsClient.request(credentialRequest.build())
+            .addOnCompleteListener(OnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null && task.result.credential != null) {
                     val credential: Credential? = task.result!!.credential
                     if (credential != null) {
@@ -246,7 +216,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                         )
                         return@OnCompleteListener
                     } catch (exception: IntentSender.SendIntentException) {
-                        Log.e(TAG, "Failed to send resolution.", exception)
+                        Log.e(PLUGIN_TAG, "Failed to send resolution.", exception)
                     }
                 }
 
@@ -265,7 +235,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun startSmsRetriever(result: MethodChannel.Result) {
-        if (smsReceiver != null) unregisterReceiver(smsReceiver)
+        unregisterAllReceivers();
         pendingResult = result
         smsReceiver = SmsBroadcastReceiver()
         mContext.registerReceiver(
@@ -280,19 +250,15 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun stopSmsRetriever(result: MethodChannel.Result) {
         if (smsReceiver == null) {
             result.success(false)
-            return
+        } else {
+            removeSmsRetrieverListener()
+            result.success(true)
         }
-        removeSmsRetrieverListener()
-        result.success(true)
     }
 
-    private fun removeSmsRetrieverListener() {
-        unregisterReceiver(smsReceiver)
-        smsReceiver = null
-    }
 
     private fun startSmsUserConsent(call: MethodCall, result: MethodChannel.Result) {
-        if (consentReceiver != null) unregisterReceiver(consentReceiver)
+        unregisterAllReceivers()
         pendingResult = result
         consentReceiver = ConsentBroadcastReceiver()
         mContext.registerReceiver(
@@ -308,15 +274,10 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun stopSmsUserConsent(result: MethodChannel.Result) {
         if (consentReceiver == null) {
             result.success(false)
-            return
+        } else {
+            removeSmsUserConsentListener()
+            result.success(true)
         }
-        removeSmsUserConsentListener()
-        result.success(true)
-    }
-
-    private fun removeSmsUserConsentListener() {
-        unregisterReceiver(consentReceiver)
-        consentReceiver = null
     }
 
 
@@ -385,24 +346,48 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         }
 
         val credential = Credential.Builder(id)
-        if (accountType != null)
-            credential.setAccountType(accountType)
-        if (name != null)
-            credential.setName(name)
-        if (password != null)
-            credential.setPassword(password)
-        if (profilePictureUri != null)
-            credential.setProfilePictureUri(Uri.parse(profilePictureUri))
+        if (accountType != null) credential.setAccountType(accountType)
+        if (name != null) credential.setName(name)
+        if (password != null) credential.setPassword(password)
+        if (profilePictureUri != null) credential.setProfilePictureUri(Uri.parse(profilePictureUri))
 
         return credential.build()
     }
 
 
+    private fun dispose() {
+        unregisterAllReceivers()
+        ignoreIllegalState { pendingResult?.success(null) }
+        mActivity = null
+        mBinding?.removeActivityResultListener(this)
+        mBinding = null
+    }
+
+    private fun unregisterAllReceivers() {
+        removeSmsRetrieverListener();
+        removeSmsUserConsentListener();
+    }
+
+
+    private fun removeSmsRetrieverListener() {
+        if (smsReceiver != null) {
+            unregisterReceiver(smsReceiver)
+            smsReceiver = null
+        }
+    }
+
+    private fun removeSmsUserConsentListener() {
+        if (consentReceiver != null) {
+            unregisterReceiver(consentReceiver)
+            consentReceiver = null
+        }
+    }
+
     private fun unregisterReceiver(receiver: BroadcastReceiver?) {
         try {
             receiver?.let { mContext.unregisterReceiver(it) }
         } catch (exception: Exception) {
-            Log.e(TAG, "Unregistering receiver failed.", exception)
+            Log.e(PLUGIN_TAG, "Unregistering receiver failed.", exception)
         }
     }
 
@@ -410,7 +395,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         try {
             fn()
         } catch (e: IllegalStateException) {
-            Log.e(TAG, "ignoring exception: $e")
+            Log.e(PLUGIN_TAG, "ignoring exception: $e")
         }
     }
 
@@ -422,19 +407,43 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         override fun onReceive(context: Context, intent: Intent) {
             if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
                 removeSmsRetrieverListener()
-
-                val extras = intent.extras
-                val smsRetrieverStatus = extras!!.get(SmsRetriever.EXTRA_STATUS) as Status
-
-                when (smsRetrieverStatus.statusCode) {
-                    CommonStatusCodes.SUCCESS -> {
-                        val smsContent = extras.get(SmsRetriever.EXTRA_SMS_MESSAGE) as String
-                        ignoreIllegalState { pendingResult?.success(smsContent) }
+                if (intent.extras != null && intent.extras!!.containsKey(SmsRetriever.EXTRA_STATUS)) {
+                    val extras = intent.extras!!
+                    val smsRetrieverStatus = extras.get(SmsRetriever.EXTRA_STATUS) as Status
+                    when (smsRetrieverStatus.statusCode) {
+                        CommonStatusCodes.SUCCESS -> {
+                            val smsContent = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
+                            if (smsContent != null) {
+                                ignoreIllegalState { pendingResult?.success(smsContent) }
+                            } else {
+                                Log.e(
+                                    PLUGIN_TAG,
+                                    "Retrieved SMS is null, check if SMS contains correct app signature"
+                                )
+                                ignoreIllegalState { pendingResult?.success(null) }
+                            }
+                        }
+                        CommonStatusCodes.TIMEOUT -> {
+                            Log.e(
+                                PLUGIN_TAG,
+                                "SMS Retriever API timed out, check if SMS contains correct app signature"
+                            )
+                            ignoreIllegalState { pendingResult?.success(null) }
+                        }
+                        else -> {
+                            Log.e(
+                                PLUGIN_TAG,
+                                "SMS Retriever API failed with status code: ${smsRetrieverStatus.statusCode}, check if SMS contains correct app signature"
+                            )
+                            ignoreIllegalState { pendingResult?.success(null) }
+                        }
                     }
-
-                    CommonStatusCodes.TIMEOUT -> {
-                        ignoreIllegalState { pendingResult?.success(null) }
-                    }
+                } else {
+                    Log.e(
+                        PLUGIN_TAG,
+                        "SMS Retriever API failed with no status code, check if SMS contains correct app signature"
+                    )
+                    ignoreIllegalState { pendingResult?.success(null) }
                 }
             }
         }
@@ -448,36 +457,56 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         override fun onReceive(context: Context, intent: Intent) {
             if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
                 removeSmsUserConsentListener()
+                if (intent.extras != null && intent.extras!!.containsKey(SmsRetriever.EXTRA_STATUS)) {
+                    val extras = intent.extras!!
+                    val smsRetrieverStatus = extras.get(SmsRetriever.EXTRA_STATUS) as Status
+                    when (smsRetrieverStatus.statusCode) {
+                        CommonStatusCodes.SUCCESS -> {
+                            try {
+                                val consentIntent =
+                                    extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
 
-                val extras = intent.extras
-                val smsRetrieverStatus = extras!!.get(SmsRetriever.EXTRA_STATUS) as Status
-
-                when (smsRetrieverStatus.statusCode) {
-                    CommonStatusCodes.SUCCESS -> {
-                        try {
-                            val consentIntent =
-                                extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
-                            this@SmartAuthPlugin.mActivity?.startActivityForResult(
-                                consentIntent,
-                                USER_CONSENT_REQUEST
-                            )
-                        } catch (e: ActivityNotFoundException) {
-                            Log.e(TAG, "ConsentBroadcastReceiver $e")
+                                if (consentIntent != null && mActivity != null) {
+                                    this@SmartAuthPlugin.mActivity?.startActivityForResult(
+                                        consentIntent, USER_CONSENT_REQUEST
+                                    )
+                                } else {
+                                    Log.e(
+                                        PLUGIN_TAG,
+                                        "ConsentBroadcastReceiver error: Can't start consent intent. consentIntent or mActivity is null"
+                                    )
+                                    ignoreIllegalState { pendingResult?.success(null) }
+                                }
+                            } catch (e: ActivityNotFoundException) {
+                                Log.e(PLUGIN_TAG, "ConsentBroadcastReceiver error: $e")
+                                ignoreIllegalState { pendingResult?.success(null) }
+                            }
+                        }
+                        CommonStatusCodes.TIMEOUT -> {
+                            Log.e(PLUGIN_TAG, "ConsentBroadcastReceiver Timeout")
                             ignoreIllegalState { pendingResult?.success(null) }
                         }
+                        else -> {
+                            Log.e(
+                                PLUGIN_TAG,
+                                "ConsentBroadcastReceiver failed with status code: ${smsRetrieverStatus.statusCode}"
+                            )
+                            ignoreIllegalState { pendingResult?.success(null) }
+                        }
+                    }
 
-                    }
-                    CommonStatusCodes.TIMEOUT -> {
-                        Log.e(TAG, "ConsentBroadcastReceiver Timeout")
-                        ignoreIllegalState { pendingResult?.success(null) }
-                    }
+                } else {
+                    Log.e(PLUGIN_TAG, "ConsentBroadcastReceiver failed with no status code")
+                    ignoreIllegalState { pendingResult?.success(null) }
                 }
+
             }
         }
     }
 
 
     companion object {
+        private const val PLUGIN_TAG = "Pinput/SmartAuth"
         private const val HINT_REQUEST = 11100
         private const val USER_CONSENT_REQUEST = 11101
         private const val SAVE_CREDENTIAL_REQUEST = 11102
