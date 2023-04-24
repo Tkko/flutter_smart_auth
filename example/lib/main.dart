@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:pinput/pinput.dart';
 import 'package:smart_auth/smart_auth.dart';
 
 void main() {
@@ -41,7 +40,9 @@ class _MyAppState extends State<MyApp> {
     final res = await smartAuth.getSmsCode(useUserConsentApi: true);
     userConsent();
     if (res.codeFound) {
-      pinputController.setText(res.code!);
+      pinputController.text = res.code!;
+      pinputController.selection = TextSelection.fromPosition(
+          TextPosition(offset: pinputController.text.length));
     } else {
       debugPrint('userConsent failed: $res');
     }
@@ -52,7 +53,9 @@ class _MyAppState extends State<MyApp> {
     final res = await smartAuth.getSmsCode();
     smsRetriever();
     if (res.codeFound) {
-      pinputController.setText(res.code!);
+      pinputController.text = res.code!;
+      pinputController.selection = TextSelection.fromPosition(
+          TextPosition(offset: pinputController.text.length));
     } else {
       debugPrint('smsRetriever failed: $res');
     }
@@ -74,6 +77,7 @@ class _MyAppState extends State<MyApp> {
 
   // identifier Url
   final accountType = 'https://developers.google.com';
+
   // Value you want to save, phone number or email for example
   final credentialId = 'Credential Id';
   final credentialName = 'Credential Name';
@@ -124,7 +128,16 @@ class _MyAppState extends State<MyApp> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Pinput(controller: pinputController),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: pinputController,
+                  decoration: const InputDecoration(
+                    hintText: 'Code',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
               TextButton(
                   onPressed: userConsent,
                   child: const Text('Sms User Consent API')),

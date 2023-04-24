@@ -3,7 +3,7 @@ description: Demonstrates how to use the smart_auth plugin.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=2.19.6 <3.0.0"
 
 dependencies:
   flutter:
@@ -11,7 +11,6 @@ dependencies:
 
   smart_auth:
     path: ../
-  pinput: 2.1.4
   cupertino_icons: ^1.0.2
   flutter_localizations:
     sdk: flutter
@@ -19,7 +18,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
 
 
 flutter:
