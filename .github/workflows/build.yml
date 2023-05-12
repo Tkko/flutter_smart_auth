@@ -63,9 +63,27 @@ jobs:
         static-analyses,
         pana,
       ]
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_pub_publish.yml@v1
-    with:
-      flutter_channel: "stable"
-      flutter_version: "3.10.0"
-      working_directory: "."
-      pub_credentials: ${{ secrets.PUB_CREDENTIALS }}
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v3
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{inputs.flutter_version}}
+          channel: ${{inputs.flutter_channel}}
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      - name: 🔐 Setup Pub Credentials
+        run: |
+          mkdir -p $XDG_CONFIG_HOME/dart
+          echo '${{inputs.pub_credentials}}' > "$XDG_CONFIG_HOME/dart/pub-credentials.json"
+
+      - name: 🌵 Dry Run
+        run: flutter pub publish --dry-run
+
+#      - name: 📢 Publish
+#        run: flutter pub publish -f
