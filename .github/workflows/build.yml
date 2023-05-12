@@ -5,9 +5,14 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  inputs:
+    min_score:
+      required: false
+      type: number
+      default: 140
 
 jobs:
-  spell_check:
+  spell-check:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
     with:
       includes: |
@@ -17,7 +22,7 @@ jobs:
       modified_files_only: false
       working_directory: "."
 
-  static_analyses:
+  static-analyses:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -55,3 +60,16 @@ jobs:
           echo "Score: $PANA_SCORE"
           IFS='/'; read -a SCORE_ARR <<< "$PANA_SCORE"; SCORE=SCORE_ARR[0];
           if (( $SCORE < ${{inputs.min_score}} )); then echo "The minimum score of ${{inputs.min_score}} was not met!"; exit 1; fi
+
+  publish:
+    needs:
+      [
+        spell-check,
+        static-analyses,
+      ]
+    runs-on: ubuntu-latest
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_pub_publish.yml@v1
+    with:
+      flutter_channel: "stable"
+      working_directory: "."
+      pub_credentials: ${{ secrets.PUB_CREDENTIALS }}
