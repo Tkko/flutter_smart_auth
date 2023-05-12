@@ -12,18 +12,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2.8.0
-
-      - name: Install Dependencies
-        run: flutter packages get
-
-      - name: Format
-        run: dart format --set-exit-if-changed .
-
   spell_check:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
     with:
@@ -34,26 +22,44 @@ jobs:
       modified_files_only: false
       working_directory: "."
 
-  dartdoc:
+  setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Install dartdoc
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v3
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "stable"
+          channel: "stable"
+          cache: true
+          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: 📦 Install Dependencies
+        run: |
+          flutter pub global activate very_good_cli
+          very_good --analytics false
+          very_good packages get --recursive --ignore=${{inputs.package_get_excludes}}
+
+      - name: ✨ Check Formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: 🕵️ Analyze
+        run: flutter analyze .
+
+      - name: 📦 Install dartdoc
         run: flutter pub global activate dartdoc
-      - name: Run dartdoc
+
+      - name: 📄 Run dartdoc
         run: dart doc . || fail "dart doc failed"
 
-  pana:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
-    with:
-      min_score: 130
-      working_directory: "."
+      - name: 📦 Install Pana
+        run: flutter pub global activate pana
 
-  build:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
-    with:
-      coverage_excludes: "*.g.dart"
-      flutter_channel: "stable"
-      flutter_version: "stable"
-      working_directory: "."
-      test_recursion: true
-      min_coverage: 0
+      - name: 📊 Verify Pana Score
+        run: |
+          PANA=$(pana . --no-warning); PANA_SCORE=$(echo $PANA | sed -n "s/.*Points: \([0-9]*\)\/\([0-9]*\)./\1\/\2/p")
+          echo "Score: $PANA_SCORE"
+          IFS='/'; read -a SCORE_ARR <<< "$PANA_SCORE"; SCORE=SCORE_ARR[0];
+          if (( $SCORE < ${{inputs.min_score}} )); then echo "The minimum score of ${{inputs.min_score}} was not met!"; exit 1; fi
