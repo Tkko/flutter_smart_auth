@@ -2,13 +2,13 @@ name: Analyze and Build Flutter package
 
 on:
   push:
-    branches: [ "main" ]
     tags:
       - 'v*.*.*'
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
     tags:
       - 'v*.*.*'
+    branches: [ "main" ]
 
 jobs:
   spell-check:
