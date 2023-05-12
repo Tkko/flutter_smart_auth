@@ -1,3 +1,7 @@
+#### 1.1.0 · 12/05/2023
+- Upgraded Gradle to 7.2.0
+
+
 #### 1.0.8 · 29/12/2022
 - Fixed Error receiving broadcast Intent
 
