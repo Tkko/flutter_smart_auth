@@ -183,7 +183,7 @@ class SmartAuth {
   }
 
   /// Tries to suggest a zero-click sign-in account. Only call this if your app does not currently know who is signed in.
-  /// If zero-click suggestion fails app show dialog of credentials to chooze from
+  /// If zero-click suggestion fails app show dialog of credentials to choose from
   /// More about this https://developers.google.com/android/reference/com/google/android/gms/auth/api/credentials/CredentialsApi?hl=en#save(com.google.android.gms.common.api.GoogleApiClient,%20com.google.android.gms.auth.api.credentials.Credential)
   Future<Credential?> getCredential({
     // Identifier url, should be you App's website url

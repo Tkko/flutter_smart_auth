@@ -23,7 +23,7 @@
 
 
 ## 1.0.1
-- Fixed Reinitializing listeners
+- Fixed reinitializing listeners
 - Fixed Typos
 
 
