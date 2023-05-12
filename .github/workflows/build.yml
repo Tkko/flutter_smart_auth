@@ -12,7 +12,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  spell_check:
+  Spell Check:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
     with:
       includes: |
@@ -22,7 +22,7 @@ jobs:
       modified_files_only: false
       working_directory: "."
 
-  setup:
+  Setup Env:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,6 +39,9 @@ jobs:
           very_good --analytics false
           very_good packages get --recursive --ignore=${{inputs.package_get_excludes}}
 
+  Static Analysis:
+    runs-on: ubuntu-latest
+    steps:
       - name: ✨ Check Formatting
         run: dart format --set-exit-if-changed .
 
