@@ -1,8 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Analyze and Build Flutter package
 
 on:
@@ -25,20 +20,19 @@ jobs:
   static_analyses:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/setup_env.yml
-#      - uses: actions/checkout@v3
-#      - uses: subosito/flutter-action@v2
-#        with:
-#          channel: 'stable'
-#          cache: true
-#          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}
-#      - run: flutter --version
-#
-#      - name: 📦 Install Dependencies
-#        run: |
-#          flutter pub global activate very_good_cli
-#          very_good --analytics false
-#          very_good packages get --recursive --ignore=${{inputs.package_get_excludes}}
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}
+      - run: flutter --version
+
+      - name: 📦 Install Dependencies
+        run: |
+          flutter pub global activate very_good_cli
+          very_good --analytics false
+          very_good packages get --recursive --ignore=${{inputs.package_get_excludes}}
 
       - name: ✨ Check Formatting
         run: dart format --set-exit-if-changed .
