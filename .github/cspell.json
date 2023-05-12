@@ -20,6 +20,8 @@
   "useGitignore": true,
   "words": [
     "endtemplate",
-    "APPDATA"
+    "APPDATA",
+    "Pinput",
+    "pinput"
   ]
 }

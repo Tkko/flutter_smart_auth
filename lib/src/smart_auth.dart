@@ -100,7 +100,7 @@ class SmartAuth {
     }
   }
 
-  /// Disposes [getSmsCode] if useUserConsntApi is false listener
+  /// Disposes [getSmsCode] if useUserConsentApi is false listener
   Future<bool> removeSmsRetrieverListener() async {
     try {
       if (_isAndroid('removeSmsRetrieverListener')) {
@@ -113,7 +113,7 @@ class SmartAuth {
     return false;
   }
 
-  /// Disposes [getSmsCode] if useUserConsntApi is true listener
+  /// Disposes [getSmsCode] if useUserConsentApi is true listener
   Future<bool> removeSmsUserConsentListener() async {
     try {
       if (_isAndroid('removeSmsUserConsentListener')) {

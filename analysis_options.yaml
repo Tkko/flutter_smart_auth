@@ -22,7 +22,6 @@ linter:
     constant_identifier_names: true
     one_member_abstracts: true
     slash_for_doc_comments: true
-    unnecessary_brace_in_string_interps: true
     cancel_subscriptions: true
     close_sinks: true
     unnecessary_const: true

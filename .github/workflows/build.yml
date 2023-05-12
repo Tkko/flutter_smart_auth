@@ -12,7 +12,14 @@ on:
     branches: [ "main" ]
 
 jobs:
+  format:
+    runs_on: macos-latest
+    steps:
+      - name: Format
+        run: dart format --set-exit-if-changed .
+
   spell_check:
+    runs_on: macos-latest
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
     with:
       includes: |
@@ -22,12 +29,22 @@ jobs:
       runs_on: macos-latest
       modified_files_only: false
       working_directory: "."
+
+  dartdoc:
+    runs_on: macos-latest
+    steps:
+      - name: Install dartdoc
+        run: flutter pub global activate dartdoc
+      - name: Run dartdoc
+        run: dart doc . || fail "dart doc failed"
+
   pana:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
     with:
       runs_on: macos-latest
       min_score: 130
       working_directory: "."
+
   build:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
     with:
