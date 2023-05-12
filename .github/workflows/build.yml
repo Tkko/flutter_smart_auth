@@ -35,6 +35,7 @@ jobs:
       working_directory: "."
 
   dartdoc:
+    runs-on: ubuntu-latest
     steps:
       - name: Install dartdoc
         run: flutter pub global activate dartdoc
