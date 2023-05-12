@@ -13,13 +13,13 @@ on:
 
 jobs:
   format:
-    runs_on: macos-latest
+    runs-on: macos-latest
     steps:
       - name: Format
         run: dart format --set-exit-if-changed .
 
   spell_check:
-    runs_on: macos-latest
+    runs-on: macos-latest
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
     with:
       includes: |
@@ -31,7 +31,7 @@ jobs:
       working_directory: "."
 
   dartdoc:
-    runs_on: macos-latest
+    runs-on: macos-latest
     steps:
       - name: Install dartdoc
         run: flutter pub global activate dartdoc
