@@ -149,9 +149,11 @@ packages:
   smart_auth:
     dependency: "direct main"
     description:
-      path: ".."
-      relative: true
-    source: path
+      path: "."
+      ref: "gradle-7.2.0"
+      resolved-ref: "107ba8ac26143b1ef4093bf14744c7a3df7e59e6"
+      url: "https://github.com/Tkko/flutter_smart_auth"
+    source: git
     version: "1.1.0"
   source_span:
     dependency: transitive
