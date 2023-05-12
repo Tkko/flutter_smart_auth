@@ -54,25 +54,18 @@ jobs:
       min_score: 140
       working_directory: "."
 
+
   publish:
     runs-on: ubuntu-latest
+    needs:
+      [
+        spell-check,
+        static-analyses,
+        pana,
+      ]
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_pub_publish.yml@v1
     with:
       flutter_channel: "stable"
+      flutter_version: "3.10.0"
       working_directory: "."
       pub_credentials: ${{ secrets.PUB_CREDENTIALS }}
-
-
-#  publish:
-#    runs-on: ubuntu-latest
-#    needs:
-#      [
-#        spell-check,
-#        static-analyses,
-#        pana,
-#      ]
-#    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_pub_publish.yml@v1
-#    with:
-#      flutter_channel: "stable"
-#      working_directory: "."
-#      pub_credentials: ${{ secrets.PUB_CREDENTIALS }}
