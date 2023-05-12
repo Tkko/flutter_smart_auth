@@ -5,11 +5,6 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  inputs:
-    min_score:
-      required: false
-      type: number
-      default: 140
 
 jobs:
   spell-check:
@@ -25,8 +20,10 @@ jobs:
   static-analyses:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v3
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
@@ -51,21 +48,18 @@ jobs:
       - name: 📄 Run dartdoc
         run: dart doc . || fail "dart doc failed"
 
-      - name: 📦 Install Pana
-        run: flutter pub global activate pana
-
-      - name: 📊 Verify Pana Score
-        run: |
-          PANA=$(pana . --no-warning); PANA_SCORE=$(echo $PANA | sed -n "s/.*Points: \([0-9]*\)\/\([0-9]*\)./\1\/\2/p")
-          echo "Score: $PANA_SCORE"
-          IFS='/'; read -a SCORE_ARR <<< "$PANA_SCORE"; SCORE=SCORE_ARR[0];
-          if (( $SCORE < ${{inputs.min_score}} )); then echo "The minimum score of ${{inputs.min_score}} was not met!"; exit 1; fi
+  pana:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
+    with:
+      min_score: 140
+      working_directory: "."
 
   publish:
     needs:
       [
         spell-check,
         static-analyses,
+        pana,
       ]
     runs-on: ubuntu-latest
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_pub_publish.yml@v1
