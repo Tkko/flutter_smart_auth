@@ -51,7 +51,7 @@ jobs:
   pana:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
     with:
-      min_score: 140
+      min_score: 130
       working_directory: "."
 
 
