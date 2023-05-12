@@ -1,0 +1,40 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Analyze and Build Flutter package
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  spell_check:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/spell_check.yml@v1
+    with:
+      includes: |
+        **/*.{dart,md,yaml}
+        !.dart_tool/**/*.{dart,yaml}
+        .*/**/*.yml
+      runs_on: macos-latest
+      modified_files_only: false
+      working_directory: "."
+  pana:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
+    with:
+      runs_on: macos-latest
+      min_score: 130
+      working_directory: "."
+  build:
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
+    with:
+      runs_on: macos-latest
+      coverage_excludes: "*.g.dart"
+      flutter_channel: "stable"
+      flutter_version: "stable"
+      working_directory: "."
+      test_recursion: true
+      min_coverage: 0
