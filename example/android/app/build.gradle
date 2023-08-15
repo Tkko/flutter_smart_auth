@@ -26,6 +26,8 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+
+    namespace "fman.ge.smart_auth_example"
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
