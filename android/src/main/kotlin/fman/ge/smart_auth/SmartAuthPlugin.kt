@@ -8,6 +8,7 @@ import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
+import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.credentials.*
 import com.google.android.gms.auth.api.credentials.HintRequest.Builder
 import com.google.android.gms.auth.api.phone.SmsRetriever
@@ -238,11 +239,14 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         unregisterAllReceivers();
         pendingResult = result
         smsReceiver = SmsBroadcastReceiver()
-        mContext.registerReceiver(
-            smsReceiver,
-            IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
-            SmsRetriever.SEND_PERMISSION,
-            null,
+        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        ContextCompat.registerReceiver(
+                mContext,
+                smsReceiver,
+                intentFilter,
+                SmsRetriever.SEND_PERMISSION,
+                null,
+                ContextCompat.RECEIVER_EXPORTED
         )
         SmsRetriever.getClient(mContext).startSmsRetriever()
     }
@@ -261,11 +265,14 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         unregisterAllReceivers()
         pendingResult = result
         consentReceiver = ConsentBroadcastReceiver()
-        mContext.registerReceiver(
-            consentReceiver,
-            IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
-            SmsRetriever.SEND_PERMISSION,
-            null,
+        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        ContextCompat.registerReceiver(
+                mContext,
+                consentReceiver,
+                intentFilter,
+                SmsRetriever.SEND_PERMISSION,
+                null,
+                ContextCompat.RECEIVER_EXPORTED
         )
         SmsRetriever.getClient(mContext).startSmsUserConsent(call.argument("senderPhoneNumber"))
     }
