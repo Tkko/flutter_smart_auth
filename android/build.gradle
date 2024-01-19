@@ -30,7 +30,7 @@ android {
         namespace 'fman.ge.smart_auth'
     }
     
-    compileSdkVersion 31
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -51,6 +51,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-auth:20.4.0'
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
 }

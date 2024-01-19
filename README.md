@@ -54,6 +54,18 @@ Don't forget to give it a star ⭐
 
 ## Demo
 
+## Setup
+We should set project kotlin version to 1.8.0 because of the new requirement for sdk 34 `RECEIVER_EXPORTED`. Or we would get **duplicate class** error in different kotlin versions.
+
+so in the android level `build.gradle` file update the kotlin version like below:
+```
+// android/build.gradle
+
+buildscript {
+    ext.kotlin_version = '1.8.0'
+}
+```
+
 ## Getting Started
 
 Create instance of SmartAuth
