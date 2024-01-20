@@ -42,7 +42,8 @@ class _MyAppState extends State<MyApp> {
     if (res.codeFound) {
       pinputController.text = res.code!;
       pinputController.selection = TextSelection.fromPosition(
-          TextPosition(offset: pinputController.text.length));
+        TextPosition(offset: pinputController.text.length),
+      );
     } else {
       debugPrint('userConsent failed: $res');
     }
@@ -55,7 +56,8 @@ class _MyAppState extends State<MyApp> {
     if (res.codeFound) {
       pinputController.text = res.code!;
       pinputController.selection = TextSelection.fromPosition(
-          TextPosition(offset: pinputController.text.length));
+        TextPosition(offset: pinputController.text.length),
+      );
     } else {
       debugPrint('smsRetriever failed: $res');
     }
@@ -122,43 +124,48 @@ class _MyAppState extends State<MyApp> {
         Locale('en', ''),
         Locale('es', ''),
       ],
-      builder: (_, __) {
-        return Scaffold(
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: pinputController,
-                  decoration: const InputDecoration(
-                    hintText: 'Code',
-                    border: OutlineInputBorder(),
-                  ),
+      home: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: pinputController,
+                decoration: const InputDecoration(
+                  hintText: 'Code',
+                  border: OutlineInputBorder(),
                 ),
               ),
-              TextButton(
-                  onPressed: userConsent,
-                  child: const Text('Sms User Consent API')),
-              TextButton(
-                  onPressed: smsRetriever,
-                  child: const Text('Sms Retriever API')),
-              TextButton(
-                  onPressed: requestHint, child: const Text('Request Hint')),
-              TextButton(
-                  onPressed: getCredential,
-                  child: const Text('Get Credential')),
-              TextButton(
-                  onPressed: saveCredential,
-                  child: const Text('Save Credential')),
-              TextButton(
-                  onPressed: deleteCredential,
-                  child: const Text('Delete Credential')),
-            ],
-          ),
-        );
-      },
+            ),
+            TextButton(
+              onPressed: userConsent,
+              child: const Text('Sms User Consent API'),
+            ),
+            TextButton(
+              onPressed: smsRetriever,
+              child: const Text('Sms Retriever API'),
+            ),
+            TextButton(
+              onPressed: requestHint,
+              child: const Text('Request Hint'),
+            ),
+            TextButton(
+              onPressed: getCredential,
+              child: const Text('Get Credential'),
+            ),
+            TextButton(
+              onPressed: saveCredential,
+              child: const Text('Save Credential'),
+            ),
+            TextButton(
+              onPressed: deleteCredential,
+              child: const Text('Delete Credential'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
