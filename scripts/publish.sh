@@ -34,4 +34,4 @@ format_and_analyze
 #run_dart_doc
 #host_docs
 run_pana
-#publish
+publish

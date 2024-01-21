@@ -1,3 +1,9 @@
+#### 2.0.0 · 21/01/2024
+- Fixed RECEIVER_EXPORTED exception in android SDK 34 [PR](https://github.com/Tkko/flutter_smart_auth/pull/16)
+- Fix "Namespace not specified" error when upgrading to AGP 8.0 [PR](https://github.com/Tkko/flutter_smart_auth/pull/11)
+- Updated readme
+- Formatted example app
+
 #### 1.1.1 · 24/07/2023
 - Fixed AGP 4.2<= compatibility
 - Updated SDK constraints
