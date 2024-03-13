@@ -54,14 +54,14 @@ Don't forget to give it a star ⭐
 
 ## Getting Started
 
-We should set project kotlin version to 1.8.0 or above because of the new requirement for sdk 34 `RECEIVER_EXPORTED`. Or we would get **duplicate class** error in different kotlin versions.
+We should set project kotlin version to 1.8.22 or above because of the new requirement for sdk 34 `RECEIVER_EXPORTED`. Or we would get **duplicate class** error in different kotlin versions.
 
 so in the android level `build.gradle` file update the kotlin version like below:
 ```
 // android/build.gradle
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '1.8.22'
 }
 ```
 
