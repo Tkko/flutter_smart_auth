@@ -35,7 +35,7 @@ class AppSignatureHelper(context: Context) : ContextWrapper(context) {
                 packageManager.getPackageInfo(
                     packageName,
                     PackageManager.GET_SIGNING_CERTIFICATES
-                ).signingInfo.apkContentsSigners
+                ).signingInfo?.apkContentsSigners
             } else {
                 packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures
             }
