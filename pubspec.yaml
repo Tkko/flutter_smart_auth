@@ -33,14 +33,3 @@ flutter:
       android:
         package: fman.ge.smart_auth
         pluginClass: SmartAuthPlugin
-      ios:
-        pluginClass: SmartAuthPlugin
-      linux:
-        pluginClass: SmartAuthPlugin
-      macos:
-        pluginClass: SmartAuthPlugin
-      windows:
-        pluginClass: SmartAuthPlugin
-      web:
-        pluginClass: SmartAuthWeb
-        fileName: smart_auth_web.dart
