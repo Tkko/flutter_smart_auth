@@ -1,5 +1,5 @@
 <div align="center">
- <h1 align="center" style="font-size: 70px;">Flutter Smart Auth From <a href="https://www.linkedin.com/in/thornike/" target="_blank">Tornike </a> & Great <a href="https://github.com/Tkko/Flutter_Pinput/graphs/contributors" target="_blank">Contributors</a> </h1>
+ <h1 align="center" style="font-size: 70px;">Flutter Smart Auth</h1>
 
 <!--  Donations -->
  <a href="https://ko-fi.com/flutterman">
@@ -15,6 +15,10 @@
  </div>
 <!--  Donations -->
 
+<h3 align="center" style="font-size: 35px;">Need anything Flutter related? Reach out on <a href="https://www.linkedin.com/in/thornike/">LinkedIn</a>
+</h3>
+
+
 [![Pub package](https://img.shields.io/pub/v/smart_auth.svg)](https://pub.dev/packages/smart_auth)
 [![GitHub starts](https://img.shields.io/github/stars/tkko/flutter_smart_auth.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/tkko/flutter_smart_auth)
 [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://github.com/tenhobi/effective_dart)
@@ -24,9 +28,7 @@
 
 Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
 
-If you need pin code input like shown below, take a look at [Pinput](https://github.com/Tkko/Flutter_Pinput) package, SmartAuth is already integrated into it and you can build highly customizable input, that your designers can't even draw in Figma 🤭
-
-Bonus tip: 🤫 Tell your PM that you need a week to implement the feature and chill with your friends meanwhile.
+If you need pin code input like shown below, take a look at the [Pinput](https://github.com/Tkko/Flutter_Pinput) package.
 
 `Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
 
