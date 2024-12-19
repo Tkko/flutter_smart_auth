@@ -35,7 +35,7 @@ class SmartAuthResult<T> {
   }
 }
 
-/// The returned value from [SmartAuth.getSmsCode]
+/// The returned value from [SmartAuth.getSmsWithRetrieverApi] and [SmartAuth.getSmsWithUserConsentApi]
 /// Contains the whole sms and the OTP code itself
 class SmsCodeResult extends SmartAuthResult<String> {
   /// The SMS text received from your OTP sender
