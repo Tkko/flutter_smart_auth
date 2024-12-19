@@ -20,21 +20,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    smartAuth.removeSmsListener();
+    smartAuth.removeSmsRetrieverApiListener();
+    smartAuth.removeUserConsentApiListener();
     pinputController.dispose();
     super.dispose();
   }
 
   void getAppSignature() async {
     final res = await smartAuth.getAppSignature();
-    setState(() => appSignature = res);
+    setState(() => appSignature = res.data);
     debugPrint('Signature: $res');
   }
 
   void userConsent() async {
     debugPrint('userConsent: ');
-    final res = await smartAuth.getSmsCode(useUserConsentApi: true);
-    userConsent();
+    final res = await smartAuth.getSmsWithUserConsentApi();
     if (res.codeFound) {
       pinputController.text = res.code!;
       pinputController.selection = TextSelection.fromPosition(
@@ -47,8 +47,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void smsRetriever() async {
-    final res = await smartAuth.getSmsCode();
-    smsRetriever();
+    final res = await smartAuth.getSmsWithRetrieverApi();
     if (res.codeFound) {
       pinputController.text = res.code!;
       pinputController.selection = TextSelection.fromPosition(
@@ -60,51 +59,35 @@ class _MyAppState extends State<MyApp> {
     debugPrint('smsRetriever: $res');
   }
 
-  void requestHint() async {
-    final res = await smartAuth.requestHint(
-      isPhoneNumberIdentifierSupported: true,
-      isEmailAddressIdentifierSupported: true,
-      showCancelButton: true,
-    );
+  void requestPhoneNumberHint() async {
+    final res = await smartAuth.requestPhoneNumberHint();
     debugPrint('requestHint: $res');
   }
 
-  void removeSmsListener() {
-    smartAuth.removeSmsListener();
-  }
-
-  // identifier Url
-  final accountType = 'https://developers.google.com';
-
-  // Value you want to save, phone number or email for example
-  final credentialId = 'Credential Id';
-  final credentialName = 'Credential Name';
-  final profilePictureUri = 'https://profilePictureUri.com';
-
   void saveCredential() async {
-    final res = await smartAuth.saveCredential(
-      id: credentialId,
-      name: credentialName,
-      accountType: accountType,
-      profilePictureUri: profilePictureUri,
-    );
-    debugPrint('saveCredentials: $res');
+    // final res = await smartAuth.saveCredential(
+    //   id: credentialId,
+    //   name: credentialName,
+    //   accountType: accountType,
+    //   profilePictureUri: profilePictureUri,
+    // );
+    // debugPrint('saveCredentials: $res');
   }
 
   void getCredential() async {
-    final res = await smartAuth.getCredential(
-      accountType: accountType,
-      showResolveDialog: true,
-    );
-    debugPrint('getCredentials: $res');
+    // final res = await smartAuth.getCredential(
+    //   accountType: accountType,
+    //   showResolveDialog: true,
+    // );
+    // debugPrint('getCredentials: $res');
   }
 
   void deleteCredential() async {
-    final res = await smartAuth.deleteCredential(
-      id: credentialId,
-      accountType: accountType,
-    );
-    debugPrint('removeCredentials: $res');
+    // final res = await smartAuth.deleteCredential(
+    //   id: credentialId,
+    //   accountType: accountType,
+    // );
+    // debugPrint('removeCredentials: $res');
   }
 
   @override
@@ -156,8 +139,8 @@ class _MyAppState extends State<MyApp> {
                     textAlign: TextAlign.center,
                   ),
                 TextButton(
-                  onPressed: requestHint,
-                  child: const Text('Request Hint'),
+                  onPressed: requestPhoneNumberHint,
+                  child: const Text('Requst Phone Number Hint'),
                 ),
                 TextButton(
                   onPressed: getCredential,

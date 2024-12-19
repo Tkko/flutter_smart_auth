@@ -1,4 +1,24 @@
-part of 'smart_auth.dart';
+part of '../smart_auth.dart';
+
+class SmartAuthResult<T> {
+  const SmartAuthResult({
+    required this.succeed,
+    required this.exception,
+    required this.data,
+  });
+
+  const SmartAuthResult.success(this.data)
+      : succeed = true,
+        exception = null;
+
+  const SmartAuthResult.failure(this.exception)
+      : succeed = false,
+        data = null;
+
+  final bool succeed;
+  final String? exception;
+  final T? data;
+}
 
 /// The returned value from [SmartAuth.getSmsCode]
 /// Contains the whole sms and the OTP code itself

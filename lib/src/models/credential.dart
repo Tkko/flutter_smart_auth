@@ -1,4 +1,4 @@
-part of 'smart_auth.dart';
+part of '../smart_auth.dart';
 
 /// A credential that can be used to authenticate a user,
 /// with additional user information used to distinguish this credential from other available credentials.
