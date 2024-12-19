@@ -50,7 +50,7 @@ PRs Welcome
 
 Discord [Channel](https://rebrand.ly/qwc3s0d)
 
-[Example](https://github.com/Tkko/flutter_smart_auth/tree/master/example/lib)
+[Example](https://github.com/Tkko/flutter_smart_auth/blob/main/example/lib/main.dart)
 
 Don't forget to give it a star ⭐
 
