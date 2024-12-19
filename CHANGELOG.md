@@ -1,4 +1,4 @@
-#### 3.0.0 · 19/12/2024
+#### 3.0.0-beta.1 · 19/12/2024
 
 - Upgraded Android Dependencies [PR](https://github.com/Tkko/flutter_smart_auth/pull/28) - with help
   of [OneXeor](https://github.com/OneXeor) 🙏
