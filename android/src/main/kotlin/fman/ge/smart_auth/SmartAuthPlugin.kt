@@ -169,11 +169,21 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                     return@addOnCompleteListener
                 } catch (exception: IntentSender.SendIntentException) {
                     Log.e(PLUGIN_TAG, "Failed to send resolution.", exception)
+                    result.error(
+                        "SEND_INTENT_EXCEPTION",
+                        "Failed to send resolution: ${exception.message}",
+                        exception
+                    )
                 }
+            } else {
+                Log.e(PLUGIN_TAG, "Failed to save credential.", exception)
+                result.error(
+                    "SAVE_CREDENTIAL_FAILED",
+                    "Failed to save credential: ${exception?.message}",
+                    exception
+                )
             }
-            result.success(false)
         }
-
     }
 
     private fun getCredential(call: MethodCall, result: MethodChannel.Result) {
@@ -184,7 +194,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         val isPasswordLoginSupported = call.argument<Boolean?>("isPasswordLoginSupported")
         val showResolveDialog = call.argument<Boolean?>("showResolveDialog") ?: false
 
-
         val credentialRequest = CredentialRequest.Builder().setAccountTypes(accountType)
         if (accountType != null) credentialRequest.setAccountTypes(accountType)
         if (idTokenNonce != null) credentialRequest.setIdTokenNonce(idTokenNonce)
@@ -193,7 +202,6 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             isPasswordLoginSupported
         )
         if (serverClientId != null) credentialRequest.setServerClientId(serverClientId)
-
 
         val credentialsClient: CredentialsClient = Credentials.getClient(mContext)
         credentialsClient.request(credentialRequest.build())
@@ -217,20 +225,38 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                         return@OnCompleteListener
                     } catch (exception: IntentSender.SendIntentException) {
                         Log.e(PLUGIN_TAG, "Failed to send resolution.", exception)
+                        result.error(
+                            "SEND_INTENT_EXCEPTION",
+                            "Failed to send resolution: ${exception.message}",
+                            exception
+                        )
                     }
+                } else {
+                    Log.e(PLUGIN_TAG, "Failed to get credential.", exception)
+                    result.error(
+                        "GET_CREDENTIAL_FAILED",
+                        "Failed to get credential: ${exception?.message}",
+                        exception
+                    )
                 }
-
-                result.success(null)
-                return@OnCompleteListener
             })
     }
-
 
     private fun deleteCredential(call: MethodCall, result: MethodChannel.Result) {
         val credential = maybeBuildCredential(call, result) ?: return
         val mCredentialsClient: CredentialsClient = Credentials.getClient(mContext)
         mCredentialsClient.delete(credential).addOnCompleteListener { task ->
-            result.success(task.isSuccessful)
+            if (task.isSuccessful) {
+                result.success(true)
+                return@addOnCompleteListener
+            }
+            val exception = task.exception
+            Log.e(PLUGIN_TAG, "Failed to delete credential.", exception)
+            result.error(
+                "DELETE_CREDENTIAL_FAILED",
+                "Failed to delete credential: ${exception?.message}",
+                exception
+            )
         }
     }
 
@@ -252,7 +278,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
     private fun stopSmsRetriever(result: MethodChannel.Result) {
         if (smsReceiver == null) {
-            result.success(false)
+            result.error("STOP_SMS_RETRIEVER_FAILED", "SMS Retriever is not running", null)
         } else {
             removeSmsRetrieverListener()
             result.success(true)
@@ -279,7 +305,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
     private fun stopSmsUserConsent(result: MethodChannel.Result) {
         if (consentReceiver == null) {
-            result.success(false)
+            result.error("STOP_SMS_USER_CONSENT_FAILED", "SMS User Consent is not running", null)
         } else {
             removeSmsUserConsentListener()
             result.success(true)
@@ -347,7 +373,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         val profilePictureUri: String? = call.argument<String?>("profilePictureUri")
 
         if (id == null) {
-            result.success(false)
+            result.error("BUILD_CREDENTIAL_FAILED", "id is required", null)
             return null
         }
 
