@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.PendingIntent
 import android.content.*
-import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
@@ -241,12 +240,12 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         smsReceiver = SmsBroadcastReceiver()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         ContextCompat.registerReceiver(
-                mContext,
-                smsReceiver,
-                intentFilter,
-                SmsRetriever.SEND_PERMISSION,
-                null,
-                ContextCompat.RECEIVER_EXPORTED
+            mContext,
+            smsReceiver,
+            intentFilter,
+            SmsRetriever.SEND_PERMISSION,
+            null,
+            ContextCompat.RECEIVER_EXPORTED
         )
         SmsRetriever.getClient(mContext).startSmsRetriever()
     }
@@ -267,12 +266,12 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         consentReceiver = ConsentBroadcastReceiver()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         ContextCompat.registerReceiver(
-                mContext,
-                consentReceiver,
-                intentFilter,
-                SmsRetriever.SEND_PERMISSION,
-                null,
-                ContextCompat.RECEIVER_EXPORTED
+            mContext,
+            consentReceiver,
+            intentFilter,
+            SmsRetriever.SEND_PERMISSION,
+            null,
+            ContextCompat.RECEIVER_EXPORTED
         )
         SmsRetriever.getClient(mContext).startSmsUserConsent(call.argument("senderPhoneNumber"))
     }
@@ -430,6 +429,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                                 ignoreIllegalState { pendingResult?.success(null) }
                             }
                         }
+
                         CommonStatusCodes.TIMEOUT -> {
                             Log.e(
                                 PLUGIN_TAG,
@@ -437,6 +437,7 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                             )
                             ignoreIllegalState { pendingResult?.success(null) }
                         }
+
                         else -> {
                             Log.e(
                                 PLUGIN_TAG,
@@ -489,10 +490,12 @@ class SmartAuthPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                                 ignoreIllegalState { pendingResult?.success(null) }
                             }
                         }
+
                         CommonStatusCodes.TIMEOUT -> {
                             Log.e(PLUGIN_TAG, "ConsentBroadcastReceiver Timeout")
                             ignoreIllegalState { pendingResult?.success(null) }
                         }
+
                         else -> {
                             Log.e(
                                 PLUGIN_TAG,

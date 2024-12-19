@@ -31,18 +31,18 @@ class AppSignatureHelper(context: Context) : ContextWrapper(context) {
             val packageName = packageName
             val packageManager = packageManager
 
-            val signatures: Array<Signature>? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_SIGNING_CERTIFICATES
-                ).signingInfo?.apkContentsSigners
-            } else {
-                packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures
-            }
+            val signatures: Array<Signature>? =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    packageManager.getPackageInfo(
+                        packageName, PackageManager.GET_SIGNING_CERTIFICATES
+                    ).signingInfo?.apkContentsSigners
+                } else {
+                    packageManager.getPackageInfo(
+                        packageName, PackageManager.GET_SIGNATURES
+                    ).signatures
+                }
 
-            signatures
-                .orEmpty()
-                .mapNotNull { hash(packageName, it.toCharsString()) }
+            signatures.orEmpty().mapNotNull { hash(packageName, it.toCharsString()) }
                 .mapTo(appCodes) { it }
             return appCodes
         } catch (e: PackageManager.NameNotFoundException) {
@@ -63,7 +63,7 @@ class AppSignatureHelper(context: Context) : ContextWrapper(context) {
             var hashSignature = messageDigest.digest()
 
             // truncated into NUM_HASHED_BYTES
-            hashSignature = Arrays.copyOfRange(hashSignature, 0, NUM_HASHED_BYTES)
+            hashSignature = hashSignature.copyOfRange(0, NUM_HASHED_BYTES)
             // encode into Base64
             var base64Hash =
                 Base64.encodeToString(hashSignature, Base64.NO_PADDING or Base64.NO_WRAP)
