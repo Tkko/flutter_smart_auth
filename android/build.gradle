@@ -29,7 +29,7 @@ android {
     if (project.android.hasProperty("namespace")) {
         namespace 'fman.ge.smart_auth'
     }
-    
+
     compileSdk 35
 
     compileOptions {
@@ -54,7 +54,7 @@ dependencies {
     implementation "androidx.core:core-ktx:1.15.0"
     implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
     implementation 'com.google.android.gms:play-services-auth:21.3.0'
-    implementation 'com.google.android.gms:play-services-auth-api-phone:18.1.0'
+//    implementation 'com.google.android.gms:play-services-auth-api-phone:18.1.0'
 
     implementation("androidx.credentials:credentials:1.5.0-beta01")
 

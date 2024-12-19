@@ -4,7 +4,7 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/smart_auth_api.g.dart',
     kotlinOptions: KotlinOptions(package: 'fman.ge.smart_auth'),
-    kotlinOut: 'android/src/main/kotlin/fman/ge/smart_auth_api.g.kt',
+    kotlinOut: 'android/src/main/kotlin/fman/ge/smart_auth/smart_auth_api.g.kt',
   ),
 )
 @HostApi()
