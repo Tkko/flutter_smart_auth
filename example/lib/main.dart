@@ -16,12 +16,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final smartAuth = SmartAuth();
   final pinputController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    getAppSignature();
-  }
+  String? appSignature;
 
   @override
   void dispose() {
@@ -32,6 +27,7 @@ class _MyAppState extends State<MyApp> {
 
   void getAppSignature() async {
     final res = await smartAuth.getAppSignature();
+    setState(() => appSignature = res);
     debugPrint('Signature: $res');
   }
 
@@ -125,45 +121,59 @@ class _MyAppState extends State<MyApp> {
         Locale('es', ''),
       ],
       home: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: pinputController,
-                decoration: const InputDecoration(
-                  hintText: 'Code',
-                  border: OutlineInputBorder(),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: pinputController,
+                    decoration: const InputDecoration(
+                      hintText: 'Code',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
-              ),
+                TextButton(
+                  onPressed: userConsent,
+                  child: const Text('Sms User Consent API'),
+                ),
+                TextButton(
+                  onPressed: smsRetriever,
+                  child: const Text('Sms Retriever API'),
+                ),
+                TextButton(
+                  onPressed: getAppSignature,
+                  child: const Text('Get App Signature'),
+                ),
+                if (appSignature != null)
+                  SelectableText(
+                    'App Signature: $appSignature',
+                    textAlign: TextAlign.center,
+                  ),
+                TextButton(
+                  onPressed: requestHint,
+                  child: const Text('Request Hint'),
+                ),
+                TextButton(
+                  onPressed: getCredential,
+                  child: const Text('Get Credential'),
+                ),
+                TextButton(
+                  onPressed: saveCredential,
+                  child: const Text('Save Credential'),
+                ),
+                TextButton(
+                  onPressed: deleteCredential,
+                  child: const Text('Delete Credential'),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: userConsent,
-              child: const Text('Sms User Consent API'),
-            ),
-            TextButton(
-              onPressed: smsRetriever,
-              child: const Text('Sms Retriever API'),
-            ),
-            TextButton(
-              onPressed: requestHint,
-              child: const Text('Request Hint'),
-            ),
-            TextButton(
-              onPressed: getCredential,
-              child: const Text('Get Credential'),
-            ),
-            TextButton(
-              onPressed: saveCredential,
-              child: const Text('Save Credential'),
-            ),
-            TextButton(
-              onPressed: deleteCredential,
-              child: const Text('Delete Credential'),
-            ),
-          ],
+          ),
         ),
       ),
     );
