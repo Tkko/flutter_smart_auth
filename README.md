@@ -39,18 +39,20 @@ the [Pinput](https://github.com/Tkko/Flutter_Pinput) package.
 
 - Android Autofill
     - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
-    - SMS User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
-- Showing Phone number hints [API](https://developers.google.com/identity/android-credential-manager)
+    - SMS User
+      Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+- Showing Phone number
+  hints [API](https://developers.google.com/identity/android-credential-manager)
 
 ## Support
-
-PRs Welcome
 
 Discord [Channel](https://rebrand.ly/qwc3s0d)
 
 [Example](https://github.com/Tkko/flutter_smart_auth/blob/main/example/lib/main.dart)
 
 Don't forget to give it a star ⭐
+
+If you want to contribute to this project, please read the [contribution](CONTRIBUTING.md) guide.
 
 ## Requirements
 
@@ -150,6 +152,7 @@ void listenSmsRetriever() async {
 ```
 
 ### The plugin automatically removes listeners after receiving the code, if not you can remove them by
+
 calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` methods
 
 ```dart
@@ -168,4 +171,5 @@ void requestPhoneNumberHint() async {
   debugPrint('requestHint: $res');
 }
 ```
+
 <img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="280px"/>
