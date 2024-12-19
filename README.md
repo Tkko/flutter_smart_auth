@@ -26,13 +26,13 @@
 
 </div>
 
+
 Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
 
 If you need pin code input like shown below, take a look at the [Pinput](https://github.com/Tkko/Flutter_Pinput) package.
 
-`Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
+<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="500"/>
 
-<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="600"/>
 
 ## Features:
 
@@ -54,18 +54,54 @@ Discord [Channel](https://rebrand.ly/qwc3s0d)
 
 Don't forget to give it a star ⭐
 
-## Getting Started
+## Requirements
 
-We should set project kotlin version to 1.8.0 or above because of the new requirement for sdk 34 `RECEIVER_EXPORTED`. Or we would get **duplicate class** error in different kotlin versions.
+#### 1. Set kotlin version to 2.0.0 or above and gradle plugin version to 8.3.2
 
-so in the android level `build.gradle` file update the kotlin version like below:
+If you are using [legacy imperative apply](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
 ```
 // android/build.gradle
-
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '2.0.0'
+    ...others
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
 ```
+
+If you are using new [declarative plugin approach](https://docs.gradle.org/8.5/userguide/plugins.html#sec:plugins_block)
+```
+// android/settings.gradle
+plugins {
+    id "org.jetbrains.kotlin.android" version "2.0.0" apply false
+    id "com.android.application" version "8.3.2" apply false
+    ...others
+}
+```
+
+#### 2. Set gradle version to 8.9.0 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
+```
+// android/gradle/wrapper/gradle-wrapper.properties
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-all.zip
+```
+
+#### 3. Set Java version to 21
+```
+// android/app/build.gradle
+compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_21.toString()
+}
+```
+
+## Getting Started
 
 Create instance of SmartAuth
 
