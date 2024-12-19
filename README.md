@@ -128,8 +128,8 @@ void getAppSignature() async {
 ### Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
 
 ```dart
-void listenSms() async {
-  final res = await smartAuth.listenSms();
+void getSmsWithRetrieverApi() async {
+  final res = await smartAuth.getSmsWithRetrieverApi();
   if (res.succeed) {
     debugPrint('SMS: ${res.code}');
   } else {
@@ -141,8 +141,8 @@ void listenSms() async {
 ### Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
 
 ```dart
-void listenSmsRetriever() async {
-  final res = await smartAuth.listenSmsRetriever();
+void getSmsWithUserConsentApi() async {
+  final res = await smartAuth.getSmsWithUserConsentApi();
   if (res.succeed) {
     debugPrint('SMS: ${res.code}');
   } else {
