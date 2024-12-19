@@ -4,31 +4,40 @@ part of '../smart_auth.dart';
 class SmartAuthResult<T> {
   const SmartAuthResult({
     required this.succeed,
+    required this.canceled,
     required this.exception,
     required this.data,
   });
 
   const SmartAuthResult.success(this.data)
       : succeed = true,
+        canceled = false,
         exception = null;
 
   const SmartAuthResult.failure(this.exception)
       : succeed = false,
+        canceled = false,
+        data = null;
+
+  const SmartAuthResult.canceled(this.exception)
+      : succeed = false,
+        canceled = true,
         data = null;
 
   final bool succeed;
+  final bool canceled;
   final String? exception;
   final T? data;
 
   @override
   String toString() {
-    return 'SmartAuthResult{succeed: $succeed, data: $data, exception: $exception, }';
+    return 'SmartAuthResult{succeed: $succeed, canceled: $canceled, data: $data, exception: $exception, }';
   }
 }
 
 /// The returned value from [SmartAuth.getSmsCode]
 /// Contains the whole sms and the OTP code itself
-class SmsCodeResult {
+class SmsCodeResult extends SmartAuthResult<String> {
   /// The SMS text received from your OTP sender
   final String? sms;
 
@@ -38,14 +47,16 @@ class SmsCodeResult {
   /// Returns true if OTP code was found in the SMS content
   bool get codeFound => code != null;
 
-  /// Returns true sms content != null
-  final bool succeed;
-
-  SmsCodeResult({
-    required this.sms,
-    required this.code,
-    this.succeed = false,
-  });
+  const SmsCodeResult({
+    this.sms,
+    this.code,
+    bool canceled = false,
+  }) : super(
+          succeed: sms != null,
+          canceled: canceled,
+          exception: null,
+          data: null,
+        );
 
   factory SmsCodeResult.fromSms(String? sms, String matcher) {
     String? extractCode(String? sms) {
@@ -67,7 +78,6 @@ class SmsCodeResult {
 
     return SmsCodeResult(
       sms: sms,
-      succeed: sms != null,
       code: extractCode(sms),
     );
   }

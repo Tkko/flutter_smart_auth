@@ -64,32 +64,6 @@ class _MyAppState extends State<MyApp> {
     debugPrint('requestHint: $res');
   }
 
-  void saveCredential() async {
-    // final res = await smartAuth.saveCredential(
-    //   id: credentialId,
-    //   name: credentialName,
-    //   accountType: accountType,
-    //   profilePictureUri: profilePictureUri,
-    // );
-    // debugPrint('saveCredentials: $res');
-  }
-
-  void getCredential() async {
-    // final res = await smartAuth.getCredential(
-    //   accountType: accountType,
-    //   showResolveDialog: true,
-    // );
-    // debugPrint('getCredentials: $res');
-  }
-
-  void deleteCredential() async {
-    // final res = await smartAuth.deleteCredential(
-    //   id: credentialId,
-    //   accountType: accountType,
-    // );
-    // debugPrint('removeCredentials: $res');
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -103,6 +77,7 @@ class _MyAppState extends State<MyApp> {
         Locale('en', ''),
         Locale('es', ''),
       ],
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
           child: SingleChildScrollView(
@@ -141,18 +116,6 @@ class _MyAppState extends State<MyApp> {
                 TextButton(
                   onPressed: requestPhoneNumberHint,
                   child: const Text('Requst Phone Number Hint'),
-                ),
-                TextButton(
-                  onPressed: getCredential,
-                  child: const Text('Get Credential'),
-                ),
-                TextButton(
-                  onPressed: saveCredential,
-                  child: const Text('Save Credential'),
-                ),
-                TextButton(
-                  onPressed: deleteCredential,
-                  child: const Text('Delete Credential'),
                 ),
               ],
             ),

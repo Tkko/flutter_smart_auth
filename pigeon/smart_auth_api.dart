@@ -24,3 +24,9 @@ abstract class SmartAuthApi {
   @async
   String requestPhoneNumberHint();
 }
+
+class SmartAuthRequestCanceled {
+  const SmartAuthRequestCanceled([this.message]);
+
+  final String? message;
+}

@@ -1,6 +1,7 @@
 package fman.ge.smart_auth
 
 import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.*
 import android.util.Log
@@ -160,15 +161,32 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                 return
             }
             ignoreIllegalState { pendingResult?.invoke(Result.success(message)) }
-        } else {
+            return
+        }
+
+        if (resultCode == RESULT_CANCELED) {
             ignoreIllegalState {
                 pendingResult?.invoke(
                     Result.failure(
-                        Exception("Failed to get SMS with user consent.")
+                        FlutterError(
+                            "USER_CONSENT_CANCELED",
+                            "User canceled SMS consent request.",
+                            SmartAuthRequestCanceled()
+                        )
                     )
                 )
             }
+            return
         }
+
+        ignoreIllegalState {
+            pendingResult?.invoke(
+                Result.failure(
+                    Exception("Failed to get SMS with user consent.")
+                )
+            )
+        }
+
     }
 
     private fun onPhoneNumberHintRequest(resultCode: Int, data: Intent?) {
@@ -180,10 +198,31 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
             return
         }
 
-        val message = "Failed to get phone number hint."
+        if (resultCode == RESULT_CANCELED) {
+            ignoreIllegalState {
+                pendingResult?.invoke(
+                    Result.failure(
+                        FlutterError(
+                            "PHONE_NUMBER_HINT_CANCELED",
+                            "User canceled phone number hint request.",
+                            SmartAuthRequestCanceled()
+                        )
+                    )
+                )
+            }
+            return
+        }
+
+        val message = "Failed to get phone number hint with resultCode: $resultCode"
         Log.e(PLUGIN_TAG, message)
         ignoreIllegalState {
-            pendingResult?.invoke(Result.failure(Exception(message)))
+            pendingResult?.invoke(
+                Result.failure(
+                    FlutterError(
+                        "PHONE_NUMBER_HINT_FAILED", message, null
+                    )
+                )
+            )
         }
     }
 

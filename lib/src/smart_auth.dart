@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:smart_auth/src/smart_auth_api.g.dart';
 
 part 'models/sms_code_result.dart';
@@ -69,6 +70,12 @@ class SmartAuth {
       final result = await _api.getSmsWithUserConsentApi(senderPhoneNumber);
       return SmsCodeResult.fromSms(result, matcher);
     } catch (error) {
+      if (error is PlatformException &&
+          error.details is SmartAuthRequestCanceled) {
+        debugPrint('Pinput/SmartAuth: ${error.message}');
+        return SmsCodeResult(canceled: true);
+      }
+
       debugPrint('Pinput/SmartAuth: getSmsWithUserConsentApi failed: $error');
       return SmsCodeResult.fromSms(null, matcher);
     }
@@ -108,6 +115,12 @@ class SmartAuth {
       final result = await _api.requestPhoneNumberHint();
       return SmartAuthResult<String>.success(result);
     } catch (error) {
+      if (error is PlatformException &&
+          error.details is SmartAuthRequestCanceled) {
+        debugPrint('Pinput/SmartAuth: ${error.message}');
+        return SmartAuthResult<void>.canceled(error.message);
+      }
+
       final message = 'Failed to request phone number hint with error: $error';
       debugPrint('Pinput/SmartAuth: $message');
       return SmartAuthResult<void>.failure(message);

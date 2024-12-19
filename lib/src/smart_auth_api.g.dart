@@ -15,6 +15,27 @@ PlatformException _createConnectionError(String channelName) {
   );
 }
 
+class SmartAuthRequestCanceled {
+  SmartAuthRequestCanceled({
+    this.message,
+  });
+
+  String? message;
+
+  Object encode() {
+    return <Object?>[
+      message,
+    ];
+  }
+
+  static SmartAuthRequestCanceled decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthRequestCanceled(
+      message: result[0] as String?,
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -23,6 +44,9 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
+    }    else if (value is SmartAuthRequestCanceled) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -31,6 +55,8 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
+      case 129: 
+        return SmartAuthRequestCanceled.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
