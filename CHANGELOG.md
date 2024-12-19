@@ -1,3 +1,11 @@
+#### 3.0.0 · 19/12/2024
+- Upgraded Android Dependencies [PR](https://github.com/Tkko/flutter_smart_auth/pull/28) - with help of [OneXeor](https://github.com/OneXeor) 🙏
+- Kotlin version 2.1.0 
+- gradle plugin 8.3.2 
+- android sdk 35 
+- core-ktx 1.15.0 
+- Java 21
+
 #### 2.0.0 · 21/01/2024
 - Fixed RECEIVER_EXPORTED exception in android SDK 34 [PR](https://github.com/Tkko/flutter_smart_auth/pull/16)
 - Fix "Namespace not specified" error when upgrading to AGP 8.0 [PR](https://github.com/Tkko/flutter_smart_auth/pull/11)
