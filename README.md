@@ -117,7 +117,7 @@ final smartAuth = SmartAuth();
 Get the App signature
 
 ```dart
-  void getAppSignature() async {
+void getAppSignature() async {
   final res = await smartAuth.getAppSignature();
   debugPrint('Signature: $res');
 }
@@ -126,7 +126,7 @@ Get the App signature
 Get SMS with User Consent API
 
 ```dart
-  void listenSms() async {
+void listenSms() async {
   final res = await smartAuth.listenSms();
   if (res.succeed) {
     debugPrint('SMS: ${res.code}');
@@ -139,7 +139,7 @@ Get SMS with User Consent API
 Get SMS with SMS Retriever API
 
 ```dart
-  void listenSmsRetriever() async {
+void listenSmsRetriever() async {
   final res = await smartAuth.listenSmsRetriever();
   if (res.succeed) {
     debugPrint('SMS: ${res.code}');
@@ -153,7 +153,7 @@ The plugin automatically removes listeners after receiving the code, if not you 
 calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` methods
 
 ```dart
-  void removeSmsListener() {
+void removeSmsListener() {
   smartAuth.removeUserConsentApiListener();
   smartAuth.removeSmsRetrieverApiListener();
 }
@@ -162,7 +162,7 @@ calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` me
 Request phone number hint
 
 ```dart
-  void requestPhoneNumberHint() async {
+void requestPhoneNumberHint() async {
   final res = await smartAuth.requestPhoneNumberHint();
   debugPrint('requestHint: $res');
 }
