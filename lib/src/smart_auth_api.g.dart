@@ -36,15 +36,15 @@ class SmartAuthRequestCanceled {
   }
 }
 
-
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
+
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is SmartAuthRequestCanceled) {
+    } else if (value is SmartAuthRequestCanceled) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else {
@@ -55,7 +55,7 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129: 
+      case 129:
         return SmartAuthRequestCanceled.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -67,9 +67,12 @@ class SmartAuthApi {
   /// Constructor for [SmartAuthApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  SmartAuthApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  SmartAuthApi({
+    BinaryMessenger? binaryMessenger,
+    String messageChannelSuffix = '',
+  })  : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix =
+            messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -77,8 +80,10 @@ class SmartAuthApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<String> getAppSignature() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.getAppSignature$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getAppSignature$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
@@ -104,8 +109,10 @@ class SmartAuthApi {
   }
 
   Future<String> getSmsWithRetrieverApi() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithRetrieverApi$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithRetrieverApi$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
@@ -131,8 +138,10 @@ class SmartAuthApi {
   }
 
   Future<String> getSmsWithUserConsentApi(String? phoneNumber) async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithUserConsentApi$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithUserConsentApi$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
@@ -158,8 +167,10 @@ class SmartAuthApi {
   }
 
   Future<void> removeSmsRetrieverListener() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeSmsRetrieverListener$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeSmsRetrieverListener$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
@@ -180,8 +191,10 @@ class SmartAuthApi {
   }
 
   Future<void> removeUserConsentListener() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeUserConsentListener$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeUserConsentListener$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
@@ -202,8 +215,10 @@ class SmartAuthApi {
   }
 
   Future<String> requestPhoneNumberHint() async {
-    final String pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.requestPhoneNumberHint$pigeonVar_messageChannelSuffix';
-    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.requestPhoneNumberHint$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,

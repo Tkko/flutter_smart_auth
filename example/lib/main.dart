@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                 TextButton(
                   onPressed: requestPhoneNumberHint,
-                  child: const Text('Requst Phone Number Hint'),
+                  child: const Text('Request Phone Number Hint'),
                 ),
               ],
             ),
