@@ -107,14 +107,14 @@ kotlinOptions {
 
 ## Getting Started
 
-Create instance of SmartAuth
+### Create instance of SmartAuth
 
 ```dart
 
 final smartAuth = SmartAuth();
 ```
 
-Get the App signature
+### Get the App signature
 
 ```dart
 void getAppSignature() async {
@@ -123,7 +123,7 @@ void getAppSignature() async {
 }
 ```
 
-Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
+### Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
 
 ```dart
 void listenSms() async {
@@ -136,7 +136,7 @@ void listenSms() async {
 }
 ```
 
-Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+### Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
 
 ```dart
 void listenSmsRetriever() async {
@@ -149,7 +149,7 @@ void listenSmsRetriever() async {
 }
 ```
 
-The plugin automatically removes listeners after receiving the code, if not you can remove them by
+### The plugin automatically removes listeners after receiving the code, if not you can remove them by
 calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` methods
 
 ```dart
@@ -160,7 +160,7 @@ void removeSmsListener() {
 }
 ```
 
-Request phone number hint
+### Request phone number hint
 
 ```dart
 void requestPhoneNumberHint() async {
@@ -168,3 +168,4 @@ void requestPhoneNumberHint() async {
   debugPrint('requestHint: $res');
 }
 ```
+<img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="280px"/>
