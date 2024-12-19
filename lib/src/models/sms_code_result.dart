@@ -1,5 +1,6 @@
 part of '../smart_auth.dart';
 
+/// The result of the SmartAuth methods
 class SmartAuthResult<T> {
   const SmartAuthResult({
     required this.succeed,
@@ -18,6 +19,11 @@ class SmartAuthResult<T> {
   final bool succeed;
   final String? exception;
   final T? data;
+
+  @override
+  String toString() {
+    return 'SmartAuthResult{succeed: $succeed, data: $data, exception: $exception, }';
+  }
 }
 
 /// The returned value from [SmartAuth.getSmsCode]

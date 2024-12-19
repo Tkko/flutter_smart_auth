@@ -4,8 +4,6 @@ import 'package:smart_auth/src/smart_auth_api.g.dart';
 
 part 'models/sms_code_result.dart';
 
-part 'models/credential.dart';
-
 const _defaultCodeMatcher = '\\d{4,8}';
 
 /// Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
