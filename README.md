@@ -84,7 +84,7 @@ plugins {
 }
 ```
 
-#### 2. Set gradle version to 8.9.0 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
+#### 2. Set gradle version to 8.4.0 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
 
 ```
 // android/gradle/wrapper/gradle-wrapper.properties
@@ -123,7 +123,7 @@ void getAppSignature() async {
 }
 ```
 
-Get SMS with User Consent API
+Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
 
 ```dart
 void listenSms() async {
@@ -136,7 +136,7 @@ void listenSms() async {
 }
 ```
 
-Get SMS with SMS Retriever API
+Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
 
 ```dart
 void listenSmsRetriever() async {
@@ -155,6 +155,7 @@ calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` me
 ```dart
 void removeSmsListener() {
   smartAuth.removeUserConsentApiListener();
+  // or
   smartAuth.removeSmsRetrieverApiListener();
 }
 ```
