@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:smart_auth/src/models/smart_auth_result.dart';
+import 'package:smart_auth/src/models/sms_code_result.dart';
 import 'package:smart_auth/src/smart_auth_api.g.dart';
-
-part 'models/sms_code_result.dart';
 
 const _defaultCodeMatcher = '\\d{4,8}';
 
-/// Flutter package for listening SMS code on Android, suggesting phone number, email, saving a credential.
+/// Flutter package for listening SMS code on Android, suggesting phone number.
 ///
 /// If you need pin code input like shown below, take a look at [Pinput](https:///github.com/Tkko/Flutter_Pinput) package, SmartAuth is already integrated into it and you can build highly customizable input, that your designers can't even draw in Figma 🤭
 /// `Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
@@ -16,13 +16,19 @@ const _defaultCodeMatcher = '\\d{4,8}';
 ///
 /// ## Features:
 /// - Android Autofill
-///   - SMS Retriever [API](https:///developers.google.com/identity/sms-retriever/overview?hl=en)
-///   - SMS User Consent [API](https:///developers.google.com/identity/sms-retriever/user-consent/overview)
-/// - Showing Hint Dialog
-/// - Getting Saved Credential
-/// - Saving Credential
-/// - Deleting Credential
+///   - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
+///   - SMS User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+/// - Showing Phone Number Hint Dialog [API](https://developers.google.com/identity/phone-number-hint/android)
 class SmartAuth {
+  SmartAuth._();
+
+  /// Singleton instance of SmartAuth
+  static final SmartAuth _instance = SmartAuth._();
+
+  /// getter for singleton instance
+  static SmartAuth get instance => _instance;
+
+  /// A Generated class from pigeon that contains methods to interact with native code
   final SmartAuthApi _api = SmartAuthApi();
 
   /// This method outputs hash that is required for SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
@@ -43,23 +49,27 @@ class SmartAuth {
   /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
   /// returns code if it matches with matcher
   /// More about SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
-  Future<SmsCodeResult> getSmsWithRetrieverApi({
+  Future<SmartAuthResult<SmartAuthSms>> getSmsWithRetrieverApi({
     /// used to extract code from SMS
     String matcher = _defaultCodeMatcher,
   }) async {
     try {
       final result = await _api.getSmsWithRetrieverApi();
-      return SmsCodeResult.fromSms(result, matcher);
+      return SmartAuthResult<SmartAuthSms>.success(
+        SmartAuthSms.fromSms(result, matcher),
+      );
     } catch (error) {
       debugPrint('Pinput/SmartAuth: getSmsWithRetrieverApi failed: $error');
-      return SmsCodeResult.fromSms(null, matcher);
+      return SmartAuthResult<SmartAuthSms>.failure(
+        'Failed to get SMS with retriever API with error: $error',
+      );
     }
   }
 
   /// Starts listening to SMS User Consent API https://developers.google.com/identity/sms-retriever/user-consent/overview
   /// Which shows confirmations dialog to user to confirm reading the SMS content
   /// returns code if it matches with matcher
-  Future<SmsCodeResult> getSmsWithUserConsentApi({
+  Future<SmartAuthResult<SmartAuthSms>> getSmsWithUserConsentApi({
     /// used to extract code from SMS
     String matcher = _defaultCodeMatcher,
 
@@ -68,16 +78,21 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithUserConsentApi(senderPhoneNumber);
-      return SmsCodeResult.fromSms(result, matcher);
+      return SmartAuthResult<SmartAuthSms>.success(
+        SmartAuthSms.fromSms(result, matcher),
+      );
     } catch (error) {
-      if (error is PlatformException &&
-          error.details is SmartAuthRequestCanceled) {
-        debugPrint('Pinput/SmartAuth: ${error.message}');
-        return SmsCodeResult(canceled: true);
-      }
+      final isCanceled = error is PlatformException &&
+          error.details is SmartAuthRequestCanceled;
 
+      if (isCanceled) {
+        debugPrint('Pinput/SmartAuth: ${error.message}');
+        return SmartAuthResult<SmartAuthSms>.canceled();
+      }
       debugPrint('Pinput/SmartAuth: getSmsWithUserConsentApi failed: $error');
-      return SmsCodeResult.fromSms(null, matcher);
+      return SmartAuthResult<SmartAuthSms>.failure(
+        'Failed to get SMS with user consent API with error: $error',
+      );
     }
   }
 
@@ -115,10 +130,11 @@ class SmartAuth {
       final result = await _api.requestPhoneNumberHint();
       return SmartAuthResult<String>.success(result);
     } catch (error) {
-      if (error is PlatformException &&
-          error.details is SmartAuthRequestCanceled) {
-        debugPrint('Pinput/SmartAuth: ${error.message}');
-        return SmartAuthResult<void>.canceled(error.message);
+      final isCanceled = error is PlatformException &&
+          error.details is SmartAuthRequestCanceled;
+      if (isCanceled) {
+        debugPrint('Pinput/SmartAuth: requestPhoneNumberHint canceled by user');
+        return SmartAuthResult<void>.canceled();
       }
 
       final message = 'Failed to request phone number hint with error: $error';

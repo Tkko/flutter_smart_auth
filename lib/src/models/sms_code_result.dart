@@ -1,64 +1,21 @@
-part of '../smart_auth.dart';
-
-/// The result of the SmartAuth methods
-class SmartAuthResult<T> {
-  const SmartAuthResult({
-    required this.succeed,
-    required this.canceled,
-    required this.exception,
-    required this.data,
-  });
-
-  const SmartAuthResult.success(this.data)
-      : succeed = true,
-        canceled = false,
-        exception = null;
-
-  const SmartAuthResult.failure(this.exception)
-      : succeed = false,
-        canceled = false,
-        data = null;
-
-  const SmartAuthResult.canceled(this.exception)
-      : succeed = false,
-        canceled = true,
-        data = null;
-
-  final bool succeed;
-  final bool canceled;
-  final String? exception;
-  final T? data;
-
-  @override
-  String toString() {
-    return 'SmartAuthResult{succeed: $succeed, canceled: $canceled, data: $data, exception: $exception, }';
-  }
-}
+import 'package:flutter/foundation.dart';
 
 /// The returned value from [SmartAuth.getSmsWithRetrieverApi] and [SmartAuth.getSmsWithUserConsentApi]
 /// Contains the whole sms and the OTP code itself
-class SmsCodeResult extends SmartAuthResult<String> {
+class SmartAuthSms {
   /// The SMS text received from your OTP sender
-  final String? sms;
+  final String sms;
 
   /// The actual code retrieved from SMS
+  /// Can be null if the regex matcher didn't find any code but user received the SMS
   final String? code;
 
-  /// Returns true if OTP code was found in the SMS content
-  bool get codeFound => code != null;
+  const SmartAuthSms({
+    required this.sms,
+    required this.code,
+  });
 
-  const SmsCodeResult({
-    this.sms,
-    this.code,
-    bool canceled = false,
-  }) : super(
-          succeed: sms != null,
-          canceled: canceled,
-          exception: null,
-          data: null,
-        );
-
-  factory SmsCodeResult.fromSms(String? sms, String matcher) {
+  static SmartAuthSms fromSms(String sms, String matcher) {
     String? extractCode(String? sms) {
       if (sms == null) return null;
 
@@ -76,7 +33,7 @@ class SmsCodeResult extends SmartAuthResult<String> {
       return null;
     }
 
-    return SmsCodeResult(
+    return SmartAuthSms(
       sms: sms,
       code: extractCode(sms),
     );
@@ -84,6 +41,6 @@ class SmsCodeResult extends SmartAuthResult<String> {
 
   @override
   String toString() {
-    return 'SmsCodeResult{sms: $sms, code: $code, succeed: $succeed}';
+    return 'SmartAuthSms{sms: $sms, code: $code}';
   }
 }

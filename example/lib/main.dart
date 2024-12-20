@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final smartAuth = SmartAuth();
+  final smartAuth = SmartAuth.instance;
   final pinputController = TextEditingController();
   String? appSignature;
 
@@ -33,34 +33,48 @@ class _MyAppState extends State<MyApp> {
   }
 
   void userConsent() async {
-    debugPrint('userConsent: ');
     final res = await smartAuth.getSmsWithUserConsentApi();
-    if (res.codeFound) {
-      pinputController.text = res.code!;
+    if (res.hasData) {
+      debugPrint('userConsent: $res');
+      final code = res.requireData.code;
+
+      /// The code can be null if the SMS is received but the code is extracted from it
+      if (code == null) return;
+      pinputController.text = code;
       pinputController.selection = TextSelection.fromPosition(
         TextPosition(offset: pinputController.text.length),
       );
+    } else if (res.isCanceled) {
+      debugPrint('userConsent canceled');
     } else {
       debugPrint('userConsent failed: $res');
     }
-    debugPrint('userConsent: $res');
   }
 
   void smsRetriever() async {
     final res = await smartAuth.getSmsWithRetrieverApi();
-    if (res.codeFound) {
-      pinputController.text = res.code!;
+    if (res.hasData) {
+      debugPrint('smsRetriever: $res');
+      final code = res.requireData.code;
+
+      /// The code can be null if the SMS is received but the code is extracted from it
+      if (code == null) return;
+      pinputController.text = code;
       pinputController.selection = TextSelection.fromPosition(
         TextPosition(offset: pinputController.text.length),
       );
     } else {
       debugPrint('smsRetriever failed: $res');
     }
-    debugPrint('smsRetriever: $res');
   }
 
   void requestPhoneNumberHint() async {
     final res = await smartAuth.requestPhoneNumberHint();
+    if (res.hasData) {
+      // Use the phone number
+    } else {
+      // Handle error
+    }
     debugPrint('requestHint: $res');
   }
 
