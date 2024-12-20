@@ -33,7 +33,7 @@ credential.
 If you need pin code input like shown below, take a look at
 the [Pinput](https://github.com/Tkko/Flutter_Pinput) package.
 
-<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="500"/>
+<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" width="250px"/>
 
 ## Features:
 
@@ -129,8 +129,6 @@ The benefits to using Phone Number Hint include the following:
 - Not directly tied to sign in/up workflows
 - Wider support for Android versions compared to Autofill
 
-<img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="250px"/>
-
 ```dart
 void requestPhoneNumberHint() async {
   final res = await smartAuth.requestPhoneNumberHint();
@@ -141,6 +139,9 @@ void requestPhoneNumberHint() async {
   }
 }
 ```
+
+<img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="250px"/>
+
 
 ### Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
 
@@ -179,6 +180,8 @@ void getSmsWithUserConsentApi() async {
   }
 }
 ```
+<img src="https://github.com/user-attachments/assets/60ace6bc-6c28-43cf-ae1d-60f56aaae8d2" width="250px"/>
+
 
 ### Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
 
@@ -188,8 +191,6 @@ any extra app permissions. When you implement automatic SMS verification in your
 verification flow looks like this:
 
 <img src="https://github.com/user-attachments/assets/7daa8895-14d4-460f-b9e7-4710446788d3"/>
-
-
 
 1. A user initiates SMS verification in your app. Your app might prompt the user to provide a phone
    number manually or request the phone number hint by calling `requestPhoneNumberHint` method.
