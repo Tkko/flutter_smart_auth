@@ -1,3 +1,8 @@
+#### 3.0.0 · 20/12/2024
+
+- Improved readme by adding detailed instructions
+- Improved the result returned from all methods
+
 #### 3.0.0-beta.1 · 19/12/2024
 
 - Upgraded Android Dependencies [PR](https://github.com/Tkko/flutter_smart_auth/pull/28) - with help
@@ -7,6 +12,7 @@
 - android sdk 35
 - core-ktx 1.15.0
 - Java 21
+- Removed fake support for other operating systems
 - Migrated to Pigeon
 - Added new Credentials
   Manager [API](https://developers.google.com/identity/android-credential-manager)
@@ -43,7 +49,7 @@
 
 ## 1.0.6
 
-- Improved doc**s
+- Improved docs
 
 ## 1.0.5
 
