@@ -187,7 +187,9 @@ automatically, without requiring the user to manually type verification codes, a
 any extra app permissions. When you implement automatic SMS verification in your app, the
 verification flow looks like this:
 
-<img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="250px"/>
+<img src="https://github.com/user-attachments/assets/7daa8895-14d4-460f-b9e7-4710446788d3"/>
+
+
 
 1. A user initiates SMS verification in your app. Your app might prompt the user to provide a phone
    number manually or request the phone number hint by calling `requestPhoneNumberHint` method.
