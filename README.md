@@ -30,14 +30,14 @@ on <a href="https://www.linkedin.com/in/thornike/">LinkedIn</a>
 Flutter package for listening SMS code on Android, suggesting phone number, email, saving a
 credential.
 
-If you need pin code input like shown below, take a look at
-the [Pinput](https://github.com/Tkko/Flutter_Pinput) package.
+_If you need pin code input like shown below, take a look at
+the [Pinput](https://github.com/Tkko/Flutter_Pinput) package._
 
-<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" width="250px"/>
+<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" width="160px"/>
 
 ## Features:
 
-- Android Autofill
+- Android SMS Autofill
     - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
     - SMS User
       Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
@@ -142,7 +142,6 @@ void requestPhoneNumberHint() async {
 
 <img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="250px"/>
 
-
 ### Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
 
 The SMS User Consent API complements the SMS Retriever API by allowing an app to prompt the user to
@@ -180,8 +179,8 @@ void getSmsWithUserConsentApi() async {
   }
 }
 ```
-<img src="https://github.com/user-attachments/assets/60ace6bc-6c28-43cf-ae1d-60f56aaae8d2" width="250px"/>
 
+<img src="https://github.com/user-attachments/assets/60ace6bc-6c28-43cf-ae1d-60f56aaae8d2" width="250px"/>
 
 ### Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
 
@@ -224,9 +223,10 @@ void getSmsWithRetrieverApi() async {
 }
 ```
 
-### The plugin automatically removes listeners after receiving the code, if not you can remove them by
+### Dispose
 
-calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` methods
+The plugin automatically removes listeners after receiving the code, if not you can remove them by
+calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` method.
 
 ```dart
 void removeSmsListener() {
