@@ -30,14 +30,14 @@ on <a href="https://www.linkedin.com/in/thornike/">LinkedIn</a>
 Flutter package for listening SMS code on Android, suggesting phone number, email, saving a
 credential.
 
-If you need pin code input like shown below, take a look at
-the [Pinput](https://github.com/Tkko/Flutter_Pinput) package.
+_If you need pin code input like shown below, take a look at
+the [Pinput](https://github.com/Tkko/Flutter_Pinput) package._
 
-<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="500"/>
+<img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" width="160px"/>
 
 ## Features:
 
-- Android Autofill
+- Android SMS Autofill
     - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
     - SMS User
       Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
@@ -113,47 +113,120 @@ kotlinOptions {
 
 ```dart
 
-final smartAuth = SmartAuth();
+final smartAuth = SmartAuth.instance;
 ```
 
-### Get the App signature
+### Request phone number hint - [Docs](https://developers.google.com/identity/phone-number-hint/android)
+
+The Phone Number Hint API, a library powered by Google Play services, provides a frictionless way to
+show a user’s (SIM-based) phone numbers as a hint.
+
+The benefits to using Phone Number Hint include the following:
+
+- No additional permission requests are needed
+- Eliminates the need for the user to manually type in the phone number
+- No Google account is needed
+- Not directly tied to sign in/up workflows
+- Wider support for Android versions compared to Autofill
 
 ```dart
-void getAppSignature() async {
-  final res = await smartAuth.getAppSignature();
-  debugPrint('Signature: $res');
-}
-```
-
-### Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
-
-```dart
-void getSmsWithRetrieverApi() async {
-  final res = await smartAuth.getSmsWithRetrieverApi();
-  if (res.succeed) {
-    debugPrint('SMS: ${res.code}');
+void requestPhoneNumberHint() async {
+  final res = await smartAuth.requestPhoneNumberHint();
+  if (res.hasData) {
+    // Use the phone number
   } else {
-    debugPrint('SMS Failure:');
+    // Handle error
   }
 }
 ```
 
-### Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+<img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="250px"/>
+
+### Get SMS with User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+
+The SMS User Consent API complements the SMS Retriever API by allowing an app to prompt the user to
+grant access to the content of a single SMS message. When a user gives consent, the app will then
+have access to the entire message body to automatically complete SMS verification. The verification
+flow looks like this:
+
+1. A user initiates SMS verification in your app. Your app might prompt the user to provide a phone
+   number manually or request the phone number hint by calling `requestPhoneNumberHint` method.
+2. Your app makes a request to your server to verify the user's phone number. Depending on what
+   information is available in your user database, this request might include the user's ID, the
+   user's phone number, or both.
+3. At the same time, your app calls the `getSmsWithUserConsentApi` to show the user a dialog to
+   grant access to the SMS message.
+4. Your server sends an SMS message to the user that includes a one-time code to be sent back to
+   your server.
+5. When the user's device receives the SMS message, the `getSmsWithUserConsentApi` will extract the
+   one-time code from the message text and you have to send it back to your server.
+7. Your server receives the one-time code from your app, verifies the code, and finally records that
+   the user has successfully verified their account.
 
 ```dart
 void getSmsWithUserConsentApi() async {
   final res = await smartAuth.getSmsWithUserConsentApi();
-  if (res.succeed) {
-    debugPrint('SMS: ${res.code}');
+  if (res.hasData) {
+    final code = res.requireData.code;
+
+    /// The code can be null if the SMS is received but the code is extracted from it
+    if (code == null) return;
+    //  Use the code
+  } else if (res.isCanceled) {
+    // User canceled the dialog
   } else {
-    debugPrint('SMS Failure:');
+    // handle the error
   }
 }
 ```
 
-### The plugin automatically removes listeners after receiving the code, if not you can remove them by
+<img src="https://github.com/user-attachments/assets/60ace6bc-6c28-43cf-ae1d-60f56aaae8d2" width="250px"/>
 
-calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` methods
+### Get SMS with SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
+
+With the SMS Retriever API, you can perform SMS-based user verification in your Android app
+automatically, without requiring the user to manually type verification codes, and without requiring
+any extra app permissions. When you implement automatic SMS verification in your app, the
+verification flow looks like this:
+
+<img src="https://github.com/user-attachments/assets/7daa8895-14d4-460f-b9e7-4710446788d3"/>
+
+1. A user initiates SMS verification in your app. Your app might prompt the user to provide a phone
+   number manually or request the phone number hint by calling `requestPhoneNumberHint` method.
+2. Your app makes a request to your server to verify the user's phone number. Depending on what
+   information is available in your user database, this request might include the user's ID, the
+   user's phone number, or both.
+3. At the same time, your app calls the `getSmsWithRetrieverApi` to begin listening for an SMS
+   response from your server.
+4. Your server sends an SMS message to the user that includes a one-time code to be sent back to
+   your server, and a hash that identifies your app.
+5. When the user's device receives the SMS message, Google Play services uses the app hash to
+   determine that the message is intended for your app, and makes the message text available to your
+   app through the SMS Retriever API.
+6. The `getSmsWithRetrieverApi` will extract the one-time code from the message text and you have to
+   send it back to your server.
+7. Your server receives the one-time code from your app, verifies the code, and finally records that
+   the user has successfully verified their account.
+
+```dart
+void getSmsWithRetrieverApi() async {
+  final res = await smartAuth.getSmsWithRetrieverApi();
+  if (res.hasData) {
+    final code = res.requireData.code;
+
+    /// The code can be null if the SMS is received but the code is extracted from it
+    if (code == null) return;
+    //  Use the code
+  } else {
+    // handle the error
+  }
+}
+```
+
+### Dispose
+
+The plugin automatically removes listeners after receiving the code, if not you can remove them by
+calling the `removeUserConsentApiListener` or `removeSmsRetrieverApiListener` method.
 
 ```dart
 void removeSmsListener() {
@@ -162,14 +235,3 @@ void removeSmsListener() {
   smartAuth.removeSmsRetrieverApiListener();
 }
 ```
-
-### Request phone number hint
-
-```dart
-void requestPhoneNumberHint() async {
-  final res = await smartAuth.requestPhoneNumberHint();
-  debugPrint('requestHint: $res');
-}
-```
-
-<img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="280px"/>
