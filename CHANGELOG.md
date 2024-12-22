@@ -1,3 +1,8 @@
+#### 3.1.0 · 22/12/2024
+
+- Lowered Java version to 11 for better compatibility
+- Retracted version 3.0.0
+
 #### 3.0.0 · 20/12/2024
 
 - Improved readme by adding detailed instructions
