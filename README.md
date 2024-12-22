@@ -56,7 +56,7 @@ If you want to contribute to this project, please read the [contribution](CONTRI
 
 ## Requirements
 
-#### 1. Set kotlin version to 2.0.0 or above and gradle plugin version to 8.3.2
+#### 1. Set kotlin version to 1.8.0 or above and gradle plugin version to 8.3.2
 
 If you are
 using [legacy imperative apply](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
@@ -64,7 +64,7 @@ using [legacy imperative apply](https://docs.flutter.dev/release/breaking-change
 ```
 // android/build.gradle
 buildscript {
-    ext.kotlin_version = '2.0.0'
+    ext.kotlin_version = '1.8.0'
     ...others
 
     dependencies {
@@ -80,7 +80,7 @@ new [declarative plugin approach](https://docs.gradle.org/8.5/userguide/plugins.
 ```
 // android/settings.gradle
 plugins {
-    id "org.jetbrains.kotlin.android" version "2.0.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
     id "com.android.application" version "8.3.2" apply false
     ...others
 }
@@ -93,17 +93,17 @@ plugins {
 distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-all.zip
 ```
 
-#### 3. Set Java version to 21
+#### 3. Set Java version to 11
 
 ```
 // android/app/build.gradle
 compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_21.toString()
+    jvmTarget = '11'
 }
 ```
 
