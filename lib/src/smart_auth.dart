@@ -125,21 +125,21 @@ class SmartAuth {
   /// Runs the Phone Number Hint API, a library powered by Google Play services
   /// provides a frictionless way to show a user’s (SIM-based) phone numbers as a hint.
   /// https://developers.google.com/identity/phone-number-hint/android
-  Future<SmartAuthResult<void>> requestPhoneNumberHint() async {
+  Future<SmartAuthResult<String?>> requestPhoneNumberHint() async {
     try {
       final result = await _api.requestPhoneNumberHint();
-      return SmartAuthResult<String>.success(result);
+      return SmartAuthResult<String?>.success(result);
     } catch (error) {
       final isCanceled = error is PlatformException &&
           error.details is SmartAuthRequestCanceled;
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: requestPhoneNumberHint canceled by user');
-        return SmartAuthResult<void>.canceled();
+        return SmartAuthResult<String?>.canceled();
       }
 
       final message = 'Failed to request phone number hint with error: $error';
       debugPrint('Pinput/SmartAuth: $message');
-      return SmartAuthResult<void>.failure(message);
+      return SmartAuthResult<String?>.failure(message);
     }
   }
 }

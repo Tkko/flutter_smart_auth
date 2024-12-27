@@ -2,7 +2,11 @@
 enum SmartAuthResultState {
   success,
   failure,
-  canceled,
+  canceled;
+
+  bool get isSuccess => this == SmartAuthResultState.success;
+  bool get isFailure => this == SmartAuthResultState.failure;
+  bool get isCanceled => this == SmartAuthResultState.canceled;
 }
 
 /// The result returned from SmartAuth methods
@@ -54,9 +58,6 @@ class SmartAuthResult<T> {
 
   /// Returns whether result contains a non-null [error] value.
   bool get hasError => error != null;
-
-  /// Returns whether user canceled the operation.
-  bool get isCanceled => state == SmartAuthResultState.canceled;
 
   @override
   String toString() {
