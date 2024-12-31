@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
       pinputController.selection = TextSelection.fromPosition(
         TextPosition(offset: pinputController.text.length),
       );
-    } else if (res.state.isCanceled) {
+    } else if (res.isCanceled) {
       debugPrint('userConsent canceled');
     } else {
       debugPrint('userConsent failed: $res');
