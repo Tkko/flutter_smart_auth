@@ -8,16 +8,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  smart_auth:
-    path: ../
   flutter_localizations:
     sdk: flutter
+  smart_auth:
+    path: ../
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  very_good_analysis: ^7.0.0
 
 
 flutter:

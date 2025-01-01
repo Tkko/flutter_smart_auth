@@ -6,7 +6,9 @@ void main() {
   runApp(const MyApp());
 }
 
+/// This example demonstrates how to use the SmartAuth plugin.
 class MyApp extends StatefulWidget {
+  /// Creates a new instance of the [MyApp] class.
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -20,25 +22,30 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    /// Removes the listeners if the SMS code is not received yet
     smartAuth.removeSmsRetrieverApiListener();
+
+    /// Removes the listeners if the SMS code is not received yet
     smartAuth.removeUserConsentApiListener();
+
     pinputController.dispose();
     super.dispose();
   }
 
-  void getAppSignature() async {
+  Future<void> getAppSignature() async {
     final res = await smartAuth.getAppSignature();
     setState(() => appSignature = res.data);
     debugPrint('Signature: $res');
   }
 
-  void userConsent() async {
+  Future<void> userConsent() async {
     final res = await smartAuth.getSmsWithUserConsentApi();
     if (res.hasData) {
       debugPrint('userConsent: $res');
       final code = res.requireData.code;
 
-      /// The code can be null if the SMS is received but the code is extracted from it
+      /// The code can be null if the SMS was received but
+      /// the code was not extracted from it
       if (code == null) return;
       pinputController.text = code;
       pinputController.selection = TextSelection.fromPosition(
@@ -51,13 +58,14 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void smsRetriever() async {
+  Future<void> smsRetriever() async {
     final res = await smartAuth.getSmsWithRetrieverApi();
     if (res.hasData) {
       debugPrint('smsRetriever: $res');
       final code = res.requireData.code;
 
-      /// The code can be null if the SMS is received but the code is extracted from it
+      /// The code can be null if the SMS was received but
+      /// the code was not extracted from it
       if (code == null) return;
       pinputController.text = code;
       pinputController.selection = TextSelection.fromPosition(
@@ -68,7 +76,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void requestPhoneNumberHint() async {
+  Future<void> requestPhoneNumberHint() async {
     final res = await smartAuth.requestPhoneNumberHint();
     if (res.hasData) {
       // Use the phone number
@@ -101,7 +109,7 @@ class _MyAppState extends State<MyApp> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: TextField(
                     controller: pinputController,
                     decoration: const InputDecoration(

@@ -1,3 +1,11 @@
+#### 3.2.0 · 1/1/2025
+
+- Fixed method type
+  by [Dishank Jindal](https://github.com/dishankjindal1) - [PR](https://github.com/Tkko/flutter_smart_auth/pull/37)
+- Removed unnecessary type declarations
+- Removed unnecessary `exclude` from the `analyses_options.yaml`
+- Replaced `flutter_lints` with `very_good_analysis` in the example app
+
 #### 3.1.0 · 22/12/2024
 
 - Lowered Java version to 11 for better compatibility
