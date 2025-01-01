@@ -44,8 +44,8 @@ class _MyAppState extends State<MyApp> {
       debugPrint('userConsent: $res');
       final code = res.requireData.code;
 
-      /// The code can be null if the SMS is received but
-      /// the code is not extracted from it
+      /// The code can be null if the SMS was received but
+      /// the code was not extracted from it
       if (code == null) return;
       pinputController.text = code;
       pinputController.selection = TextSelection.fromPosition(
@@ -64,8 +64,8 @@ class _MyAppState extends State<MyApp> {
       debugPrint('smsRetriever: $res');
       final code = res.requireData.code;
 
-      /// The code can be null if the SMS is received but
-      /// the code is not extracted from it
+      /// The code can be null if the SMS was received but
+      /// the code was not extracted from it
       if (code == null) return;
       pinputController.text = code;
       pinputController.selection = TextSelection.fromPosition(

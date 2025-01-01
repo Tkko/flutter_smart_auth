@@ -169,7 +169,7 @@ void getSmsWithUserConsentApi() async {
   if (res.hasData) {
     final code = res.requireData.code;
 
-    /// The code can be null if the SMS is received but the code is not extracted from it
+    /// The code can be null if the SMS was received but the code was not extracted from it
     if (code == null) return;
     //  Use the code
   } else if (res.isCanceled) {
@@ -214,7 +214,7 @@ void getSmsWithRetrieverApi() async {
   if (res.hasData) {
     final code = res.requireData.code;
 
-    /// The code can be null if the SMS is received but the code is not extracted from it
+    /// The code can be null if the SMS was received but the code was not extracted from it
     if (code == null) return;
     //  Use the code
   } else {
