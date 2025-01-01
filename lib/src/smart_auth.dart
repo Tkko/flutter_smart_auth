@@ -37,7 +37,7 @@ class SmartAuth {
   Future<SmartAuthResult<String>> getAppSignature() async {
     try {
       final result = await _api.getAppSignature();
-      return SmartAuthResult<String>.success(result);
+      return SmartAuthResult.success(result);
     } catch (error) {
       debugPrint('Pinput/SmartAuth: getAppSignature failed: $error');
       return SmartAuthResult.failure(
@@ -55,12 +55,12 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithRetrieverApi();
-      return SmartAuthResult<SmartAuthSms>.success(
+      return SmartAuthResult.success(
         SmartAuthSms.fromSms(result, matcher),
       );
     } catch (error) {
       debugPrint('Pinput/SmartAuth: getSmsWithRetrieverApi failed: $error');
-      return SmartAuthResult<SmartAuthSms>.failure(
+      return SmartAuthResult.failure(
         'Failed to get SMS with retriever API with error: $error',
       );
     }
@@ -78,7 +78,7 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithUserConsentApi(senderPhoneNumber);
-      return SmartAuthResult<SmartAuthSms>.success(
+      return SmartAuthResult.success(
         SmartAuthSms.fromSms(result, matcher),
       );
     } catch (error) {
@@ -87,10 +87,10 @@ class SmartAuth {
 
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: ${error.message}');
-        return SmartAuthResult<SmartAuthSms>.canceled();
+        return SmartAuthResult.canceled();
       }
       debugPrint('Pinput/SmartAuth: getSmsWithUserConsentApi failed: $error');
-      return SmartAuthResult<SmartAuthSms>.failure(
+      return SmartAuthResult.failure(
         'Failed to get SMS with user consent API with error: $error',
       );
     }
@@ -100,10 +100,10 @@ class SmartAuth {
   Future<SmartAuthResult<void>> removeUserConsentApiListener() async {
     try {
       await _api.removeUserConsentListener();
-      return SmartAuthResult<void>.success(null);
+      return SmartAuthResult.success(null);
     } catch (error) {
       debugPrint('Pinput/SmartAuth: removeUserConsentListener failed: $error');
-      return SmartAuthResult<void>.failure(
+      return SmartAuthResult.failure(
         'Failed to remove user consent listener with error: $error',
       );
     }
@@ -113,10 +113,10 @@ class SmartAuth {
   Future<SmartAuthResult<void>> removeSmsRetrieverApiListener() async {
     try {
       await _api.removeSmsRetrieverListener();
-      return SmartAuthResult<void>.success(null);
+      return SmartAuthResult.success(null);
     } catch (error) {
       debugPrint('Pinput/SmartAuth: removeSmsRetrieverListener failed: $error');
-      return SmartAuthResult<void>.failure(
+      return SmartAuthResult.failure(
         'Failed to remove sms retriever listener with error: $error',
       );
     }
@@ -125,21 +125,21 @@ class SmartAuth {
   /// Runs the Phone Number Hint API, a library powered by Google Play services
   /// provides a frictionless way to show a user’s (SIM-based) phone numbers as a hint.
   /// https://developers.google.com/identity/phone-number-hint/android
-  Future<SmartAuthResult<String?>> requestPhoneNumberHint() async {
+  Future<SmartAuthResult<String>> requestPhoneNumberHint() async {
     try {
       final result = await _api.requestPhoneNumberHint();
-      return SmartAuthResult<String?>.success(result);
+      return SmartAuthResult.success(result);
     } catch (error) {
       final isCanceled = error is PlatformException &&
           error.details is SmartAuthRequestCanceled;
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: requestPhoneNumberHint canceled by user');
-        return SmartAuthResult<String?>.canceled();
+        return SmartAuthResult.canceled();
       }
 
       final message = 'Failed to request phone number hint with error: $error';
       debugPrint('Pinput/SmartAuth: $message');
-      return SmartAuthResult<String?>.failure(message);
+      return SmartAuthResult.failure(message);
     }
   }
 }

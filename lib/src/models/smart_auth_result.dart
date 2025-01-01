@@ -7,27 +7,21 @@ enum SmartAuthResultState {
 
 /// The result returned from SmartAuth methods
 class SmartAuthResult<T> {
-  const SmartAuthResult({
-    required this.state,
-    required this.data,
-    required this.error,
-  });
-
   const SmartAuthResult.success(this.data)
-      : state = SmartAuthResultState.success,
+      : _state = SmartAuthResultState.success,
         error = null;
 
   const SmartAuthResult.failure(this.error)
-      : state = SmartAuthResultState.failure,
+      : _state = SmartAuthResultState.failure,
         data = null;
 
   const SmartAuthResult.canceled()
-      : state = SmartAuthResultState.canceled,
+      : _state = SmartAuthResultState.canceled,
         error = null,
         data = null;
 
   /// The state of the result
-  final SmartAuthResultState state;
+  final SmartAuthResultState _state;
 
   /// The data object if [state] is [SmartAuthResultState.success]
   final T? data;
@@ -56,11 +50,11 @@ class SmartAuthResult<T> {
   bool get hasError => error != null;
 
   /// Returns whether user canceled the operation.
-  bool get isCanceled => state == SmartAuthResultState.canceled;
+  bool get isCanceled => _state == SmartAuthResultState.canceled;
 
   @override
   String toString() {
-    return 'SmartAuthResult{state: $state, data: $data, error: $error}';
+    return 'SmartAuthResult{state: $_state, data: $data, error: $error}';
   }
 
   @override
@@ -68,10 +62,10 @@ class SmartAuthResult<T> {
       identical(this, other) ||
       other is SmartAuthResult &&
           runtimeType == other.runtimeType &&
-          state == other.state &&
+          _state == other._state &&
           data == other.data &&
           error == other.error;
 
   @override
-  int get hashCode => state.hashCode ^ data.hashCode ^ error.hashCode;
+  int get hashCode => _state.hashCode ^ data.hashCode ^ error.hashCode;
 }
