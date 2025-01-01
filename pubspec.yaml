@@ -10,11 +10,10 @@ topics:
   - sms-retriever-api
   - smart-lock
 screenshots:
-  - description: 'SmartAuth Cover'
+  - description: "SmartAuth Cover"
     path: example/smart_auth_cover.png
 funding:
   - https://ko-fi.com/flutterman
-
 
 environment:
   sdk: ">=2.16.1 <4.0.0"
@@ -23,7 +22,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
 
 dev_dependencies:
   flutter_test:
