@@ -22,10 +22,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    /// Removes the listeners if the SMS code is not recieved yet
+    /// Removes the listeners if the SMS code is not received yet
     smartAuth.removeSmsRetrieverApiListener();
 
-    /// Removes the listeners if the SMS code is not recieved yet
+    /// Removes the listeners if the SMS code is not received yet
     smartAuth.removeUserConsentApiListener();
 
     pinputController.dispose();
