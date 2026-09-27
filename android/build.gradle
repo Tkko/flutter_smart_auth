@@ -22,7 +22,15 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+
+// AGP 9+ ships built-in Kotlin support; only apply KGP when built-in Kotlin is
+// not in effect (older AGP, or projects opting out via android.builtInKotlin=false).
+// See: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+def builtInKotlin = agpMajor >= 9 && project.findProperty('android.builtInKotlin') != 'false'
+if (!builtInKotlin) {
+    apply plugin: 'kotlin-android'
+}
 
 android {
     // Conditional for compatibility with AGP <4.2.
@@ -37,12 +45,18 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = '11'
+    // android.kotlinOptions only exists when KGP is applied; with AGP 9 built-in
+    // Kotlin, jvmTarget follows compileOptions.targetCompatibility.
+    if (!builtInKotlin) {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_11.toString()
+        }
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        // Kotlin sources must go to the kotlin source set; AGP 9 built-in Kotlin
+        // does not compile Kotlin files added to the java source set.
+        main.kotlin.directories.add('src/main/kotlin')
     }
 
     defaultConfig {

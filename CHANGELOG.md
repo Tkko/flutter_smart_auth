@@ -1,3 +1,11 @@
+#### 3.3.0 · 8/18/2026
+
+- Migrated to Flutter's built-in Kotlin support for AGP 9+ compatibility
+  - KGP (`kotlin-android`) is now applied conditionally only on AGP < 9
+  - `kotlinOptions` replaced with `kotlin { compilerOptions {} }` DSL
+  - See: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+- Fixes [#45](https://github.com/Tkko/flutter_smart_auth/issues/45)
+
 #### 3.2.0 · 1/1/2025
 
 - Fixed method type
