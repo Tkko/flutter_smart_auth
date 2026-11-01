@@ -16,6 +16,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.PluginRegistry
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 
 /** SmartAuthPlugin */
@@ -71,9 +72,9 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     }
 
 
-    override fun getSmsWithRetrieverApi(callback: (Result<String>) -> Unit) {
+    override suspend fun getSmsWithRetrieverApi(): String = suspendCancellableCoroutine { cont ->
         unregisterAllReceivers()
-        pendingResult = callback
+        pendingResult = { cont.resumeWith(it) }
         smsReceiver = SmsBroadcastReceiver()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         ContextCompat.registerReceiver(
@@ -87,11 +88,10 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
         SmsRetriever.getClient(mContext).startSmsRetriever()
     }
 
-    override fun getSmsWithUserConsentApi(
-        phoneNumber: String?, callback: (Result<String>) -> Unit
-    ) {
+    override suspend fun getSmsWithUserConsentApi(phoneNumber: String?): String =
+        suspendCancellableCoroutine { cont ->
         unregisterAllReceivers()
-        pendingResult = callback
+        pendingResult = { cont.resumeWith(it) }
         consentReceiver = ConsentBroadcastReceiver()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         ContextCompat.registerReceiver(
@@ -121,8 +121,8 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     }
 
 
-    override fun requestPhoneNumberHint(callback: (Result<String>) -> Unit) {
-        pendingResult = callback
+    override suspend fun requestPhoneNumberHint(): String = suspendCancellableCoroutine { cont ->
+        pendingResult = { cont.resumeWith(it) }
         val hintRequest = GetPhoneNumberHintIntentRequest.builder().build()
 
         val signInClient = Identity.getSignInClient(mContext)
@@ -142,7 +142,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
         }.addOnFailureListener { exception ->
             val message = "Failed to get phone number hint intent: ${exception.message}"
             Log.e(PLUGIN_TAG, message)
-            callback.invoke(Result.failure(Exception(message)))
+            cont.resumeWith(Result.failure(Exception(message)))
         }
     }
 

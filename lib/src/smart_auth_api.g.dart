@@ -10,9 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show immutable, protected, visibleForTesting;
 
 Object? _extractReplyValueOrThrow(
-  List<Object?>? replyList,
-  String channelName, {
-  required bool isNullValid,
+    List<Object?>? replyList,
+    String channelName, {
+    required bool isNullValid,
 }) {
   if (replyList == null) {
     throw PlatformException(
@@ -96,6 +96,7 @@ int _deepHash(Object? value) {
   return value.hashCode;
 }
 
+
 class SmartAuthRequestCanceled {
   SmartAuthRequestCanceled({
     this.message,
@@ -110,8 +111,7 @@ class SmartAuthRequestCanceled {
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
   static SmartAuthRequestCanceled decode(Object result) {
     result as List<Object?>;
@@ -123,8 +123,7 @@ class SmartAuthRequestCanceled {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! SmartAuthRequestCanceled ||
-        other.runtimeType != runtimeType) {
+    if (other is! SmartAuthRequestCanceled || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -143,6 +142,7 @@ class SmartAuthRequestCanceled {
   }
 }
 
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -150,7 +150,7 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    } else if (value is SmartAuthRequestCanceled) {
+    }    else if (value is SmartAuthRequestCanceled) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else {
@@ -174,20 +174,20 @@ class SmartAuthApi {
   /// available for dependency injection. If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
   SmartAuthApi({
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  })  : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix =
-            messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+      BinaryMessenger? binaryMessenger, 
+      String messageChannelSuffix = '', 
+      })
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
 
   final BinaryMessenger? pigeonVar_binaryMessenger;
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
   final String pigeonVar_messageChannelSuffix;
 
+
   Future<String> getAppSignature() async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getAppSignature$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.getAppSignature$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -197,16 +197,16 @@ class SmartAuthApi {
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
 
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-      pigeonVar_replyList,
-      pigeonVar_channelName,
-      isNullValid: false,
-    );
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
     return pigeonVar_replyValue! as String;
   }
 
   Future<String> getSmsWithRetrieverApi() async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithRetrieverApi$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithRetrieverApi$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -216,36 +216,35 @@ class SmartAuthApi {
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
 
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-      pigeonVar_replyList,
-      pigeonVar_channelName,
-      isNullValid: false,
-    );
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
     return pigeonVar_replyValue! as String;
   }
 
   Future<String> getSmsWithUserConsentApi(String? phoneNumber) async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithUserConsentApi$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.getSmsWithUserConsentApi$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture =
-        pigeonVar_channel.send(<Object?>[phoneNumber]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[phoneNumber]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
 
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-      pigeonVar_replyList,
-      pigeonVar_channelName,
-      isNullValid: false,
-    );
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
     return pigeonVar_replyValue! as String;
   }
 
   Future<void> removeSmsRetrieverListener() async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeSmsRetrieverListener$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeSmsRetrieverListener$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -255,15 +254,15 @@ class SmartAuthApi {
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
 
     _extractReplyValueOrThrow(
-      pigeonVar_replyList,
-      pigeonVar_channelName,
-      isNullValid: true,
-    );
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: true,
+    )
+    ;
   }
 
   Future<void> removeUserConsentListener() async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeUserConsentListener$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.removeUserConsentListener$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -273,15 +272,15 @@ class SmartAuthApi {
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
 
     _extractReplyValueOrThrow(
-      pigeonVar_replyList,
-      pigeonVar_channelName,
-      isNullValid: true,
-    );
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: true,
+    )
+    ;
   }
 
   Future<String> requestPhoneNumberHint() async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.smart_auth.SmartAuthApi.requestPhoneNumberHint$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.smart_auth.SmartAuthApi.requestPhoneNumberHint$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -291,10 +290,11 @@ class SmartAuthApi {
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
 
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-      pigeonVar_replyList,
-      pigeonVar_channelName,
-      isNullValid: false,
-    );
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
     return pigeonVar_replyValue! as String;
   }
 }

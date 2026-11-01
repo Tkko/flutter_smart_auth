@@ -1,3 +1,9 @@
+#### Unreleased
+
+- Updated the minimum supported SDK version to Flutter 3.44/Dart 3.12
+- Migrated Android to built-in Kotlin
+- Fixed Android build: namespace, manifest and suspend-based Pigeon API
+
 #### 3.2.0 · 1/1/2025
 
 - Fixed method type
