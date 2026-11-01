@@ -1,0 +1,26 @@
+name: Create Release & Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name (e.g. v3.2.1). Leave empty to use version from pubspec.yaml'
+        required: false
+        type: string
+      dry_run:
+        description: 'Dry run (validate tests and pubspec without creating tag/release)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  release:
+    uses: Tkko/better-actions/.github/workflows/create-release.yml@main
+    with:
+      tag_name: ${{ inputs.tag_name }}
+      platforms: android
+      dry_run: ${{ inputs.dry_run }}
+      integration-test-target: integration_test/smart_auth_test.dart
+    permissions:
+      contents: write
+      actions: write

@@ -55,9 +55,7 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithRetrieverApi();
-      return SmartAuthResult.success(
-        SmartAuthSms.fromSms(result, matcher),
-      );
+      return SmartAuthResult.success(SmartAuthSms.fromSms(result, matcher));
     } catch (error) {
       debugPrint('Pinput/SmartAuth: getSmsWithRetrieverApi failed: $error');
       return SmartAuthResult.failure(
@@ -78,11 +76,10 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithUserConsentApi(senderPhoneNumber);
-      return SmartAuthResult.success(
-        SmartAuthSms.fromSms(result, matcher),
-      );
+      return SmartAuthResult.success(SmartAuthSms.fromSms(result, matcher));
     } catch (error) {
-      final isCanceled = error is PlatformException &&
+      final isCanceled =
+          error is PlatformException &&
           error.details is SmartAuthRequestCanceled;
 
       if (isCanceled) {
@@ -130,7 +127,8 @@ class SmartAuth {
       final result = await _api.requestPhoneNumberHint();
       return SmartAuthResult.success(result);
     } catch (error) {
-      final isCanceled = error is PlatformException &&
+      final isCanceled =
+          error is PlatformException &&
           error.details is SmartAuthRequestCanceled;
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: requestPhoneNumberHint canceled by user');

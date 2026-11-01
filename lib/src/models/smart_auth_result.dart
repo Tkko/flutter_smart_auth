@@ -1,24 +1,20 @@
 /// The state of the result returned from SmartAuth methods
-enum SmartAuthResultState {
-  success,
-  failure,
-  canceled,
-}
+enum SmartAuthResultState { success, failure, canceled }
 
 /// The result returned from SmartAuth methods
 class SmartAuthResult<T> {
   const SmartAuthResult.success(this.data)
-      : _state = SmartAuthResultState.success,
-        error = null;
+    : _state = SmartAuthResultState.success,
+      error = null;
 
   const SmartAuthResult.failure(this.error)
-      : _state = SmartAuthResultState.failure,
-        data = null;
+    : _state = SmartAuthResultState.failure,
+      data = null;
 
   const SmartAuthResult.canceled()
-      : _state = SmartAuthResultState.canceled,
-        error = null,
-        data = null;
+    : _state = SmartAuthResultState.canceled,
+      error = null,
+      data = null;
 
   /// The state of the result
   final SmartAuthResultState _state;

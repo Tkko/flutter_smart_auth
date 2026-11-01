@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:smart_auth/smart_auth.dart';
@@ -11,54 +12,65 @@ void main() {
 
   final smartAuth = SmartAuth.instance;
 
-  group('getAppSignature', () {
-    testWidgets('returns an 11 character hash', (tester) async {
-      final result = await smartAuth.getAppSignature();
+  // The plugin only has an Android implementation.
+  final isAndroid = !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
-      expect(result.hasData, isTrue, reason: '${result.error}');
-      expect(result.requireData, hasLength(11));
-    });
+  group(
+    'getAppSignature',
+    () {
+      testWidgets('returns an 11 character hash', (tester) async {
+        final result = await smartAuth.getAppSignature();
 
-    testWidgets('is stable between calls', (tester) async {
-      final first = await smartAuth.getAppSignature();
-      final second = await smartAuth.getAppSignature();
+        expect(result.hasData, isTrue, reason: '${result.error}');
+        expect(result.requireData, hasLength(11));
+      });
 
-      expect(first.requireData, second.requireData);
-    });
-  });
+      testWidgets('is stable between calls', (tester) async {
+        final first = await smartAuth.getAppSignature();
+        final second = await smartAuth.getAppSignature();
 
-  group('listeners', () {
-    testWidgets('removeSmsRetrieverApiListener succeeds without a listener',
-        (tester) async {
-      final result = await smartAuth.removeSmsRetrieverApiListener();
+        expect(first.requireData, second.requireData);
+      });
+    },
+    skip: !isAndroid,
+  );
 
-      expect(result.hasError, isFalse, reason: '${result.error}');
-    });
+  group(
+    'listeners',
+    () {
+      testWidgets('removeSmsRetrieverApiListener succeeds without a listener',
+          (tester) async {
+        final result = await smartAuth.removeSmsRetrieverApiListener();
 
-    testWidgets('removeUserConsentApiListener succeeds without a listener',
-        (tester) async {
-      final result = await smartAuth.removeUserConsentApiListener();
+        expect(result.hasError, isFalse, reason: '${result.error}');
+      });
 
-      expect(result.hasError, isFalse, reason: '${result.error}');
-    });
+      testWidgets('removeUserConsentApiListener succeeds without a listener',
+          (tester) async {
+        final result = await smartAuth.removeUserConsentApiListener();
 
-    testWidgets('listeners can be removed repeatedly', (tester) async {
-      for (var i = 0; i < 3; i++) {
-        expect(
-          (await smartAuth.removeSmsRetrieverApiListener()).hasError,
-          isFalse,
-        );
-        expect(
-          (await smartAuth.removeUserConsentApiListener()).hasError,
-          isFalse,
-        );
-      }
-    });
-  });
+        expect(result.hasError, isFalse, reason: '${result.error}');
+      });
+
+      testWidgets('listeners can be removed repeatedly', (tester) async {
+        for (var i = 0; i < 3; i++) {
+          expect(
+            (await smartAuth.removeSmsRetrieverApiListener()).hasError,
+            isFalse,
+          );
+          expect(
+            (await smartAuth.removeUserConsentApiListener()).hasError,
+            isFalse,
+          );
+        }
+      });
+    },
+    skip: !isAndroid,
+  );
 
   // These need an SMS sent from outside the app, so they only run when
   // started through `integration_test/run_sms_tests.sh`.
-  const smsTests = bool.fromEnvironment('SMS_TESTS');
+  final smsTests = isAndroid && const bool.fromEnvironment('SMS_TESTS');
 
   group('SMS Retriever API', () {
     testWidgets(
