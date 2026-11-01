@@ -1,4 +1,4 @@
-package fman.ge.smart_auth
+package tornike.dev.smart_auth
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel

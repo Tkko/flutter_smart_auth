@@ -16,7 +16,7 @@ funding:
   - https://ko-fi.com/flutterman
 
 environment:
-  sdk: ">=2.16.1 <4.0.0"
+  sdk: ">=3.0.0 <5.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
@@ -26,12 +26,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pigeon: ^29.1.0
+  pigeon: 29.0.0
   flutter_lints: ^6.0.0
 
 flutter:
   plugin:
     platforms:
       android:
-        package: fman.ge.smart_auth
+        package: dev.tornike.smart_auth
         pluginClass: SmartAuthPlugin
