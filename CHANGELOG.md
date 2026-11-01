@@ -1,7 +1,15 @@
-#### Unreleased
+#### 4.0.0-beta.1 · 2/11/2026
 
-- Updated the minimum supported SDK version to Flutter 3.44/Dart 3.12
+**Breaking requirements** (the Dart API is unchanged)
+
+- Minimum Flutter 3.44 / Dart 3.12
+- Android: compileSdk 35 or above, AGP 8.6.0 or above, Gradle 8.7 or above
+
+- Added the missing `meta` dependency
 - Migrated Android to built-in Kotlin
+- Removed the Kotlin Gradle Plugin classpath from the plugin's `build.gradle` (AGP 9 support)
+- Updated `androidx.credentials` from `1.5.0-beta01` to the stable `1.5.0`
+- README: clarified minimum versions ("or above"), documented the compileSdk 35 requirement and added a 2.x to 3.x migration guide
 - Fixed Android build: namespace, manifest and suspend-based Pigeon API
 
 #### 3.2.0 · 1/1/2025

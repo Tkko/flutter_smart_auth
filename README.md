@@ -56,7 +56,7 @@ If you want to contribute to this project, please read the [contribution](CONTRI
 
 ## Requirements
 
-#### 1. Set kotlin version to 1.8.0 or above and gradle plugin version to 8.3.2
+#### 1. Set kotlin version to 1.8.0 or above and Android Gradle Plugin (AGP) version to 8.6.0 or above
 
 If you are
 using [legacy imperative apply](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
@@ -68,7 +68,7 @@ buildscript {
     ...others
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.android.tools.build:gradle:8.6.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -81,19 +81,23 @@ new [declarative plugin approach](https://docs.gradle.org/8.5/userguide/plugins.
 // android/settings.gradle
 plugins {
     id "org.jetbrains.kotlin.android" version "1.8.0" apply false
-    id "com.android.application" version "8.3.2" apply false
+    id "com.android.application" version "8.6.0" apply false
     ...others
 }
 ```
 
-#### 2. Set gradle version to 8.4.0 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
+> If you use AGP 9.0 or above, Kotlin is built in: you don't need the `kotlin-gradle-plugin` classpath
+> or the `org.jetbrains.kotlin.android` plugin. See the
+> [migration guide](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers).
+
+#### 2. Set gradle version to 8.7 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
 
 ```
 // android/gradle/wrapper/gradle-wrapper.properties
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-all.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-all.zip
 ```
 
-#### 3. Set Java version to 11
+#### 3. Set Java version to 11 or above
 
 ```
 // android/app/build.gradle
@@ -106,6 +110,32 @@ kotlinOptions {
     jvmTarget = '11'
 }
 ```
+
+With built-in Kotlin (AGP 9.0 or above) `kotlinOptions` is deprecated, the `compileOptions` above are enough.
+
+#### 4. Set compileSdk to 35 or above
+
+The Android Credential Manager dependency requires apps to compile against Android API 35 or later.
+Older AGP versions only officially support up to 34, so use AGP 8.6.0 or above to avoid the `checkDebugAarMetadata` error.
+
+```
+// android/app/build.gradle
+android {
+    compileSdk = 35
+}
+```
+
+## Migrating from 2.x to 3.x
+
+| 2.x                                           | 3.x                                                                      |
+|-----------------------------------------------|--------------------------------------------------------------------------|
+| `SmartAuth()`                                 | `SmartAuth.instance`                                                     |
+| `getSmsCode()` returning `SmsCodeResult`      | `getSmsWithRetrieverApi()` / `getSmsWithUserConsentApi()` returning `SmartAuthResult<SmartAuthSms>` |
+| `res.succeed && res.codeFound`, `res.code`    | `res.hasData`, `res.data?.code`                                          |
+| `getAppSignature()` returning `String?`       | returns `SmartAuthResult<String>`, read the value with `res.data`        |
+| `removeSmsListener()`                         | `removeSmsRetrieverApiListener()` / `removeUserConsentApiListener()`  |
+
+See the [example](https://github.com/Tkko/flutter_smart_auth/blob/main/example/lib/main.dart) for full usage.
 
 ## Getting Started
 
