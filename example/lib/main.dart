@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:smart_auth/smart_auth.dart';
@@ -23,10 +25,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     /// Removes the listeners if the SMS code is not received yet
-    smartAuth.removeSmsRetrieverApiListener();
+    unawaited(smartAuth.removeSmsRetrieverApiListener());
 
     /// Removes the listeners if the SMS code is not received yet
-    smartAuth.removeUserConsentApiListener();
+    unawaited(smartAuth.removeUserConsentApiListener());
 
     pinputController.dispose();
     super.dispose();
