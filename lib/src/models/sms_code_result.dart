@@ -10,10 +10,7 @@ class SmartAuthSms {
   /// Can be null if the regex matcher didn't find any code but user received the SMS
   final String? code;
 
-  const SmartAuthSms({
-    required this.sms,
-    required this.code,
-  });
+  const SmartAuthSms({required this.sms, required this.code});
 
   static SmartAuthSms fromSms(String sms, String matcher) {
     String? extractCode(String? sms) {
@@ -33,10 +30,7 @@ class SmartAuthSms {
       return null;
     }
 
-    return SmartAuthSms(
-      sms: sms,
-      code: extractCode(sms),
-    );
+    return SmartAuthSms(sms: sms, code: extractCode(sms));
   }
 
   @override

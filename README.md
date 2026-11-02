@@ -41,8 +41,14 @@ the [Pinput](https://github.com/Tkko/Flutter_Pinput) package._
     - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
     - SMS User
       Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+- Credential Manager [API](https://developer.android.com/identity/sign-in/credential-manager)
+    - Get saved passwords and passkeys - `getCredential`
+    - Save a password - `createPasswordCredential`
+    - Create a passkey - `createPublicKeyCredential`
+    - Speed up the account selector on Android 14+ - `prepareGetCredential`, `getPreparedCredential`
+    - Clear the credential state on sign out - `clearCredentialState`
 - Showing Phone number
-  hints [API](https://developers.google.com/identity/android-credential-manager)
+  hints [API](https://developers.google.com/identity/phone-number-hint/android)
 
 ## Support
 
@@ -56,56 +62,68 @@ If you want to contribute to this project, please read the [contribution](CONTRI
 
 ## Requirements
 
-#### 1. Set kotlin version to 1.8.0 or above and gradle plugin version to 8.3.2
+Flutter 3.44 or above, the plugin is tested with Flutter 3.47.
 
-If you are
-using [legacy imperative apply](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
+#### Android build tools
+
+AGP, Gradle and Kotlin versions are dictated by your Flutter version. Flutter checks them when
+building and tells you what to upgrade, and a project created with `flutter create` already has
+them. For example Flutter 3.47 requires:
+
+| Tool                        | Minimum                               |
+|-----------------------------|---------------------------------------|
+| Android Gradle Plugin (AGP) | 8.11.1 (Flutter will move to 9.0.1)   |
+| Gradle                      | 8.14 (Flutter will move to 9.1.0)     |
+| Kotlin                      | 2.2.20 (Flutter will move to 2.3.20)  |
+
+The plugin also works with AGP 9, where Kotlin is built in, see the
+[migration guide](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers).
+With AGP 9 you don't need the `kotlin-gradle-plugin` classpath or the `org.jetbrains.kotlin.android`
+plugin, and `kotlinOptions` is deprecated.
+
+#### Requirements added by this package
+
+| Requirement                       | Minimum                                                          |
+|-----------------------------------|------------------------------------------------------------------|
+| `compileSdk`                      | 35 or above                                                      |
+| JDK that runs Gradle              | 17 or above, JDK 25 doesn't work with Gradle 8.14                |
+| Java source and target version    | 11 or above                                                      |
+
+`compileSdk` is the API your app is compiled against, it doesn't drop any devices.
+The Android Credential Manager dependency requires 35, and older AGP versions only officially
+support up to 34.
 
 ```
-// android/build.gradle
-buildscript {
-    ext.kotlin_version = '1.8.0'
-    ...others
+// android/app/build.gradle
+android {
+    compileSdk = 35
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 ```
 
-If you are using
-new [declarative plugin approach](https://docs.gradle.org/8.5/userguide/plugins.html#sec:plugins_block)
+#### Supported Android devices
 
-```
-// android/settings.gradle
-plugins {
-    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
-    id "com.android.application" version "8.3.2" apply false
-    ...others
-}
-```
+- Android 7.0 (API 24) or above, the minimum of Flutter 3.44 apps.
+- Google Play services is required for the SMS Retriever, SMS User Consent and phone number hint APIs,
+  and for the Credential Manager on Android 13 and below.
+- `prepareGetCredential` and `getPreparedCredential` need Android 14 (API 34) or above, they fail
+  with `UNSUPPORTED` on older versions.
 
-#### 2. Set gradle version to 8.4.0 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
+## Migrating from 2.x to 3.x
 
-```
-// android/gradle/wrapper/gradle-wrapper.properties
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-all.zip
-```
+| 2.x                                           | 3.x                                                                      |
+|-----------------------------------------------|--------------------------------------------------------------------------|
+| `SmartAuth()`                                 | `SmartAuth.instance`                                                     |
+| `getSmsCode()` returning `SmsCodeResult`      | `getSmsWithRetrieverApi()` / `getSmsWithUserConsentApi()` returning `SmartAuthResult<SmartAuthSms>` |
+| `res.succeed && res.codeFound`, `res.code`    | `res.hasData`, `res.data?.code`                                          |
+| `getAppSignature()` returning `String?`       | returns `SmartAuthResult<String>`, read the value with `res.data`        |
+| `removeSmsListener()`                         | `removeSmsRetrieverApiListener()` / `removeUserConsentApiListener()`  |
 
-#### 3. Set Java version to 11
-
-```
-// android/app/build.gradle
-compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-kotlinOptions {
-    jvmTarget = '11'
-}
-```
+See the [example](https://github.com/Tkko/flutter_smart_auth/blob/main/example/lib/main.dart) for full usage.
 
 ## Getting Started
 
@@ -115,6 +133,55 @@ kotlinOptions {
 
 final smartAuth = SmartAuth.instance;
 ```
+
+### Credential Manager - [Docs](https://developer.android.com/identity/sign-in/credential-manager)
+
+Get, save and clear passwords and passkeys with the Android Credential Manager.
+Every method returns a `SmartAuthResult`, `isCanceled` is true when the user dismisses the dialog.
+
+```dart
+// Show saved passwords and passkeys
+final result = await smartAuth.getCredential(
+  passwordOption: SmartAuthPasswordOption(),
+  publicKeyOptions: [SmartAuthPublicKeyOption(requestJson: requestJsonFromServer)],
+);
+final credential = result.data;
+// credential.type is password or publicKey
+// password:  credential.id, credential.password
+// passkey:   credential.authenticationResponseJson
+
+// Save a password
+await smartAuth.createPasswordCredential(id: 'user@example.com', password: 'secret');
+
+// Create a passkey, send registrationResponseJson to your server
+final created = await smartAuth.createPublicKeyCredential(requestJson: requestJsonFromServer);
+
+// Android 14+: fetch the data first to show the account selector faster
+final prepared = await smartAuth.prepareGetCredential(passwordOption: SmartAuthPasswordOption());
+if (prepared.hasData) {
+  final credential = await smartAuth.getPreparedCredential();
+}
+
+// On sign out
+await smartAuth.clearCredentialState();
+```
+
+Notes:
+
+- `prepareGetCredential` and `getPreparedCredential` need Android 14 or higher, below that they fail with `UNSUPPORTED`.
+- Only privileged apps can see which credentials `prepareGetCredential` found, the `has*` fields of
+  `SmartAuthPreparedCredential` are `null` for other apps. It still makes the next `getPreparedCredential` faster.
+- Failed results contain one of these codes in `error`:
+
+| Code                                                            | Meaning                                                              |
+|-----------------------------------------------------------------|----------------------------------------------------------------------|
+| `NO_CREDENTIAL`                                                 | Nothing to show, the user has no matching saved credentials          |
+| `INVALID_REQUEST`                                               | The request is incomplete, e.g. `getCredential` without any option  |
+| `NO_ACTIVITY`                                                   | There is no foreground activity to show the dialog on                |
+| `UNSUPPORTED`                                                   | The method needs a newer Android version                            |
+| `NO_PREPARED_CREDENTIAL`                                        | `getPreparedCredential` was called before `prepareGetCredential`     |
+| `GET_CREDENTIAL_FAILED`, `CREATE_CREDENTIAL_FAILED`, `PREPARE_GET_CREDENTIAL_FAILED`, `CLEAR_CREDENTIAL_STATE_FAILED` | The Credential Manager reported an error |
+
 
 ### Request phone number hint - [Docs](https://developers.google.com/identity/phone-number-hint/android)
 

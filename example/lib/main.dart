@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:smart_auth/smart_auth.dart';
@@ -23,10 +25,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     /// Removes the listeners if the SMS code is not received yet
-    smartAuth.removeSmsRetrieverApiListener();
+    unawaited(smartAuth.removeSmsRetrieverApiListener());
 
     /// Removes the listeners if the SMS code is not received yet
-    smartAuth.removeUserConsentApiListener();
+    unawaited(smartAuth.removeUserConsentApiListener());
 
     pinputController.dispose();
     super.dispose();
@@ -86,6 +88,39 @@ class _MyAppState extends State<MyApp> {
     debugPrint('requestHint: $res');
   }
 
+  Future<void> getCredential() async {
+    final res = await smartAuth.getCredential(
+      passwordOption: SmartAuthPasswordOption(),
+    );
+    // Never log `res.data`, it contains the password.
+    debugPrint('getCredential: ${res.state} ${res.error ?? ''}');
+  }
+
+  Future<void> createPasswordCredential() async {
+    final res = await smartAuth.createPasswordCredential(
+      id: 'user@example.com',
+      password: 'password123',
+    );
+    debugPrint('createPasswordCredential: ${res.state} ${res.error ?? ''}');
+  }
+
+  Future<void> prepareAndGetCredential() async {
+    final prepared = await smartAuth.prepareGetCredential(
+      passwordOption: SmartAuthPasswordOption(),
+    );
+    debugPrint(
+      'prepareGetCredential: ${prepared.state} ${prepared.error ?? ''}',
+    );
+    if (!prepared.hasData) return;
+    final res = await smartAuth.getPreparedCredential();
+    debugPrint('getPreparedCredential: ${res.state} ${res.error ?? ''}');
+  }
+
+  Future<void> clearCredentialState() async {
+    final res = await smartAuth.clearCredentialState();
+    debugPrint('clearCredentialState: ${res.state} ${res.error ?? ''}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -138,6 +173,22 @@ class _MyAppState extends State<MyApp> {
                 TextButton(
                   onPressed: requestPhoneNumberHint,
                   child: const Text('Request Phone Number Hint'),
+                ),
+                TextButton(
+                  onPressed: getCredential,
+                  child: const Text('Get Credential'),
+                ),
+                TextButton(
+                  onPressed: createPasswordCredential,
+                  child: const Text('Create Password Credential'),
+                ),
+                TextButton(
+                  onPressed: prepareAndGetCredential,
+                  child: const Text('Prepare + Get Credential (Android 14+)'),
+                ),
+                TextButton(
+                  onPressed: clearCredentialState,
+                  child: const Text('Clear Credential State'),
                 ),
               ],
             ),

@@ -1,4 +1,4 @@
-package fman.ge.smart_auth
+package dev.tornike.smart_auth
 
 import android.annotation.SuppressLint
 import android.content.Context

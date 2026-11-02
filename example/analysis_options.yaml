@@ -1,3 +1,12 @@
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 include: package:very_good_analysis/analysis_options.yaml
 
 linter:
@@ -14,3 +23,4 @@ linter:
   # producing the lint.
   rules:
     cascade_invocations: false
+    specify_nonobvious_property_types: false

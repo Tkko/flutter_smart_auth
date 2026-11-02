@@ -18,6 +18,7 @@ const _defaultCodeMatcher = '\\d{4,8}';
 /// - Android Autofill
 ///   - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
 ///   - SMS User Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+/// - Credential Manager: get, save and clear passwords and passkeys [API](https://developer.android.com/identity/sign-in/credential-manager)
 /// - Showing Phone Number Hint Dialog [API](https://developers.google.com/identity/phone-number-hint/android)
 class SmartAuth {
   SmartAuth._();
@@ -55,9 +56,7 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithRetrieverApi();
-      return SmartAuthResult.success(
-        SmartAuthSms.fromSms(result, matcher),
-      );
+      return SmartAuthResult.success(SmartAuthSms.fromSms(result, matcher));
     } catch (error) {
       debugPrint('Pinput/SmartAuth: getSmsWithRetrieverApi failed: $error');
       return SmartAuthResult.failure(
@@ -78,11 +77,10 @@ class SmartAuth {
   }) async {
     try {
       final result = await _api.getSmsWithUserConsentApi(senderPhoneNumber);
-      return SmartAuthResult.success(
-        SmartAuthSms.fromSms(result, matcher),
-      );
+      return SmartAuthResult.success(SmartAuthSms.fromSms(result, matcher));
     } catch (error) {
-      final isCanceled = error is PlatformException &&
+      final isCanceled =
+          error is PlatformException &&
           error.details is SmartAuthRequestCanceled;
 
       if (isCanceled) {
@@ -130,7 +128,8 @@ class SmartAuth {
       final result = await _api.requestPhoneNumberHint();
       return SmartAuthResult.success(result);
     } catch (error) {
-      final isCanceled = error is PlatformException &&
+      final isCanceled =
+          error is PlatformException &&
           error.details is SmartAuthRequestCanceled;
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: requestPhoneNumberHint canceled by user');
@@ -138,6 +137,139 @@ class SmartAuth {
       }
 
       final message = 'Failed to request phone number hint with error: $error';
+      debugPrint('Pinput/SmartAuth: $message');
+      return SmartAuthResult.failure(message);
+    }
+  }
+
+  /// Shows the account selector of the Credential Manager and returns the credential selected by the user.
+  /// Pass [passwordOption] to get saved passwords and [publicKeyOptions] to sign in with a passkey.
+  /// At least one option is required.
+  /// https://developer.android.com/identity/sign-in/credential-manager
+  Future<SmartAuthResult<SmartAuthCredential>> getCredential({
+    SmartAuthPasswordOption? passwordOption,
+    List<SmartAuthPublicKeyOption>? publicKeyOptions,
+    bool? preferImmediatelyAvailableCredentials,
+    String? origin,
+  }) {
+    return _runCredentialRequest(
+      'getCredential',
+      () => _api.getCredential(
+        SmartAuthGetCredentialRequest(
+          passwordOption: passwordOption,
+          publicKeyOptions: publicKeyOptions,
+          preferImmediatelyAvailableCredentials:
+              preferImmediatelyAvailableCredentials,
+          origin: origin,
+        ),
+      ),
+    );
+  }
+
+  /// Saves a password to the Credential Manager.
+  Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
+  createPasswordCredential({
+    required String id,
+    required String password,
+    bool? isAutoSelectAllowed,
+    bool? preferImmediatelyAvailableCredentials,
+    String? origin,
+  }) {
+    return _runCredentialRequest(
+      'createPasswordCredential',
+      () => _api.createCredential(
+        SmartAuthCreateCredentialRequest(
+          type: SmartAuthCredentialType.password,
+          id: id,
+          password: password,
+          isAutoSelectAllowed: isAutoSelectAllowed,
+          preferImmediatelyAvailableCredentials:
+              preferImmediatelyAvailableCredentials,
+          origin: origin,
+        ),
+      ),
+    );
+  }
+
+  /// Creates a passkey, [requestJson] is the registration request in the WebAuthn JSON format.
+  /// The registration response to send to your server is in
+  /// [SmartAuthCreateCredentialResponse.registrationResponseJson].
+  Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
+  createPublicKeyCredential({
+    required String requestJson,
+    Uint8List? clientDataHash,
+    bool? preferImmediatelyAvailableCredentials,
+    String? origin,
+  }) {
+    return _runCredentialRequest(
+      'createPublicKeyCredential',
+      () => _api.createCredential(
+        SmartAuthCreateCredentialRequest(
+          type: SmartAuthCredentialType.publicKey,
+          requestJson: requestJson,
+          clientDataHash: clientDataHash,
+          preferImmediatelyAvailableCredentials:
+              preferImmediatelyAvailableCredentials,
+          origin: origin,
+        ),
+      ),
+    );
+  }
+
+  /// Fetches the credential data in advance to reduce the latency of the account selector.
+  /// Call [getPreparedCredential] afterwards to show it. Android 14 or higher only.
+  Future<SmartAuthResult<SmartAuthPreparedCredential>> prepareGetCredential({
+    SmartAuthPasswordOption? passwordOption,
+    List<SmartAuthPublicKeyOption>? publicKeyOptions,
+    bool? preferImmediatelyAvailableCredentials,
+    String? origin,
+  }) {
+    return _runCredentialRequest(
+      'prepareGetCredential',
+      () => _api.prepareGetCredential(
+        SmartAuthGetCredentialRequest(
+          passwordOption: passwordOption,
+          publicKeyOptions: publicKeyOptions,
+          preferImmediatelyAvailableCredentials:
+              preferImmediatelyAvailableCredentials,
+          origin: origin,
+        ),
+      ),
+    );
+  }
+
+  /// Shows the account selector for the request passed to the last [prepareGetCredential]. Android 14 or higher only.
+  Future<SmartAuthResult<SmartAuthCredential>> getPreparedCredential() {
+    return _runCredentialRequest(
+      'getPreparedCredential',
+      _api.getPreparedCredential,
+    );
+  }
+
+  /// Clears the credential state, call it when the user signs out.
+  Future<SmartAuthResult<void>> clearCredentialState() {
+    return _runCredentialRequest<void>(
+      'clearCredentialState',
+      _api.clearCredentialState,
+    );
+  }
+
+  Future<SmartAuthResult<T>> _runCredentialRequest<T>(
+    String method,
+    Future<T> Function() request,
+  ) async {
+    try {
+      return SmartAuthResult.success(await request());
+    } catch (error) {
+      final isCanceled =
+          error is PlatformException &&
+          error.details is SmartAuthRequestCanceled;
+      if (isCanceled) {
+        debugPrint('Pinput/SmartAuth: $method canceled by user');
+        return SmartAuthResult.canceled();
+      }
+
+      final message = '$method failed with error: $error';
       debugPrint('Pinput/SmartAuth: $message');
       return SmartAuthResult.failure(message);
     }

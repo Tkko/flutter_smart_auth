@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: Tkko/better-actions/.github/workflows/ci.yml@main
+    with:
+      # The plugin is Android-only.
+      platforms: android
+      integration-test-target: integration_test/smart_auth_test.dart
+    permissions:
+      contents: read
+      pull-requests: read
+
+  # The SMS and phone number hint tests need Google Play services and something
+  # to happen outside the app (an SMS to arrive, a dialog to be dismissed), so
+  # they can't run through the shared workflow. The script sends the SMS and
+  # taps the dialogs, see example/integration_test/run_sms_tests.sh.
+  # Not required yet: dialog driven tests can be flaky on shared runners.
+  integration-android-sms:
+    name: Integration Tests (Android Emulator, SMS and hint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Checkout shared actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Tkko/better-actions
+          ref: main
+          path: .github/workflow-actions
+          sparse-checkout: .github/actions
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: Set up Flutter package
+        uses: ./.github/workflow-actions/.github/actions/setup-flutter
+        with:
+          working-directory: example
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - name: Enable KVM access
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run SMS and phone number hint tests
+        uses: ReactiveCircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808 # v2
+        with:
+          api-level: 35
+          target: google_apis_playstore
+          arch: x86_64
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          working-directory: example
+          script: >-
+            bash -o pipefail -c '
+            bash integration_test/run_sms_tests.sh emulator-5554 2>&1 | tee "$RUNNER_TEMP/sms-tests.log";
+            status=$?;
+            if [ "$status" -ne 0 ]; then
+            adb -s emulator-5554 exec-out screencap -p > "$RUNNER_TEMP/sms-failure.png";
+            adb -s emulator-5554 logcat -d > "$RUNNER_TEMP/sms-logcat.txt";
+            adb -s emulator-5554 logcat -d | grep -E "Pinput/SmartAuth|SmsRetriever|UserConsent|PhoneNumberHint" | tail -60;
+            fi;
+            exit "$status"
+            '
+      - name: Upload failure diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-sms-test-diagnostics
+          path: |
+            ${{ runner.temp }}/sms-tests.log
+            ${{ runner.temp }}/sms-logcat.txt
+            ${{ runner.temp }}/sms-failure.png
+          retention-days: 7
+          if-no-files-found: warn
