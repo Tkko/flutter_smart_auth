@@ -70,6 +70,27 @@ void main() {
     expect(result.hasData, isTrue);
   });
 
+  test('createPublicKeyCredential sends requestJson', () async {
+    mock('createCredential', (args) {
+      final request = args.first! as SmartAuthCreateCredentialRequest;
+      expect(request.type, SmartAuthCredentialType.publicKey);
+      expect(request.requestJson, '{"challenge":"123"}');
+      return [
+        SmartAuthCreateCredentialResponse(
+          type: SmartAuthCredentialType.publicKey,
+          registrationResponseJson: '{"id":"key1"}',
+        ),
+      ];
+    });
+
+    final result = await SmartAuth.instance.createPublicKeyCredential(
+      requestJson: '{"challenge":"123"}',
+    );
+
+    expect(result.hasData, isTrue);
+    expect(result.requireData.registrationResponseJson, '{"id":"key1"}');
+  });
+
   test('prepareGetCredential and getPreparedCredential', () async {
     mock(
       'prepareGetCredential',

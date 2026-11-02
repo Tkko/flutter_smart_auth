@@ -64,3 +64,6 @@ The Credential Manager tests use an emulator without a password manager, so they
 validation, error handling and the cases where nothing can be found. Picking a saved password,
 saving one and creating a passkey need a credential provider and a real user, check them manually
 on a device with Google Password Manager before a release.
+
+CI runs the plain integration tests through the shared workflow and the script above in a separate,
+non-blocking job (`integration-android-sms` in `.github/workflows/ci.yml`).

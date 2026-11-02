@@ -22,8 +22,21 @@ void main() {
       const result = SmartAuthResult.success('x');
 
       expect(result.hasData, isTrue);
+      expect(result.isSuccess, isTrue);
+      expect(result.state, SmartAuthResultState.success);
       expect(result.requireData, 'x');
       expect(result.isCanceled, isFalse);
+    });
+
+    test('success with void data succeeds and requireData does not throw', () {
+      const result = SmartAuthResult<void>.success(null);
+
+      expect(result.hasData, isFalse);
+      expect(result.isSuccess, isTrue);
+      expect(result.state, SmartAuthResultState.success);
+      expect(result.hasError, isFalse);
+      expect(result.isCanceled, isFalse);
+      expect(() => result.requireData, returnsNormally);
     });
 
     test('canceled is reported', () {

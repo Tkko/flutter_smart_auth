@@ -12,4 +12,5 @@ export 'src/smart_auth_api.g.dart'
         SmartAuthCredentialType,
         SmartAuthPasswordOption,
         SmartAuthPreparedCredential,
-        SmartAuthPublicKeyOption;
+        SmartAuthPublicKeyOption,
+        SmartAuthRequestCanceled;

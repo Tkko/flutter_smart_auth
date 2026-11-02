@@ -7,6 +7,7 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CreateCredentialRequest
 import androidx.credentials.CreateCredentialResponse
 import androidx.credentials.CreatePasswordRequest
+import androidx.credentials.CreatePasswordResponse
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CreatePublicKeyCredentialResponse
 import androidx.credentials.Credential
@@ -42,7 +43,7 @@ class CredentialManagerHelper(context: Context) {
         } catch (e: GetCredentialCancellationException) {
             throw canceled("GET_CREDENTIAL_CANCELED", "User canceled get credential request.")
         } catch (e: NoCredentialException) {
-            throw FlutterError("NO_CREDENTIAL", e.message, null)
+            throw FlutterError("NO_CREDENTIAL", e.message ?: "No credential found", null)
         } catch (e: GetCredentialException) {
             throw FlutterError("GET_CREDENTIAL_FAILED", e.message, e.type)
         }
@@ -89,19 +90,23 @@ class CredentialManagerHelper(context: Context) {
     suspend fun getPreparedCredential(activity: Activity?): SmartAuthCredential {
         val currentActivity = requireActivity(activity)
         requireUpsideDownCake("getPreparedCredential")
-        val handle = preparedResponse?.pendingGetCredentialHandle ?: throw FlutterError(
+        val response = preparedResponse ?: throw FlutterError(
             "NO_PREPARED_CREDENTIAL",
             "Call prepareGetCredential before getPreparedCredential.",
             null
         )
+        val handle = response.pendingGetCredentialHandle
+        preparedResponse = null
+        if (handle == null) {
+            throw FlutterError("NO_CREDENTIAL", "No prepared credentials available.", null)
+        }
         try {
-            val response = credentialManager.getCredential(currentActivity, handle)
-            preparedResponse = null
-            return response.credential.toMessage()
+            val getResponse = credentialManager.getCredential(currentActivity, handle)
+            return getResponse.credential.toMessage()
         } catch (e: GetCredentialCancellationException) {
             throw canceled("GET_CREDENTIAL_CANCELED", "User canceled get credential request.")
         } catch (e: NoCredentialException) {
-            throw FlutterError("NO_CREDENTIAL", e.message, null)
+            throw FlutterError("NO_CREDENTIAL", e.message ?: "No credential found", null)
         } catch (e: GetCredentialException) {
             throw FlutterError("GET_CREDENTIAL_FAILED", e.message, e.type)
         }
@@ -191,7 +196,11 @@ class CredentialManagerHelper(context: Context) {
                 registrationResponseJson = registrationResponseJson,
             )
 
-            else -> SmartAuthCreateCredentialResponse(type = SmartAuthCredentialType.PASSWORD)
+            is CreatePasswordResponse -> SmartAuthCreateCredentialResponse(
+                type = SmartAuthCredentialType.PASSWORD
+            )
+
+            else -> SmartAuthCreateCredentialResponse(type = SmartAuthCredentialType.UNKNOWN)
         }
 
     /**

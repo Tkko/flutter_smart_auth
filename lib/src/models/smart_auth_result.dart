@@ -27,17 +27,23 @@ class SmartAuthResult<T> {
 
   /// Returns latest data received, failing if there is no data.
   ///
-  /// Throws [error], if [hasError]. Throws [StateError], if neither [hasData]
+  /// Throws [error], if [hasError]. Throws [StateError], if neither [isSuccess]
   /// nor [hasError].
   T get requireData {
-    if (hasData) {
-      return data!;
+    if (hasData || isSuccess) {
+      return data as T;
     }
     if (hasError) {
       Error.throwWithStackTrace(error!, StackTrace.current);
     }
     throw StateError('Snapshot has neither data nor error');
   }
+
+  /// The state of the result.
+  SmartAuthResultState get state => _state;
+
+  /// Returns whether the operation succeeded.
+  bool get isSuccess => _state == SmartAuthResultState.success;
 
   /// Returns whether result contains a non-null [data] value.
   bool get hasData => data != null;

@@ -31,12 +31,14 @@ flutter test integration_test/smart_auth_test.dart -d "$device" \
       # Accept the consent dialog.
       sleep 3
       adb -s "$device" shell uiautomator dump --windows /sdcard/ui.xml >/dev/null
-      adb -s "$device" shell cat /sdcard/ui.xml \
+      coords=$(adb -s "$device" shell cat /sdcard/ui.xml \
         | grep -o 'text="Allow"[^>]*bounds="\[[0-9,]*\]\[[0-9,]*\]"' \
-        | grep -o '\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]' | head -1 \
+        | grep -o '\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]' | head -n 1 \
         | sed 's/\]\[/,/; s/[][]//g' | tr ',' ' ' \
-        | awk '{print int(($1+$3)/2), int(($2+$4)/2)}' \
-        | xargs -r adb -s "$device" shell input tap
+        | awk '{print int(($1+$3)/2), int(($2+$4)/2)}' || true)
+      if [ -n "$coords" ]; then
+        adb -s "$device" shell input tap $coords
+      fi
       ;;
   esac
 done
