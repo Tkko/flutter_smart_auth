@@ -68,4 +68,25 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: example
-          script: bash integration_test/run_sms_tests.sh emulator-5554
+          script: >-
+            bash -o pipefail -c '
+            bash integration_test/run_sms_tests.sh emulator-5554 2>&1 | tee "$RUNNER_TEMP/sms-tests.log";
+            status=$?;
+            if [ "$status" -ne 0 ]; then
+            adb -s emulator-5554 exec-out screencap -p > "$RUNNER_TEMP/sms-failure.png";
+            adb -s emulator-5554 logcat -d > "$RUNNER_TEMP/sms-logcat.txt";
+            adb -s emulator-5554 logcat -d | grep -E "Pinput/SmartAuth|SmsRetriever|UserConsent|PhoneNumberHint" | tail -60;
+            fi;
+            exit "$status"
+            '
+      - name: Upload failure diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-sms-test-diagnostics
+          path: |
+            ${{ runner.temp }}/sms-tests.log
+            ${{ runner.temp }}/sms-logcat.txt
+            ${{ runner.temp }}/sms-failure.png
+          retention-days: 7
+          if-no-files-found: warn
