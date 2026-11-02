@@ -1,10 +1,11 @@
 #### 4.0.0-beta.1 · 2/11/2026
 
-**Breaking requirements** (the Dart API is unchanged)
+**Breaking requirements** (the existing Dart API is unchanged)
 
 - Minimum Flutter 3.44 / Dart 3.12
 - Android: compileSdk 35 or above, AGP 8.6.0 or above, Gradle 8.7 or above
 
+- Added Credential Manager support for passwords and passkeys: `getCredential`, `createPasswordCredential`, `createPublicKeyCredential`, `prepareGetCredential`, `getPreparedCredential` and `clearCredentialState`
 - Added the missing `meta` dependency
 - Migrated Android to built-in Kotlin
 - Removed the Kotlin Gradle Plugin classpath from the plugin's `build.gradle` (AGP 9 support)

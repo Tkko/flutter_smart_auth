@@ -14,11 +14,12 @@ dart run pigeon --input pigeon/smart_auth_api.dart
 ```
 
 The generated code will be in the `lib/src/smart_auth_api.g.dart` and
-`android/src/main/kotlin/fman/ge/smart_auth/smart_auth_api.g.kt`,
+`android/src/main/kotlin/dev/tornike/smart_auth/smart_auth_api.g.kt`,
 but you don't need to touch these files.
 
 If you want to make changes in the Android part, you need to modify the
-`android/src/main/kotlin/fman/ge/smart_auth/SmartAuthPlugin.kt` file.
+`android/src/main/kotlin/dev/tornike/smart_auth/SmartAuthPlugin.kt` file, the Credential Manager
+logic lives in `CredentialManagerHelper.kt` next to it.
 
 If you want to make changes in the Flutter part, you need to modify the `lib/src/smart_auth.dart`
 file.
@@ -35,4 +36,31 @@ file.
 5. If you want to change anything in Dart, just open the project root folder in any IDE of your
    choice
 
+### Testing
 
+Unit tests (the Dart side, with the platform channel mocked):
+
+```bash
+flutter test
+```
+
+Integration tests run the real plugin on an Android emulator or device, from the `example` folder.
+They cover every `SmartAuth` method:
+
+```bash
+flutter test integration_test/smart_auth_test.dart -d <device-id>
+```
+
+The SMS Retriever, SMS User Consent and Phone Number Hint tests need something to happen outside
+the app (an SMS to arrive, a dialog to be accepted or dismissed), so they are skipped by default.
+Run them on an emulator with Google Play services using the script, it sends the SMS and taps the
+dialogs for you:
+
+```bash
+integration_test/run_sms_tests.sh [emulator-id]
+```
+
+The Credential Manager tests use an emulator without a password manager, so they cover the request
+validation, error handling and the cases where nothing can be found. Picking a saved password,
+saving one and creating a passkey need a credential provider and a real user, check them manually
+on a device with Google Password Manager before a release.

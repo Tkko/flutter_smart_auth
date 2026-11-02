@@ -198,6 +198,385 @@ class FlutterError (
   val details: Any? = null
 ) : RuntimeException()
 
+/** Type of the credential, [unknown] is returned for the types that are not supported yet */
+enum class SmartAuthCredentialType(val raw: Int) {
+  PASSWORD(0),
+  PUBLIC_KEY(1),
+  UNKNOWN(2);
+
+  companion object {
+    fun ofRaw(raw: Int): SmartAuthCredentialType? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
+/**
+ * Maps to `GetPasswordOption`
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthPasswordOption (
+  val isAutoSelectAllowed: Boolean? = null,
+  val allowedUserIds: List<String>? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthPasswordOption {
+      val isAutoSelectAllowed = pigeonVar_list[0] as Boolean?
+      val allowedUserIds = pigeonVar_list[1] as List<String>?
+      return SmartAuthPasswordOption(isAutoSelectAllowed, allowedUserIds)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      isAutoSelectAllowed,
+      allowedUserIds,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthPasswordOption
+    return SmartAuthApiPigeonUtils.deepEquals(this.isAutoSelectAllowed, other.isAutoSelectAllowed) && SmartAuthApiPigeonUtils.deepEquals(this.allowedUserIds, other.allowedUserIds)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.isAutoSelectAllowed)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.allowedUserIds)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthPasswordOption(isAutoSelectAllowed=$isAutoSelectAllowed, allowedUserIds=$allowedUserIds)"
+  }
+}
+
+/**
+ * Maps to `GetPublicKeyCredentialOption`
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthPublicKeyOption (
+  val requestJson: String,
+  val clientDataHash: ByteArray? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthPublicKeyOption {
+      val requestJson = pigeonVar_list[0] as String
+      val clientDataHash = pigeonVar_list[1] as ByteArray?
+      return SmartAuthPublicKeyOption(requestJson, clientDataHash)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      requestJson,
+      clientDataHash,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthPublicKeyOption
+    return SmartAuthApiPigeonUtils.deepEquals(this.requestJson, other.requestJson) && SmartAuthApiPigeonUtils.deepEquals(this.clientDataHash, other.clientDataHash)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.requestJson)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.clientDataHash)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthPublicKeyOption(requestJson=$requestJson, clientDataHash=${clientDataHash?.contentToString()})"
+  }
+}
+
+/**
+ * Maps to `GetCredentialRequest`
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthGetCredentialRequest (
+  val passwordOption: SmartAuthPasswordOption? = null,
+  val publicKeyOptions: List<SmartAuthPublicKeyOption>? = null,
+  val preferImmediatelyAvailableCredentials: Boolean? = null,
+  val origin: String? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthGetCredentialRequest {
+      val passwordOption = pigeonVar_list[0] as SmartAuthPasswordOption?
+      val publicKeyOptions = pigeonVar_list[1] as List<SmartAuthPublicKeyOption>?
+      val preferImmediatelyAvailableCredentials = pigeonVar_list[2] as Boolean?
+      val origin = pigeonVar_list[3] as String?
+      return SmartAuthGetCredentialRequest(passwordOption, publicKeyOptions, preferImmediatelyAvailableCredentials, origin)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      passwordOption,
+      publicKeyOptions,
+      preferImmediatelyAvailableCredentials,
+      origin,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthGetCredentialRequest
+    return SmartAuthApiPigeonUtils.deepEquals(this.passwordOption, other.passwordOption) && SmartAuthApiPigeonUtils.deepEquals(this.publicKeyOptions, other.publicKeyOptions) && SmartAuthApiPigeonUtils.deepEquals(this.preferImmediatelyAvailableCredentials, other.preferImmediatelyAvailableCredentials) && SmartAuthApiPigeonUtils.deepEquals(this.origin, other.origin)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.passwordOption)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.publicKeyOptions)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.preferImmediatelyAvailableCredentials)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.origin)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthGetCredentialRequest(passwordOption=$passwordOption, publicKeyOptions=$publicKeyOptions, preferImmediatelyAvailableCredentials=$preferImmediatelyAvailableCredentials, origin=$origin)"
+  }
+}
+
+/**
+ * Maps to `PasswordCredential` and `PublicKeyCredential`
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthCredential (
+  val type: SmartAuthCredentialType,
+  val id: String? = null,
+  val password: String? = null,
+  val authenticationResponseJson: String? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthCredential {
+      val type = pigeonVar_list[0] as SmartAuthCredentialType
+      val id = pigeonVar_list[1] as String?
+      val password = pigeonVar_list[2] as String?
+      val authenticationResponseJson = pigeonVar_list[3] as String?
+      return SmartAuthCredential(type, id, password, authenticationResponseJson)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      type,
+      id,
+      password,
+      authenticationResponseJson,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthCredential
+    return SmartAuthApiPigeonUtils.deepEquals(this.type, other.type) && SmartAuthApiPigeonUtils.deepEquals(this.id, other.id) && SmartAuthApiPigeonUtils.deepEquals(this.password, other.password) && SmartAuthApiPigeonUtils.deepEquals(this.authenticationResponseJson, other.authenticationResponseJson)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.type)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.id)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.password)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.authenticationResponseJson)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthCredential(type=$type, id=$id, password=$password, authenticationResponseJson=$authenticationResponseJson)"
+  }
+}
+
+/**
+ * Maps to `CreatePasswordRequest` and `CreatePublicKeyCredentialRequest`
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthCreateCredentialRequest (
+  val type: SmartAuthCredentialType,
+  val id: String? = null,
+  val password: String? = null,
+  val requestJson: String? = null,
+  val clientDataHash: ByteArray? = null,
+  val isAutoSelectAllowed: Boolean? = null,
+  val preferImmediatelyAvailableCredentials: Boolean? = null,
+  val origin: String? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthCreateCredentialRequest {
+      val type = pigeonVar_list[0] as SmartAuthCredentialType
+      val id = pigeonVar_list[1] as String?
+      val password = pigeonVar_list[2] as String?
+      val requestJson = pigeonVar_list[3] as String?
+      val clientDataHash = pigeonVar_list[4] as ByteArray?
+      val isAutoSelectAllowed = pigeonVar_list[5] as Boolean?
+      val preferImmediatelyAvailableCredentials = pigeonVar_list[6] as Boolean?
+      val origin = pigeonVar_list[7] as String?
+      return SmartAuthCreateCredentialRequest(type, id, password, requestJson, clientDataHash, isAutoSelectAllowed, preferImmediatelyAvailableCredentials, origin)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      type,
+      id,
+      password,
+      requestJson,
+      clientDataHash,
+      isAutoSelectAllowed,
+      preferImmediatelyAvailableCredentials,
+      origin,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthCreateCredentialRequest
+    return SmartAuthApiPigeonUtils.deepEquals(this.type, other.type) && SmartAuthApiPigeonUtils.deepEquals(this.id, other.id) && SmartAuthApiPigeonUtils.deepEquals(this.password, other.password) && SmartAuthApiPigeonUtils.deepEquals(this.requestJson, other.requestJson) && SmartAuthApiPigeonUtils.deepEquals(this.clientDataHash, other.clientDataHash) && SmartAuthApiPigeonUtils.deepEquals(this.isAutoSelectAllowed, other.isAutoSelectAllowed) && SmartAuthApiPigeonUtils.deepEquals(this.preferImmediatelyAvailableCredentials, other.preferImmediatelyAvailableCredentials) && SmartAuthApiPigeonUtils.deepEquals(this.origin, other.origin)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.type)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.id)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.password)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.requestJson)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.clientDataHash)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.isAutoSelectAllowed)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.preferImmediatelyAvailableCredentials)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.origin)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthCreateCredentialRequest(type=$type, id=$id, password=$password, requestJson=$requestJson, clientDataHash=${clientDataHash?.contentToString()}, isAutoSelectAllowed=$isAutoSelectAllowed, preferImmediatelyAvailableCredentials=$preferImmediatelyAvailableCredentials, origin=$origin)"
+  }
+}
+
+/**
+ * Maps to `CreatePasswordResponse` and `CreatePublicKeyCredentialResponse`
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthCreateCredentialResponse (
+  val type: SmartAuthCredentialType,
+  val registrationResponseJson: String? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthCreateCredentialResponse {
+      val type = pigeonVar_list[0] as SmartAuthCredentialType
+      val registrationResponseJson = pigeonVar_list[1] as String?
+      return SmartAuthCreateCredentialResponse(type, registrationResponseJson)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      type,
+      registrationResponseJson,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthCreateCredentialResponse
+    return SmartAuthApiPigeonUtils.deepEquals(this.type, other.type) && SmartAuthApiPigeonUtils.deepEquals(this.registrationResponseJson, other.registrationResponseJson)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.type)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.registrationResponseJson)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthCreateCredentialResponse(type=$type, registrationResponseJson=$registrationResponseJson)"
+  }
+}
+
+/**
+ * Maps to `PrepareGetCredentialResponse`.
+ *
+ * Android only lets privileged apps (`CREDENTIAL_MANAGER_QUERY_CANDIDATE_CREDENTIALS`)
+ * see what credentials are available, for any other app the fields are null.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SmartAuthPreparedCredential (
+  val hasPasswordCredentials: Boolean? = null,
+  val hasPublicKeyCredentials: Boolean? = null,
+  val hasAuthenticationResults: Boolean? = null,
+  val hasRemoteResults: Boolean? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SmartAuthPreparedCredential {
+      val hasPasswordCredentials = pigeonVar_list[0] as Boolean?
+      val hasPublicKeyCredentials = pigeonVar_list[1] as Boolean?
+      val hasAuthenticationResults = pigeonVar_list[2] as Boolean?
+      val hasRemoteResults = pigeonVar_list[3] as Boolean?
+      return SmartAuthPreparedCredential(hasPasswordCredentials, hasPublicKeyCredentials, hasAuthenticationResults, hasRemoteResults)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      hasPasswordCredentials,
+      hasPublicKeyCredentials,
+      hasAuthenticationResults,
+      hasRemoteResults,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other == null || other.javaClass != javaClass) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    val other = other as SmartAuthPreparedCredential
+    return SmartAuthApiPigeonUtils.deepEquals(this.hasPasswordCredentials, other.hasPasswordCredentials) && SmartAuthApiPigeonUtils.deepEquals(this.hasPublicKeyCredentials, other.hasPublicKeyCredentials) && SmartAuthApiPigeonUtils.deepEquals(this.hasAuthenticationResults, other.hasAuthenticationResults) && SmartAuthApiPigeonUtils.deepEquals(this.hasRemoteResults, other.hasRemoteResults)
+  }
+
+  override fun hashCode(): Int {
+    var result = javaClass.hashCode()
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.hasPasswordCredentials)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.hasPublicKeyCredentials)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.hasAuthenticationResults)
+    result = 31 * result + SmartAuthApiPigeonUtils.deepHash(this.hasRemoteResults)
+    return result
+  }
+  override fun toString(): String {
+    return "SmartAuthPreparedCredential(hasPasswordCredentials=$hasPasswordCredentials, hasPublicKeyCredentials=$hasPublicKeyCredentials, hasAuthenticationResults=$hasAuthenticationResults, hasRemoteResults=$hasRemoteResults)"
+  }
+}
+
 /** Generated class from Pigeon that represents data sent in messages. */
 data class SmartAuthRequestCanceled (
   val message: String? = null
@@ -238,6 +617,46 @@ private open class SmartAuthApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
       129.toByte() -> {
+        return (readValue(buffer) as Long?)?.let {
+          SmartAuthCredentialType.ofRaw(it.toInt())
+        }
+      }
+      130.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthPasswordOption.fromList(it)
+        }
+      }
+      131.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthPublicKeyOption.fromList(it)
+        }
+      }
+      132.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthGetCredentialRequest.fromList(it)
+        }
+      }
+      133.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthCredential.fromList(it)
+        }
+      }
+      134.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthCreateCredentialRequest.fromList(it)
+        }
+      }
+      135.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthCreateCredentialResponse.fromList(it)
+        }
+      }
+      136.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          SmartAuthPreparedCredential.fromList(it)
+        }
+      }
+      137.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           SmartAuthRequestCanceled.fromList(it)
         }
@@ -247,8 +666,40 @@ private open class SmartAuthApiPigeonCodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is SmartAuthRequestCanceled -> {
+      is SmartAuthCredentialType -> {
         stream.write(129)
+        writeValue(stream, value.raw.toLong())
+      }
+      is SmartAuthPasswordOption -> {
+        stream.write(130)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthPublicKeyOption -> {
+        stream.write(131)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthGetCredentialRequest -> {
+        stream.write(132)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthCredential -> {
+        stream.write(133)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthCreateCredentialRequest -> {
+        stream.write(134)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthCreateCredentialResponse -> {
+        stream.write(135)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthPreparedCredential -> {
+        stream.write(136)
+        writeValue(stream, value.toList())
+      }
+      is SmartAuthRequestCanceled -> {
+        stream.write(137)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -265,6 +716,19 @@ interface SmartAuthApi {
   fun removeSmsRetrieverListener()
   fun removeUserConsentListener()
   suspend fun requestPhoneNumberHint(): String
+  /** Credential Manager `getCredential` */
+  suspend fun getCredential(request: SmartAuthGetCredentialRequest): SmartAuthCredential
+  /** Credential Manager `createCredential` */
+  suspend fun createCredential(request: SmartAuthCreateCredentialRequest): SmartAuthCreateCredentialResponse
+  /** Credential Manager `prepareGetCredential`, Android 14 or higher */
+  suspend fun prepareGetCredential(request: SmartAuthGetCredentialRequest): SmartAuthPreparedCredential
+  /**
+   * Credential Manager `getCredential` with the handle of the last
+   * [prepareGetCredential], Android 14 or higher
+   */
+  suspend fun getPreparedCredential(): SmartAuthCredential
+  /** Credential Manager `clearCredentialState` */
+  suspend fun clearCredentialState()
 
   companion object {
     /** The codec used by SmartAuthApi. */
@@ -365,6 +829,98 @@ interface SmartAuthApi {
             CoroutineScope(Dispatchers.Main).launch {
               val wrapped: List<Any?> = try {
                 listOf(api.requestPhoneNumberHint())
+              } catch (exception: Throwable) {
+                SmartAuthApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.smart_auth.SmartAuthApi.getCredential$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val requestArg = args[0] as SmartAuthGetCredentialRequest
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.getCredential(requestArg))
+              } catch (exception: Throwable) {
+                SmartAuthApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.smart_auth.SmartAuthApi.createCredential$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val requestArg = args[0] as SmartAuthCreateCredentialRequest
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.createCredential(requestArg))
+              } catch (exception: Throwable) {
+                SmartAuthApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.smart_auth.SmartAuthApi.prepareGetCredential$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val requestArg = args[0] as SmartAuthGetCredentialRequest
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.prepareGetCredential(requestArg))
+              } catch (exception: Throwable) {
+                SmartAuthApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.smart_auth.SmartAuthApi.getPreparedCredential$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.getPreparedCredential())
+              } catch (exception: Throwable) {
+                SmartAuthApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.smart_auth.SmartAuthApi.clearCredentialState$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.clearCredentialState()
+                listOf(null)
               } catch (exception: Throwable) {
                 SmartAuthApiPigeonUtils.wrapError(exception)
               }

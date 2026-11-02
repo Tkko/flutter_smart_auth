@@ -23,6 +23,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener,
     SmartAuthApi {
     private lateinit var mContext: Context
+    private lateinit var credentialManager: CredentialManagerHelper
     private var mActivity: Activity? = null
     private var mBinding: ActivityPluginBinding? = null
     private var pendingResult: ((Result<String>) -> Unit)? = null
@@ -31,6 +32,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         mContext = flutterPluginBinding.applicationContext
+        credentialManager = CredentialManagerHelper(mContext)
         SmartAuthApi.setUp(flutterPluginBinding.binaryMessenger, this)
     }
 
@@ -146,6 +148,23 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
         }
     }
 
+    override suspend fun getCredential(
+        request: SmartAuthGetCredentialRequest
+    ): SmartAuthCredential = credentialManager.getCredential(mActivity, request)
+
+    override suspend fun createCredential(
+        request: SmartAuthCreateCredentialRequest
+    ): SmartAuthCreateCredentialResponse = credentialManager.createCredential(mActivity, request)
+
+    override suspend fun prepareGetCredential(
+        request: SmartAuthGetCredentialRequest
+    ): SmartAuthPreparedCredential = credentialManager.prepareGetCredential(request)
+
+    override suspend fun getPreparedCredential(): SmartAuthCredential =
+        credentialManager.getPreparedCredential(mActivity)
+
+    override suspend fun clearCredentialState() = credentialManager.clearCredentialState()
+
     /// Callbacks
     private fun onSmsConsentRequest(resultCode: Int, data: Intent?) {
         if (resultCode == RESULT_OK && data != null) {
@@ -229,6 +248,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
 
     private fun dispose() {
         unregisterAllReceivers()
+        credentialManager.dispose()
         mActivity = null
         mBinding?.removeActivityResultListener(this)
         mBinding = null

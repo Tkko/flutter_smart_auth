@@ -68,9 +68,164 @@ void main() {
     skip: !isAndroid,
   );
 
+  // The emulator has no credential provider (password manager) set up, so
+  // these cover the requests that can be answered without any UI. Showing the
+  // account selector and creating passkeys needs a provider and a real person.
+  group(
+    'Credential Manager',
+    () {
+      const timeout = Duration(seconds: 30);
+
+      setUp(() async {
+        await smartAuth.clearCredentialState();
+      });
+
+      testWidgets('clearCredentialState succeeds', (tester) async {
+        final result = await smartAuth.clearCredentialState();
+
+        expect(result.hasError, isFalse, reason: '${result.error}');
+        expect(result.isCanceled, isFalse);
+      });
+
+      testWidgets('getCredential without options fails', (tester) async {
+        final result = await smartAuth.getCredential();
+
+        expect(result.hasData, isFalse);
+        expect(result.error, contains('INVALID_REQUEST'));
+      });
+
+      testWidgets('getCredential finishes when there is nothing to show',
+          (tester) async {
+        final result = await smartAuth
+            .getCredential(passwordOption: SmartAuthPasswordOption())
+            .timeout(timeout);
+
+        // Without a provider the plugin reports NO_CREDENTIAL, with saved
+        // credentials the user would pick one.
+        expect(
+          result.hasData || result.hasError || result.isCanceled,
+          isTrue,
+        );
+        if (result.hasError) {
+          expect(result.error, contains('NO_CREDENTIAL'));
+        }
+      });
+
+      testWidgets('createPasswordCredential finishes without crashing',
+          (tester) async {
+        final result = await smartAuth
+            .createPasswordCredential(
+              id: 'user@example.com',
+              password: 'password123',
+            )
+            .timeout(timeout);
+
+        expect(
+          result.hasData || result.hasError || result.isCanceled,
+          isTrue,
+        );
+        if (result.hasError) {
+          expect(result.error, contains('CREATE_CREDENTIAL_FAILED'));
+        }
+      });
+
+      testWidgets('createPublicKeyCredential rejects an invalid request',
+          (tester) async {
+        final result = await smartAuth
+            .createPublicKeyCredential(requestJson: 'not json')
+            .timeout(timeout);
+
+        expect(result.hasData, isFalse);
+        expect(result.hasError || result.isCanceled, isTrue);
+      });
+
+      testWidgets('getCredential with an invalid passkey request fails',
+          (tester) async {
+        final result = await smartAuth.getCredential(
+          publicKeyOptions: [
+            SmartAuthPublicKeyOption(requestJson: 'not json'),
+          ],
+        ).timeout(timeout);
+
+        expect(result.hasData, isFalse);
+      });
+
+      testWidgets('getPreparedCredential needs prepareGetCredential first',
+          (tester) async {
+        final result = await smartAuth.getPreparedCredential();
+
+        expect(result.hasData, isFalse);
+        expect(result.hasError, isTrue);
+      });
+
+      testWidgets('getPreparedCredential uses the last prepareGetCredential',
+          (tester) async {
+        final prepared = await smartAuth
+            .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
+            .timeout(timeout);
+        if (prepared.hasError) {
+          // Below Android 14 there is nothing to prepare.
+          expect(prepared.error, contains('UNSUPPORTED'));
+          return;
+        }
+
+        final result = await smartAuth.getPreparedCredential().timeout(timeout);
+
+        // Without a provider nothing is found, with saved credentials the
+        // user would pick one.
+        expect(
+          result.hasData || result.hasError || result.isCanceled,
+          isTrue,
+        );
+        if (result.hasError) {
+          expect(result.error, contains('NO_CREDENTIAL'));
+        }
+      });
+
+      testWidgets('prepareGetCredential does not fail with a SecurityException',
+          (tester) async {
+        final result = await smartAuth
+            .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
+            .timeout(timeout);
+
+        // Below Android 14 it reports UNSUPPORTED. From Android 14 it
+        // succeeds, the has* fields are null because only privileged apps may
+        // query them.
+        if (result.hasError) {
+          expect(result.error, contains('UNSUPPORTED'));
+        } else {
+          expect(result.hasData, isTrue, reason: '${result.error}');
+        }
+      });
+    },
+    skip: !isAndroid,
+  );
+
   // These need an SMS sent from outside the app, so they only run when
   // started through `integration_test/run_sms_tests.sh`.
   final smsTests = isAndroid && const bool.fromEnvironment('SMS_TESTS');
+
+  // Needs the hint dialog to be dismissed from outside the app, see
+  // `integration_test/run_sms_tests.sh`.
+  final hintTests = isAndroid && const bool.fromEnvironment('HINT_TESTS');
+
+  group('Phone Number Hint', () {
+    testWidgets(
+      'is reported as canceled when the user dismisses the dialog',
+      (tester) async {
+        // ignore: avoid_print for testing
+        print('HINT_READY');
+        final result = await smartAuth
+            .requestPhoneNumberHint()
+            .timeout(const Duration(seconds: 60));
+
+        expect(result.hasData, isFalse);
+        // Without a SIM or Google account the dialog can't be shown at all.
+        expect(result.isCanceled || result.hasError, isTrue);
+      },
+      skip: !hintTests,
+    );
+  });
 
   group('SMS Retriever API', () {
     testWidgets(

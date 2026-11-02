@@ -41,8 +41,14 @@ the [Pinput](https://github.com/Tkko/Flutter_Pinput) package._
     - SMS Retriever [API](https://developers.google.com/identity/sms-retriever/overview?hl=en)
     - SMS User
       Consent [API](https://developers.google.com/identity/sms-retriever/user-consent/overview)
+- Credential Manager [API](https://developer.android.com/identity/sign-in/credential-manager)
+    - Get saved passwords and passkeys - `getCredential`
+    - Save a password - `createPasswordCredential`
+    - Create a passkey - `createPublicKeyCredential`
+    - Speed up the account selector on Android 14+ - `prepareGetCredential`, `getPreparedCredential`
+    - Clear the credential state on sign out - `clearCredentialState`
 - Showing Phone number
-  hints [API](https://developers.google.com/identity/android-credential-manager)
+  hints [API](https://developers.google.com/identity/phone-number-hint/android)
 
 ## Support
 
@@ -145,6 +151,55 @@ See the [example](https://github.com/Tkko/flutter_smart_auth/blob/main/example/l
 
 final smartAuth = SmartAuth.instance;
 ```
+
+### Credential Manager - [Docs](https://developer.android.com/identity/sign-in/credential-manager)
+
+Get, save and clear passwords and passkeys with the Android Credential Manager.
+Every method returns a `SmartAuthResult`, `isCanceled` is true when the user dismisses the dialog.
+
+```dart
+// Show saved passwords and passkeys
+final result = await smartAuth.getCredential(
+  passwordOption: SmartAuthPasswordOption(),
+  publicKeyOptions: [SmartAuthPublicKeyOption(requestJson: requestJsonFromServer)],
+);
+final credential = result.data;
+// credential.type is password or publicKey
+// password:  credential.id, credential.password
+// passkey:   credential.authenticationResponseJson
+
+// Save a password
+await smartAuth.createPasswordCredential(id: 'user@example.com', password: 'secret');
+
+// Create a passkey, send registrationResponseJson to your server
+final created = await smartAuth.createPublicKeyCredential(requestJson: requestJsonFromServer);
+
+// Android 14+: fetch the data first to show the account selector faster
+final prepared = await smartAuth.prepareGetCredential(passwordOption: SmartAuthPasswordOption());
+if (prepared.hasData) {
+  final credential = await smartAuth.getPreparedCredential();
+}
+
+// On sign out
+await smartAuth.clearCredentialState();
+```
+
+Notes:
+
+- `prepareGetCredential` and `getPreparedCredential` need Android 14 or higher, below that they fail with `UNSUPPORTED`.
+- Only privileged apps can see which credentials `prepareGetCredential` found, the `has*` fields of
+  `SmartAuthPreparedCredential` are `null` for other apps. It still makes the next `getPreparedCredential` faster.
+- Failed results contain one of these codes in `error`:
+
+| Code                                                            | Meaning                                                              |
+|-----------------------------------------------------------------|----------------------------------------------------------------------|
+| `NO_CREDENTIAL`                                                 | Nothing to show, the user has no matching saved credentials          |
+| `INVALID_REQUEST`                                               | The request is incomplete, e.g. `getCredential` without any option  |
+| `NO_ACTIVITY`                                                   | There is no foreground activity to show the dialog on                |
+| `UNSUPPORTED`                                                   | The method needs a newer Android version                            |
+| `NO_PREPARED_CREDENTIAL`                                        | `getPreparedCredential` was called before `prepareGetCredential`     |
+| `GET_CREDENTIAL_FAILED`, `CREATE_CREDENTIAL_FAILED`, `PREPARE_GET_CREDENTIAL_FAILED`, `CLEAR_CREDENTIAL_STATE_FAILED` | The Credential Manager reported an error |
+
 
 ### Request phone number hint - [Docs](https://developers.google.com/identity/phone-number-hint/android)
 

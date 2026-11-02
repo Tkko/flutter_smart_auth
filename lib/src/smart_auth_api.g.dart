@@ -97,6 +97,450 @@ int _deepHash(Object? value) {
   return value.hashCode;
 }
 
+/// Type of the credential, [unknown] is returned for the types that are not supported yet
+enum SmartAuthCredentialType { password, publicKey, unknown }
+
+/// Maps to `GetPasswordOption`
+class SmartAuthPasswordOption {
+  SmartAuthPasswordOption({this.isAutoSelectAllowed, this.allowedUserIds});
+
+  bool? isAutoSelectAllowed;
+
+  List<String>? allowedUserIds;
+
+  List<Object?> _toList() {
+    return <Object?>[isAutoSelectAllowed, allowedUserIds];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthPasswordOption decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthPasswordOption(
+      isAutoSelectAllowed: result[0] as bool?,
+      allowedUserIds: (result[1] as List<Object?>?)?.cast<String>(),
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthPasswordOption || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(isAutoSelectAllowed, other.isAutoSelectAllowed) &&
+        _deepEquals(allowedUserIds, other.allowedUserIds);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthPasswordOption(isAutoSelectAllowed: $isAutoSelectAllowed, allowedUserIds: $allowedUserIds)';
+  }
+}
+
+/// Maps to `GetPublicKeyCredentialOption`
+class SmartAuthPublicKeyOption {
+  SmartAuthPublicKeyOption({required this.requestJson, this.clientDataHash});
+
+  String requestJson;
+
+  Uint8List? clientDataHash;
+
+  List<Object?> _toList() {
+    return <Object?>[requestJson, clientDataHash];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthPublicKeyOption decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthPublicKeyOption(
+      requestJson: result[0]! as String,
+      clientDataHash: result[1] as Uint8List?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthPublicKeyOption ||
+        other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(requestJson, other.requestJson) &&
+        _deepEquals(clientDataHash, other.clientDataHash);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthPublicKeyOption(requestJson: $requestJson, clientDataHash: $clientDataHash)';
+  }
+}
+
+/// Maps to `GetCredentialRequest`
+class SmartAuthGetCredentialRequest {
+  SmartAuthGetCredentialRequest({
+    this.passwordOption,
+    this.publicKeyOptions,
+    this.preferImmediatelyAvailableCredentials,
+    this.origin,
+  });
+
+  SmartAuthPasswordOption? passwordOption;
+
+  List<SmartAuthPublicKeyOption>? publicKeyOptions;
+
+  bool? preferImmediatelyAvailableCredentials;
+
+  String? origin;
+
+  List<Object?> _toList() {
+    return <Object?>[
+      passwordOption,
+      publicKeyOptions,
+      preferImmediatelyAvailableCredentials,
+      origin,
+    ];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthGetCredentialRequest decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthGetCredentialRequest(
+      passwordOption: result[0] as SmartAuthPasswordOption?,
+      publicKeyOptions: (result[1] as List<Object?>?)
+          ?.cast<SmartAuthPublicKeyOption>(),
+      preferImmediatelyAvailableCredentials: result[2] as bool?,
+      origin: result[3] as String?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthGetCredentialRequest ||
+        other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(passwordOption, other.passwordOption) &&
+        _deepEquals(publicKeyOptions, other.publicKeyOptions) &&
+        _deepEquals(
+          preferImmediatelyAvailableCredentials,
+          other.preferImmediatelyAvailableCredentials,
+        ) &&
+        _deepEquals(origin, other.origin);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthGetCredentialRequest(passwordOption: $passwordOption, publicKeyOptions: $publicKeyOptions, preferImmediatelyAvailableCredentials: $preferImmediatelyAvailableCredentials, origin: $origin)';
+  }
+}
+
+/// Maps to `PasswordCredential` and `PublicKeyCredential`
+class SmartAuthCredential {
+  SmartAuthCredential({
+    required this.type,
+    this.id,
+    this.password,
+    this.authenticationResponseJson,
+  });
+
+  SmartAuthCredentialType type;
+
+  String? id;
+
+  String? password;
+
+  String? authenticationResponseJson;
+
+  List<Object?> _toList() {
+    return <Object?>[type, id, password, authenticationResponseJson];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthCredential decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthCredential(
+      type: result[0]! as SmartAuthCredentialType,
+      id: result[1] as String?,
+      password: result[2] as String?,
+      authenticationResponseJson: result[3] as String?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthCredential || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(type, other.type) &&
+        _deepEquals(id, other.id) &&
+        _deepEquals(password, other.password) &&
+        _deepEquals(
+          authenticationResponseJson,
+          other.authenticationResponseJson,
+        );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthCredential(type: $type, id: $id, password: $password, authenticationResponseJson: $authenticationResponseJson)';
+  }
+}
+
+/// Maps to `CreatePasswordRequest` and `CreatePublicKeyCredentialRequest`
+class SmartAuthCreateCredentialRequest {
+  SmartAuthCreateCredentialRequest({
+    required this.type,
+    this.id,
+    this.password,
+    this.requestJson,
+    this.clientDataHash,
+    this.isAutoSelectAllowed,
+    this.preferImmediatelyAvailableCredentials,
+    this.origin,
+  });
+
+  SmartAuthCredentialType type;
+
+  String? id;
+
+  String? password;
+
+  String? requestJson;
+
+  Uint8List? clientDataHash;
+
+  bool? isAutoSelectAllowed;
+
+  bool? preferImmediatelyAvailableCredentials;
+
+  String? origin;
+
+  List<Object?> _toList() {
+    return <Object?>[
+      type,
+      id,
+      password,
+      requestJson,
+      clientDataHash,
+      isAutoSelectAllowed,
+      preferImmediatelyAvailableCredentials,
+      origin,
+    ];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthCreateCredentialRequest decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthCreateCredentialRequest(
+      type: result[0]! as SmartAuthCredentialType,
+      id: result[1] as String?,
+      password: result[2] as String?,
+      requestJson: result[3] as String?,
+      clientDataHash: result[4] as Uint8List?,
+      isAutoSelectAllowed: result[5] as bool?,
+      preferImmediatelyAvailableCredentials: result[6] as bool?,
+      origin: result[7] as String?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthCreateCredentialRequest ||
+        other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(type, other.type) &&
+        _deepEquals(id, other.id) &&
+        _deepEquals(password, other.password) &&
+        _deepEquals(requestJson, other.requestJson) &&
+        _deepEquals(clientDataHash, other.clientDataHash) &&
+        _deepEquals(isAutoSelectAllowed, other.isAutoSelectAllowed) &&
+        _deepEquals(
+          preferImmediatelyAvailableCredentials,
+          other.preferImmediatelyAvailableCredentials,
+        ) &&
+        _deepEquals(origin, other.origin);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthCreateCredentialRequest(type: $type, id: $id, password: $password, requestJson: $requestJson, clientDataHash: $clientDataHash, isAutoSelectAllowed: $isAutoSelectAllowed, preferImmediatelyAvailableCredentials: $preferImmediatelyAvailableCredentials, origin: $origin)';
+  }
+}
+
+/// Maps to `CreatePasswordResponse` and `CreatePublicKeyCredentialResponse`
+class SmartAuthCreateCredentialResponse {
+  SmartAuthCreateCredentialResponse({
+    required this.type,
+    this.registrationResponseJson,
+  });
+
+  SmartAuthCredentialType type;
+
+  String? registrationResponseJson;
+
+  List<Object?> _toList() {
+    return <Object?>[type, registrationResponseJson];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthCreateCredentialResponse decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthCreateCredentialResponse(
+      type: result[0]! as SmartAuthCredentialType,
+      registrationResponseJson: result[1] as String?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthCreateCredentialResponse ||
+        other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(type, other.type) &&
+        _deepEquals(registrationResponseJson, other.registrationResponseJson);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthCreateCredentialResponse(type: $type, registrationResponseJson: $registrationResponseJson)';
+  }
+}
+
+/// Maps to `PrepareGetCredentialResponse`.
+///
+/// Android only lets privileged apps (`CREDENTIAL_MANAGER_QUERY_CANDIDATE_CREDENTIALS`)
+/// see what credentials are available, for any other app the fields are null.
+class SmartAuthPreparedCredential {
+  SmartAuthPreparedCredential({
+    this.hasPasswordCredentials,
+    this.hasPublicKeyCredentials,
+    this.hasAuthenticationResults,
+    this.hasRemoteResults,
+  });
+
+  bool? hasPasswordCredentials;
+
+  bool? hasPublicKeyCredentials;
+
+  bool? hasAuthenticationResults;
+
+  bool? hasRemoteResults;
+
+  List<Object?> _toList() {
+    return <Object?>[
+      hasPasswordCredentials,
+      hasPublicKeyCredentials,
+      hasAuthenticationResults,
+      hasRemoteResults,
+    ];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static SmartAuthPreparedCredential decode(Object result) {
+    result as List<Object?>;
+    return SmartAuthPreparedCredential(
+      hasPasswordCredentials: result[0] as bool?,
+      hasPublicKeyCredentials: result[1] as bool?,
+      hasAuthenticationResults: result[2] as bool?,
+      hasRemoteResults: result[3] as bool?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! SmartAuthPreparedCredential ||
+        other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(hasPasswordCredentials, other.hasPasswordCredentials) &&
+        _deepEquals(hasPublicKeyCredentials, other.hasPublicKeyCredentials) &&
+        _deepEquals(hasAuthenticationResults, other.hasAuthenticationResults) &&
+        _deepEquals(hasRemoteResults, other.hasRemoteResults);
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => _deepHash(<Object?>[runtimeType, ..._toList()]);
+
+  @override
+  String toString() {
+    return 'SmartAuthPreparedCredential(hasPasswordCredentials: $hasPasswordCredentials, hasPublicKeyCredentials: $hasPublicKeyCredentials, hasAuthenticationResults: $hasAuthenticationResults, hasRemoteResults: $hasRemoteResults)';
+  }
+}
+
 class SmartAuthRequestCanceled {
   SmartAuthRequestCanceled({this.message});
 
@@ -145,8 +589,32 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    } else if (value is SmartAuthRequestCanceled) {
+    } else if (value is SmartAuthCredentialType) {
       buffer.putUint8(129);
+      writeValue(buffer, value.index);
+    } else if (value is SmartAuthPasswordOption) {
+      buffer.putUint8(130);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthPublicKeyOption) {
+      buffer.putUint8(131);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthGetCredentialRequest) {
+      buffer.putUint8(132);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthCredential) {
+      buffer.putUint8(133);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthCreateCredentialRequest) {
+      buffer.putUint8(134);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthCreateCredentialResponse) {
+      buffer.putUint8(135);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthPreparedCredential) {
+      buffer.putUint8(136);
+      writeValue(buffer, value.encode());
+    } else if (value is SmartAuthRequestCanceled) {
+      buffer.putUint8(137);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -157,6 +625,23 @@ class _PigeonCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 129:
+        final value = readValue(buffer) as int?;
+        return value == null ? null : SmartAuthCredentialType.values[value];
+      case 130:
+        return SmartAuthPasswordOption.decode(readValue(buffer)!);
+      case 131:
+        return SmartAuthPublicKeyOption.decode(readValue(buffer)!);
+      case 132:
+        return SmartAuthGetCredentialRequest.decode(readValue(buffer)!);
+      case 133:
+        return SmartAuthCredential.decode(readValue(buffer)!);
+      case 134:
+        return SmartAuthCreateCredentialRequest.decode(readValue(buffer)!);
+      case 135:
+        return SmartAuthCreateCredentialResponse.decode(readValue(buffer)!);
+      case 136:
+        return SmartAuthPreparedCredential.decode(readValue(buffer)!);
+      case 137:
         return SmartAuthRequestCanceled.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -293,5 +778,117 @@ class SmartAuthApi {
       isNullValid: false,
     );
     return pigeonVar_replyValue! as String;
+  }
+
+  /// Credential Manager `getCredential`
+  Future<SmartAuthCredential> getCredential(
+    SmartAuthGetCredentialRequest request,
+  ) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getCredential$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[request],
+    );
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as SmartAuthCredential;
+  }
+
+  /// Credential Manager `createCredential`
+  Future<SmartAuthCreateCredentialResponse> createCredential(
+    SmartAuthCreateCredentialRequest request,
+  ) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.createCredential$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[request],
+    );
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as SmartAuthCreateCredentialResponse;
+  }
+
+  /// Credential Manager `prepareGetCredential`, Android 14 or higher
+  Future<SmartAuthPreparedCredential> prepareGetCredential(
+    SmartAuthGetCredentialRequest request,
+  ) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.prepareGetCredential$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[request],
+    );
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as SmartAuthPreparedCredential;
+  }
+
+  /// Credential Manager `getCredential` with the handle of the last
+  /// [prepareGetCredential], Android 14 or higher
+  Future<SmartAuthCredential> getPreparedCredential() async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.getPreparedCredential$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return pigeonVar_replyValue! as SmartAuthCredential;
+  }
+
+  /// Credential Manager `clearCredentialState`
+  Future<void> clearCredentialState() async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.smart_auth.SmartAuthApi.clearCredentialState$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: true,
+    );
   }
 }
