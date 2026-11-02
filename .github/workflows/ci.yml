@@ -68,7 +68,7 @@ jobs:
           working-directory: example
           script: >-
             bash -o pipefail -c '
-            bash integration_test/run_sms_tests.sh emulator-5554 2>&1 | tee "$RUNNER_TEMP/sms-tests.log";
+            timeout --signal=KILL 15m bash integration_test/run_sms_tests.sh emulator-5554 2>&1 | tee "$RUNNER_TEMP/sms-tests.log";
             status=$?;
             if [ "$status" -ne 0 ]; then
             adb -s emulator-5554 exec-out screencap -p > "$RUNNER_TEMP/sms-failure.png";
@@ -78,7 +78,7 @@ jobs:
             exit "$status"
             '
       - name: Upload failure diagnostics
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: android-sms-test-diagnostics

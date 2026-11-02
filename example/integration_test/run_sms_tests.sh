@@ -9,7 +9,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 device="${1:-emulator-5554}"
 
-flutter test integration_test/smart_auth_test.dart -d "$device" \
+# The default reporter buffers prints until a test finishes, but these markers
+# must reach adb while the test is still waiting for the SMS or dialog.
+flutter test integration_test/smart_auth_test.dart -d "$device" --reporter expanded \
   --dart-define=SMS_TESTS=true --dart-define=HINT_TESTS=true 2>&1 | while IFS= read -r line; do
   echo "$line"
   case "$line" in
