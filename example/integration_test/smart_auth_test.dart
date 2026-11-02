@@ -182,6 +182,24 @@ void main() {
         }
       });
 
+      testWidgets('clearCredentialState drops the prepared credential',
+          (tester) async {
+        final prepared = await smartAuth
+            .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
+            .timeout(timeout);
+        if (prepared.hasError) {
+          // Below Android 14 there is nothing to prepare.
+          expect(prepared.error, contains('UNSUPPORTED'));
+          return;
+        }
+
+        await smartAuth.clearCredentialState();
+        final result = await smartAuth.getPreparedCredential();
+
+        expect(result.hasData, isFalse);
+        expect(result.error, contains('NO_PREPARED_CREDENTIAL'));
+      });
+
       testWidgets('prepareGetCredential does not fail with a SecurityException',
           (tester) async {
         final result = await smartAuth

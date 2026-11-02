@@ -62,74 +62,56 @@ If you want to contribute to this project, please read the [contribution](CONTRI
 
 ## Requirements
 
-#### 1. Set kotlin version to 1.8.0 or above and Android Gradle Plugin (AGP) version to 8.6.0 or above
+Flutter 3.44 or above, the plugin is tested with Flutter 3.47.
 
-If you are
-using [legacy imperative apply](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
+#### Android build tools
 
-```
-// android/build.gradle
-buildscript {
-    ext.kotlin_version = '1.8.0'
-    ...others
+AGP, Gradle and Kotlin versions are dictated by your Flutter version. Flutter checks them when
+building and tells you what to upgrade, and a project created with `flutter create` already has
+them. For example Flutter 3.47 requires:
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-```
+| Tool                        | Minimum                               |
+|-----------------------------|---------------------------------------|
+| Android Gradle Plugin (AGP) | 8.11.1 (Flutter will move to 9.0.1)   |
+| Gradle                      | 8.14 (Flutter will move to 9.1.0)     |
+| Kotlin                      | 2.2.20 (Flutter will move to 2.3.20)  |
 
-If you are using
-new [declarative plugin approach](https://docs.gradle.org/8.5/userguide/plugins.html#sec:plugins_block)
+The plugin also works with AGP 9, where Kotlin is built in, see the
+[migration guide](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers).
+With AGP 9 you don't need the `kotlin-gradle-plugin` classpath or the `org.jetbrains.kotlin.android`
+plugin, and `kotlinOptions` is deprecated.
 
-```
-// android/settings.gradle
-plugins {
-    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
-    id "com.android.application" version "8.6.0" apply false
-    ...others
-}
-```
+#### Requirements added by this package
 
-> If you use AGP 9.0 or above, Kotlin is built in: you don't need the `kotlin-gradle-plugin` classpath
-> or the `org.jetbrains.kotlin.android` plugin. See the
-> [migration guide](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers).
+| Requirement                       | Minimum                                                          |
+|-----------------------------------|------------------------------------------------------------------|
+| `compileSdk`                      | 35 or above                                                      |
+| JDK that runs Gradle              | 17 or above, JDK 25 doesn't work with Gradle 8.14                |
+| Java source and target version    | 11 or above                                                      |
 
-#### 2. Set gradle version to 8.7 or above - [more about gradle versions](https://developer.android.com/build/releases/gradle-plugin)
-
-```
-// android/gradle/wrapper/gradle-wrapper.properties
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-all.zip
-```
-
-#### 3. Set Java version to 11 or above
-
-```
-// android/app/build.gradle
-compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-kotlinOptions {
-    jvmTarget = '11'
-}
-```
-
-With built-in Kotlin (AGP 9.0 or above) `kotlinOptions` is deprecated, the `compileOptions` above are enough.
-
-#### 4. Set compileSdk to 35 or above
-
-The Android Credential Manager dependency requires apps to compile against Android API 35 or later.
-Older AGP versions only officially support up to 34, so use AGP 8.6.0 or above to avoid the `checkDebugAarMetadata` error.
+`compileSdk` is the API your app is compiled against, it doesn't drop any devices.
+The Android Credential Manager dependency requires 35, and older AGP versions only officially
+support up to 34.
 
 ```
 // android/app/build.gradle
 android {
     compileSdk = 35
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 }
 ```
+
+#### Supported Android devices
+
+- Android 7.0 (API 24) or above, the minimum of Flutter 3.44 apps.
+- Google Play services is required for the SMS Retriever, SMS User Consent and phone number hint APIs,
+  and for the Credential Manager on Android 13 and below.
+- `prepareGetCredential` and `getPreparedCredential` need Android 14 (API 34) or above, they fail
+  with `UNSUPPORTED` on older versions.
 
 ## Migrating from 2.x to 3.x
 

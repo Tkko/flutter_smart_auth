@@ -33,6 +33,13 @@ class CredentialManagerHelper(context: Context) {
     private val credentialManager = CredentialManager.create(context)
     private var preparedResponse: PrepareGetCredentialResponse? = null
 
+    /**
+     * Incremented whenever a preparation starts or the prepared state is
+     * invalidated, so a preparation that finishes late can't restore a cleared
+     * or older request.
+     */
+    private var prepareGeneration = 0
+
     suspend fun getCredential(
         activity: Activity?, request: SmartAuthGetCredentialRequest
     ): SmartAuthCredential {
@@ -69,8 +76,16 @@ class CredentialManagerHelper(context: Context) {
         request: SmartAuthGetCredentialRequest
     ): SmartAuthPreparedCredential {
         requireUpsideDownCake("prepareGetCredential")
+        val generation = ++prepareGeneration
+        preparedResponse = null
         try {
             val response = credentialManager.prepareGetCredential(buildGetRequest(request))
+            if (generation != prepareGeneration) {
+                throw canceled(
+                    "PREPARE_GET_CREDENTIAL_CANCELED",
+                    "Prepare request was replaced or cleared before it finished."
+                )
+            }
             preparedResponse = response
             return SmartAuthPreparedCredential(
                 hasPasswordCredentials = queryResults {
@@ -113,7 +128,7 @@ class CredentialManagerHelper(context: Context) {
     }
 
     suspend fun clearCredentialState() {
-        preparedResponse = null
+        invalidatePrepared()
         try {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
         } catch (e: ClearCredentialException) {
@@ -122,6 +137,11 @@ class CredentialManagerHelper(context: Context) {
     }
 
     fun dispose() {
+        invalidatePrepared()
+    }
+
+    private fun invalidatePrepared() {
+        prepareGeneration++
         preparedResponse = null
     }
 

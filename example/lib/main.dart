@@ -92,7 +92,8 @@ class _MyAppState extends State<MyApp> {
     final res = await smartAuth.getCredential(
       passwordOption: SmartAuthPasswordOption(),
     );
-    debugPrint('getCredential: $res');
+    // Never log `res.data`, it contains the password.
+    debugPrint('getCredential: ${res.state} ${res.error ?? ''}');
   }
 
   Future<void> createPasswordCredential() async {
@@ -100,22 +101,24 @@ class _MyAppState extends State<MyApp> {
       id: 'user@example.com',
       password: 'password123',
     );
-    debugPrint('createPasswordCredential: $res');
+    debugPrint('createPasswordCredential: ${res.state} ${res.error ?? ''}');
   }
 
   Future<void> prepareAndGetCredential() async {
     final prepared = await smartAuth.prepareGetCredential(
       passwordOption: SmartAuthPasswordOption(),
     );
-    debugPrint('prepareGetCredential: $prepared');
+    debugPrint(
+      'prepareGetCredential: ${prepared.state} ${prepared.error ?? ''}',
+    );
     if (!prepared.hasData) return;
     final res = await smartAuth.getPreparedCredential();
-    debugPrint('getPreparedCredential: $res');
+    debugPrint('getPreparedCredential: ${res.state} ${res.error ?? ''}');
   }
 
   Future<void> clearCredentialState() async {
     final res = await smartAuth.clearCredentialState();
-    debugPrint('clearCredentialState: $res');
+    debugPrint('clearCredentialState: ${res.state} ${res.error ?? ''}');
   }
 
   @override
