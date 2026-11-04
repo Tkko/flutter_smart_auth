@@ -5,12 +5,14 @@ import 'package:smart_auth/src/models/smart_auth_result.dart';
 import 'package:smart_auth/src/models/sms_code_result.dart';
 import 'package:smart_auth/src/smart_auth_api.g.dart';
 
-const _defaultCodeMatcher = '\\d{4,8}';
+const _defaultCodeMatcher = r'\d{4,8}';
 
 /// Flutter package for listening SMS code on Android, suggesting phone number.
 ///
-/// If you need pin code input like shown below, take a look at [Pinput](https:///github.com/Tkko/Flutter_Pinput) package, SmartAuth is already integrated into it and you can build highly customizable input, that your designers can't even draw in Figma 🤭
-/// `Note that only Android is supported, I faked other operating systems because other package is depended on this one and that package works on every system`
+/// If you need pin code input like shown below, take a look at [Pinput](https:///github.com/Tkko/Flutter_Pinput) package
+/// `Note that only Android is supported, I faked other operating systems
+/// because other package is depended on this one and that package works
+/// on every system`
 ///
 /// <img src="https:///user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="600"/>
 ///
@@ -29,7 +31,8 @@ class SmartAuth {
   /// getter for singleton instance
   static SmartAuth get instance => _instance;
 
-  /// A Generated class from pigeon that contains methods to interact with native code
+  /// A Generated class from pigeon that contains methods
+  /// to interact with native code
   final SmartAuthApi _api = SmartAuthApi();
 
   /// This method outputs hash that is required for SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
@@ -47,7 +50,8 @@ class SmartAuth {
     }
   }
 
-  /// Starts listening to SMS that contains the App signature [getAppSignature] in the text
+  /// Starts listening to SMS that contains
+  /// the App signature [getAppSignature]in the text
   /// returns code if it matches with matcher
   /// More about SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
   Future<SmartAuthResult<SmartAuthSms>> getSmsWithRetrieverApi({
@@ -66,7 +70,8 @@ class SmartAuth {
   }
 
   /// Starts listening to SMS User Consent API https://developers.google.com/identity/sms-retriever/user-consent/overview
-  /// Which shows confirmations dialog to user to confirm reading the SMS content
+  /// Which shows confirmations dialog to user to
+  /// confirm reading the SMS content
   /// returns code if it matches with matcher
   Future<SmartAuthResult<SmartAuthSms>> getSmsWithUserConsentApi({
     /// used to extract code from SMS
@@ -85,7 +90,7 @@ class SmartAuth {
 
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: ${error.message}');
-        return SmartAuthResult.canceled();
+        return const SmartAuthResult.canceled();
       }
       debugPrint('Pinput/SmartAuth: getSmsWithUserConsentApi failed: $error');
       return SmartAuthResult.failure(
@@ -98,7 +103,7 @@ class SmartAuth {
   Future<SmartAuthResult<void>> removeUserConsentApiListener() async {
     try {
       await _api.removeUserConsentListener();
-      return SmartAuthResult.success(null);
+      return const SmartAuthResult.success(null);
     } catch (error) {
       debugPrint('Pinput/SmartAuth: removeUserConsentListener failed: $error');
       return SmartAuthResult.failure(
@@ -111,7 +116,7 @@ class SmartAuth {
   Future<SmartAuthResult<void>> removeSmsRetrieverApiListener() async {
     try {
       await _api.removeSmsRetrieverListener();
-      return SmartAuthResult.success(null);
+      return const SmartAuthResult.success(null);
     } catch (error) {
       debugPrint('Pinput/SmartAuth: removeSmsRetrieverListener failed: $error');
       return SmartAuthResult.failure(
@@ -121,7 +126,8 @@ class SmartAuth {
   }
 
   /// Runs the Phone Number Hint API, a library powered by Google Play services
-  /// provides a frictionless way to show a user’s (SIM-based) phone numbers as a hint.
+  /// provides a frictionless way to show a user’s (SIM-based)
+  /// phone numbers as a hint.
   /// https://developers.google.com/identity/phone-number-hint/android
   Future<SmartAuthResult<String>> requestPhoneNumberHint() async {
     try {
@@ -133,7 +139,7 @@ class SmartAuth {
           error.details is SmartAuthRequestCanceled;
       if (isCanceled) {
         debugPrint('Pinput/SmartAuth: requestPhoneNumberHint canceled by user');
-        return SmartAuthResult.canceled();
+        return const SmartAuthResult.canceled();
       }
 
       final message = 'Failed to request phone number hint with error: $error';
@@ -142,8 +148,10 @@ class SmartAuth {
     }
   }
 
-  /// Shows the account selector of the Credential Manager and returns the credential selected by the user.
-  /// Pass [passwordOption] to get saved passwords and [publicKeyOptions] to sign in with a passkey.
+  /// Shows the account selector of the Credential Manager and
+  /// returns the credential selected by the user.
+  /// Pass [passwordOption] to get saved passwords and
+  /// [publicKeyOptions] to sign in with a passkey.
   /// At least one option is required.
   /// https://developer.android.com/identity/sign-in/credential-manager
   Future<SmartAuthResult<SmartAuthCredential>> getCredential({
@@ -191,7 +199,8 @@ class SmartAuth {
     );
   }
 
-  /// Creates a passkey, [requestJson] is the registration request in the WebAuthn JSON format.
+  /// Creates a passkey, [requestJson] is the registration request
+  /// in the WebAuthn JSON format.
   /// The registration response to send to your server is in
   /// [SmartAuthCreateCredentialResponse.registrationResponseJson].
   Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
@@ -216,8 +225,10 @@ class SmartAuth {
     );
   }
 
-  /// Fetches the credential data in advance to reduce the latency of the account selector.
-  /// Call [getPreparedCredential] afterwards to show it. Android 14 or higher only.
+  /// Fetches the credential data in advance to reduce the latency of
+  /// the account selector.
+  /// Call [getPreparedCredential] afterwards to show it.
+  /// Android 14 or higher only.
   Future<SmartAuthResult<SmartAuthPreparedCredential>> prepareGetCredential({
     SmartAuthPasswordOption? passwordOption,
     List<SmartAuthPublicKeyOption>? publicKeyOptions,
@@ -238,7 +249,8 @@ class SmartAuth {
     );
   }
 
-  /// Shows the account selector for the request passed to the last [prepareGetCredential]. Android 14 or higher only.
+  /// Shows the account selector for the request passed to the
+  /// last [prepareGetCredential]. Android 14 or higher only.
   Future<SmartAuthResult<SmartAuthCredential>> getPreparedCredential() {
     return _runCredentialRequest(
       'getPreparedCredential',

@@ -38,15 +38,17 @@ void main() {
   group(
     'listeners',
     () {
-      testWidgets('removeSmsRetrieverApiListener succeeds without a listener',
-          (tester) async {
+      testWidgets('removeSmsRetrieverApiListener succeeds without a listener', (
+        tester,
+      ) async {
         final result = await smartAuth.removeSmsRetrieverApiListener();
 
         expect(result.hasError, isFalse, reason: '${result.error}');
       });
 
-      testWidgets('removeUserConsentApiListener succeeds without a listener',
-          (tester) async {
+      testWidgets('removeUserConsentApiListener succeeds without a listener', (
+        tester,
+      ) async {
         final result = await smartAuth.removeUserConsentApiListener();
 
         expect(result.hasError, isFalse, reason: '${result.error}');
@@ -100,8 +102,9 @@ void main() {
         expect(result.error, contains('INVALID_REQUEST'));
       });
 
-      testWidgets('getCredential finishes when there is nothing to show',
-          (tester) async {
+      testWidgets('getCredential finishes when there is nothing to show', (
+        tester,
+      ) async {
         final result = await smartAuth
             .getCredential(passwordOption: SmartAuthPasswordOption())
             .timeout(timeout);
@@ -117,8 +120,9 @@ void main() {
         }
       });
 
-      testWidgets('createPasswordCredential finishes without crashing',
-          (tester) async {
+      testWidgets('createPasswordCredential finishes without crashing', (
+        tester,
+      ) async {
         final result = await smartAuth
             .createPasswordCredential(
               id: 'user@example.com',
@@ -135,8 +139,9 @@ void main() {
         }
       });
 
-      testWidgets('createPublicKeyCredential rejects an invalid request',
-          (tester) async {
+      testWidgets('createPublicKeyCredential rejects an invalid request', (
+        tester,
+      ) async {
         final result = await smartAuth
             .createPublicKeyCredential(requestJson: 'not json')
             .timeout(timeout);
@@ -145,27 +150,32 @@ void main() {
         expect(result.hasError || result.isCanceled, isTrue);
       });
 
-      testWidgets('getCredential with an invalid passkey request fails',
-          (tester) async {
-        final result = await smartAuth.getCredential(
-          publicKeyOptions: [
-            SmartAuthPublicKeyOption(requestJson: 'not json'),
-          ],
-        ).timeout(timeout);
+      testWidgets('getCredential with an invalid passkey request fails', (
+        tester,
+      ) async {
+        final result = await smartAuth
+            .getCredential(
+              publicKeyOptions: [
+                SmartAuthPublicKeyOption(requestJson: 'not json'),
+              ],
+            )
+            .timeout(timeout);
 
         expect(result.hasData, isFalse);
       });
 
-      testWidgets('getPreparedCredential needs prepareGetCredential first',
-          (tester) async {
+      testWidgets('getPreparedCredential needs prepareGetCredential first', (
+        tester,
+      ) async {
         final result = await smartAuth.getPreparedCredential();
 
         expect(result.hasData, isFalse);
         expect(result.hasError, isTrue);
       });
 
-      testWidgets('getPreparedCredential uses the last prepareGetCredential',
-          (tester) async {
+      testWidgets('getPreparedCredential uses the last prepareGetCredential', (
+        tester,
+      ) async {
         final prepared = await smartAuth
             .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
             .timeout(timeout);
@@ -188,8 +198,9 @@ void main() {
         }
       });
 
-      testWidgets('clearCredentialState drops the prepared credential',
-          (tester) async {
+      testWidgets('clearCredentialState drops the prepared credential', (
+        tester,
+      ) async {
         final prepared = await smartAuth
             .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
             .timeout(timeout);
@@ -206,21 +217,23 @@ void main() {
         expect(result.error, contains('NO_PREPARED_CREDENTIAL'));
       });
 
-      testWidgets('prepareGetCredential does not fail with a SecurityException',
-          (tester) async {
-        final result = await smartAuth
-            .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
-            .timeout(timeout);
+      testWidgets(
+        'prepareGetCredential does not fail with a SecurityException',
+        (tester) async {
+          final result = await smartAuth
+              .prepareGetCredential(passwordOption: SmartAuthPasswordOption())
+              .timeout(timeout);
 
-        // Below Android 14 it reports UNSUPPORTED. From Android 14 it
-        // succeeds, the has* fields are null because only privileged apps may
-        // query them.
-        if (result.hasError) {
-          expect(result.error, contains('UNSUPPORTED'));
-        } else {
-          expect(result.hasData, isTrue, reason: '${result.error}');
-        }
-      });
+          // Below Android 14 it reports UNSUPPORTED. From Android 14 it
+          // succeeds, the has* fields are null because only privileged apps may
+          // query them.
+          if (result.hasError) {
+            expect(result.error, contains('UNSUPPORTED'));
+          } else {
+            expect(result.hasData, isTrue, reason: '${result.error}');
+          }
+        },
+      );
     },
     skip: !isAndroid,
   );
@@ -239,9 +252,9 @@ void main() {
       (tester) async {
         // ignore: avoid_print for testing
         print('HINT_READY');
-        final result = await smartAuth
-            .requestPhoneNumberHint()
-            .timeout(const Duration(seconds: 60));
+        final result = await smartAuth.requestPhoneNumberHint().timeout(
+          const Duration(seconds: 60),
+        );
 
         expect(result.hasData, isFalse);
         // Without a SIM or Google account the dialog can't be shown at all.
@@ -259,9 +272,9 @@ void main() {
         // ignore: avoid_print for testing
         print('SMS_SIGNATURE=$signature');
 
-        final result = await smartAuth
-            .getSmsWithRetrieverApi()
-            .timeout(const Duration(seconds: 60));
+        final result = await smartAuth.getSmsWithRetrieverApi().timeout(
+          const Duration(seconds: 60),
+        );
 
         expect(result.hasData, isTrue, reason: '${result.error}');
         expect(result.requireData.code, '123456');

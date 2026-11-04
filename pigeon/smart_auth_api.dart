@@ -51,7 +51,8 @@ abstract class SmartAuthApi {
   void clearCredentialState();
 }
 
-/// Type of the credential, [unknown] is returned for the types that are not supported yet
+/// Type of the credential, [unknown] is returned for the types
+/// that are not supported yet
 enum SmartAuthCredentialType { password, publicKey, unknown }
 
 /// Maps to `GetPasswordOption`
@@ -136,7 +137,8 @@ class SmartAuthCreateCredentialResponse {
 
 /// Maps to `PrepareGetCredentialResponse`.
 ///
-/// Android only lets privileged apps (`CREDENTIAL_MANAGER_QUERY_CANDIDATE_CREDENTIALS`)
+/// Android only lets privileged apps
+/// (`CREDENTIAL_MANAGER_QUERY_CANDIDATE_CREDENTIALS`)
 /// see what credentials are available, for any other app the fields are null.
 class SmartAuthPreparedCredential {
   SmartAuthPreparedCredential({
