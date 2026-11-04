@@ -11,7 +11,7 @@ void main() {
 /// This example demonstrates how to use the SmartAuth plugin.
 class MyApp extends StatefulWidget {
   /// Creates a new instance of the [MyApp] class.
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();

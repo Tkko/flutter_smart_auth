@@ -1,4 +1,4 @@
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
 
 analyzer:
   errors:
@@ -8,6 +8,11 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:
