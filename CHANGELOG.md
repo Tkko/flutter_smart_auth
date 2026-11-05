@@ -1,3 +1,11 @@
+#### 4.0.0-beta.2 · 5/11/2026
+
+- Fixed analyzer warnings and linter rules across the plugin and example app
+- Added `@immutable` annotation to `SmartAuthResult`
+- Added `const` constructor to `SmartAuthSms`
+- Replaced `very_good_analysis` with `flutter_lints: ^6.0.0`
+- Aligned SDK constraints in example app to match minimum Flutter 3.44 / Dart 3.12 requirements
+
 #### 4.0.0-beta.1 · 2/11/2026
 
 **Breaking requirements** (the existing Dart API is unchanged)
