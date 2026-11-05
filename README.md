@@ -12,6 +12,10 @@
 
 [Install](#install) · [Usage](#usage) · [Requirements](#requirements) · [Example](example/lib/main.dart) · [pub.dev](https://pub.dev/packages/smart_auth) · [Changelog](CHANGELOG.md)
 
+<b>🚀 Have a project in mind? <a href="https://www.linkedin.com/in/thornike/">Let's work together on LinkedIn</a>.</b>
+
+<b>Enjoying this package? Help keep it maintained.</b>
+
 <a href="https://ko-fi.com/flutterman"><img height="40" src="https://user-images.githubusercontent.com/26390946/161375565-e7d64410-bbcf-4a28-896b-7514e106478e.png" alt="Support on Ko-fi"></a>
 <a href="https://www.buymeacoffee.com/fman"><img height="40" src="https://user-images.githubusercontent.com/26390946/161375563-69c634fd-89d2-45ac-addd-931b03996b34.png" alt="Buy Me a Coffee"></a>
 
@@ -21,7 +25,7 @@
 
 | SMS autofill | Phone number hint | User consent dialog |
 | :---: | :---: | :---: |
-| <img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" height="400" alt="SMS autofill demo" /> | <img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" height="400" alt="Phone number hint" /> | <img src="https://github.com/user-attachments/assets/60ace6bc-6c28-43cf-ae1d-60f56aaae8d2" height="400" alt="User consent dialog" /> |
+| <img src="https://user-images.githubusercontent.com/26390946/155599527-fe934f2c-5124-4754-bbf6-bb97d55a77c0.gif" width="180" height="400" alt="SMS autofill demo" /> | <img src="https://github.com/user-attachments/assets/efff8893-4ac4-4601-98b5-1fb10ae365a3" width="180" height="400" alt="Phone number hint" /> | <img src="https://github.com/user-attachments/assets/60ace6bc-6c28-43cf-ae1d-60f56aaae8d2" width="180" height="400" alt="User consent dialog" /> |
 
 > Looking for a PIN / OTP input field? See [Pinput](https://github.com/Tkko/Flutter_Pinput).
 
@@ -36,11 +40,7 @@
   - speed up the account selector on Android 14+: `prepareGetCredential`, `getPreparedCredential`
   - clear state on sign out: `clearCredentialState`
 
-## Platform support
-
-| Android | iOS | Web | macOS | Windows | Linux |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | – | – | – | – | – |
+**Platform:** Android only.
 
 ## Install
 
@@ -255,7 +255,7 @@ PRs are welcome. Read the [contributing guide](CONTRIBUTING.md) first, and see t
 
 <div align="center">
 
-Made by [Tornike](https://www.linkedin.com/in/thornike/) · [Discord](https://rebrand.ly/qwc3s0d) · [MIT License](LICENSE)
+Made by [Tornike](https://www.linkedin.com/in/thornike/) · [MIT License](LICENSE)
 
 If this package helps you, a ⭐ on GitHub means a lot.
 
