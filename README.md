@@ -132,6 +132,20 @@ if (res.hasData) {
 
 </details>
 
+Get your app's hash with `getAppSignature` and have your backend end every SMS with it (the message must be short, contain the code and end with the 11-character hash). The hash differs between debug and release builds.
+
+```dart
+final res = await smartAuth.getAppSignature();
+if (res.hasData) {
+  print(res.data); // e.g. kg+TZ3A5qzS
+}
+```
+
+```
+Your ExampleApp code is: 123456
+kg+TZ3A5qzS
+```
+
 ### Remove listeners
 
 The plugin removes listeners after it receives a code. To stop earlier, for example in `dispose`:
@@ -237,7 +251,11 @@ The plugin also works with AGP 9, where Kotlin is built in, see the [migration g
 
 </details>
 
-## Migrating from 2.x to 3.x
+## Migrating
+
+**To 4.x:** the Dart API is unchanged. The new requirements are Flutter 3.44 / Dart 3.12, `compileSdk` 35 or above, and the AGP, Gradle and Kotlin versions your Flutter version requires (see [Requirements](#requirements)). The plugin's own `minSdkVersion` is 21.
+
+**From 2.x to 3.x:**
 
 | 2.x | 3.x |
 | :--- | :--- |
