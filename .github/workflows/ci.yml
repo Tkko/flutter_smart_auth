@@ -10,14 +10,14 @@ permissions:
 
 jobs:
   ci:
+    permissions:
+      contents: read
+      pull-requests: read
     uses: Tkko/better-actions/.github/workflows/ci.yml@main
     with:
       # The plugin is Android-only.
       platforms: android
       integration-test-target: integration_test/smart_auth_test.dart
-    permissions:
-      contents: read
-      pull-requests: read
 
   # The SMS and phone number hint tests need Google Play services and something
   # to happen outside the app (an SMS to arrive, a dialog to be dismissed), so
