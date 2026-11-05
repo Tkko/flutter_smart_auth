@@ -11,7 +11,7 @@ void main() {
 /// This example demonstrates how to use the SmartAuth plugin.
 class MyApp extends StatefulWidget {
   /// Creates a new instance of the [MyApp] class.
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -130,10 +130,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('es', ''),
-      ],
+      supportedLocales: const [Locale('en', ''), Locale('es', '')],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(

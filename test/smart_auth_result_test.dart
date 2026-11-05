@@ -4,14 +4,14 @@ import 'package:smart_auth/smart_auth.dart';
 void main() {
   group('SmartAuthSms.fromSms', () {
     test('extracts the first 4-8 digit code by default', () {
-      final sms = SmartAuthSms.fromSms('Your code is 123456', '\\d{4,8}');
+      final sms = SmartAuthSms.fromSms('Your code is 123456', r'\d{4,8}');
 
       expect(sms.code, '123456');
       expect(sms.sms, 'Your code is 123456');
     });
 
     test('returns null code when nothing matches', () {
-      final sms = SmartAuthSms.fromSms('Hello there', '\\d{4,8}');
+      final sms = SmartAuthSms.fromSms('Hello there', r'\d{4,8}');
 
       expect(sms.code, isNull);
     });

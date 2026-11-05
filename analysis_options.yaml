@@ -8,10 +8,18 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:
     unnecessary_this: false
+    avoid_catches_without_on_clauses: false
+    public_member_api_docs: false
+    prefer_constructors_over_static_methods: false
     always_declare_return_types: true
     camel_case_types: true
     empty_constructor_bodies: true

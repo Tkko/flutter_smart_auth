@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
+
 /// The state of the result returned from SmartAuth methods
 enum SmartAuthResultState { success, failure, canceled }
 
 /// The result returned from SmartAuth methods
+@immutable
 class SmartAuthResult<T> {
   const SmartAuthResult.success(this.data)
     : _state = SmartAuthResultState.success,

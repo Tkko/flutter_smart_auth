@@ -1,16 +1,19 @@
 import 'package:flutter/foundation.dart';
 
-/// The returned value from [SmartAuth.getSmsWithRetrieverApi] and [SmartAuth.getSmsWithUserConsentApi]
+//ignore_for_file: comment_references Don't want to import those files here
+/// The returned value from [SmartAuth.getSmsWithRetrieverApi]
+/// and [SmartAuth.getSmsWithUserConsentApi]
 /// Contains the whole sms and the OTP code itself
 class SmartAuthSms {
+  const SmartAuthSms({required this.sms, required this.code});
+
   /// The SMS text received from your OTP sender
   final String sms;
 
   /// The actual code retrieved from SMS
-  /// Can be null if the regex matcher didn't find any code but user received the SMS
+  /// Can be null if the regex matcher didn't find any code
+  /// but user received the SMS
   final String? code;
-
-  const SmartAuthSms({required this.sms, required this.code});
 
   static SmartAuthSms fromSms(String sms, String matcher) {
     String? extractCode(String? sms) {
