@@ -1,3 +1,7 @@
+#### 4.0.0-beta.4 · 5/11/2026
+
+- Documentation: resized the donation badges in the README so they render at a sensible size on pub.dev
+
 #### 4.0.0-beta.3 · 5/11/2026
 
 - Documentation: redesigned README with a shared header and footer, documented `getAppSignature` and added a 4.x migration note
