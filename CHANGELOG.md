@@ -1,3 +1,8 @@
+#### 4.0.0-beta.3 · 5/11/2026
+
+- Documentation: redesigned README with a shared header and footer, documented `getAppSignature` and added a 4.x migration note
+- Aligned issue forms and the pull request template
+
 #### 4.0.0-beta.2 · 5/11/2026
 
 - Fixed analyzer warnings and linter rules across the plugin and example app
