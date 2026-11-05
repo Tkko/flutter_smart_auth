@@ -23,9 +23,18 @@ flutter test integration_test/smart_auth_test.dart -d "$device" --reporter expan
       adb -s "$device" emu sms send 5551234 "<#> Your code is 123456 $signature"
       ;;
     *HINT_READY*)
-      # Dismiss the phone number hint dialog.
+      # Dismiss the phone number hint dialog. Only press Back while the dialog
+      # has focus: it can die on its own on CI emulators, and a stray Back would
+      # then send the app to the background and stall the rest of the run.
       sleep 4
-      adb -s "$device" shell input keyevent KEYCODE_BACK
+      for _ in 1 2 3 4 5; do
+        if adb -s "$device" shell dumpsys window 2>/dev/null \
+          | grep -E 'mCurrentFocus|mFocusedWindow' | grep -q PhoneNumberHintActivity; then
+          adb -s "$device" shell input keyevent KEYCODE_BACK
+          break
+        fi
+        sleep 2
+      done
       ;;
     *SMS_CONSENT_READY*)
       sleep 2

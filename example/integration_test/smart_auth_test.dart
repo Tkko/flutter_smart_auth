@@ -230,9 +230,13 @@ void main() {
     ) async {
       // ignore: avoid_print for testing
       print('HINT_READY');
-      final result = await smartAuth.requestPhoneNumberHint().timeout(
-        const Duration(seconds: 60),
-      );
+      // runAsync keeps the timeout on the real clock, so a dialog that dies
+      // without reporting back fails the test instead of hanging the job.
+      final result = (await tester.runAsync(
+        () => smartAuth.requestPhoneNumberHint().timeout(
+          const Duration(seconds: 60),
+        ),
+      ))!;
 
       expect(result.hasData, isFalse);
       // Without a SIM or Google account the dialog can't be shown at all.
