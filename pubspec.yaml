@@ -25,11 +25,10 @@ dependencies:
   meta: ^1.16.0
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
   pigeon: 29.0.0
-  very_good_analysis: ^10.3.0
-
 flutter:
   plugin:
     platforms:

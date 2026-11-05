@@ -130,10 +130,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('es', ''),
-      ],
+      supportedLocales: const [Locale('en', ''), Locale('es', '')],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
