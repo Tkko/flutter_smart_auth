@@ -187,6 +187,7 @@ if (prepared.hasData) {
 await smartAuth.clearCredentialState();
 ```
 
+- Saving a password or creating a passkey needs a credential provider on the device, such as Google Password Manager with a signed-in Google account. Without one the call fails with `TYPE_NO_CREATE_OPTIONS`, which is common on emulators. Treat it as "not saved", not as a failed sign-in.
 - `prepareGetCredential` and `getPreparedCredential` need Android 14 or higher. Below that they fail with `UNSUPPORTED`.
 - Only privileged apps can see which credentials `prepareGetCredential` found. The `has*` fields of `SmartAuthPreparedCredential` are `null` for other apps. It still makes the next `getPreparedCredential` faster.
 

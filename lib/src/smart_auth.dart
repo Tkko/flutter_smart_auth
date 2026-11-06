@@ -192,6 +192,10 @@ class SmartAuth {
   }
 
   /// Saves a password to the Credential Manager.
+  ///
+  /// Needs a credential provider on the device, such as Google Password
+  /// Manager with a signed-in Google account. Without one this fails with
+  /// `TYPE_NO_CREATE_OPTIONS`.
   Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
   createPasswordCredential({
     required String id,
@@ -220,6 +224,10 @@ class SmartAuth {
   /// in the WebAuthn JSON format.
   /// The registration response to send to your server is in
   /// [SmartAuthCreateCredentialResponse.registrationResponseJson].
+  ///
+  /// Needs a credential provider on the device, such as Google Password
+  /// Manager with a signed-in Google account. Without one this fails with
+  /// `TYPE_NO_CREATE_OPTIONS`.
   Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
   createPublicKeyCredential({
     required String requestJson,
