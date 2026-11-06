@@ -18,20 +18,18 @@ jobs:
       contents: read
     uses: Tkko/better-actions/.github/workflows/ci.yml@main
     with:
-      # The plugin is Android-only.
-      platforms: android
-      integration-test-target: integration_test/smart_auth_test.dart
+      # The plugin is Android-only, and integration-android-sms below runs the
+      # whole integration test file, so the shared platform jobs are skipped.
+      platforms: none
 
   # The SMS and phone number hint tests need Google Play services and something
   # to happen outside the app (an SMS to arrive, a dialog to be dismissed), so
   # they can't run through the shared workflow. The script sends the SMS and
   # taps the dialogs, see example/integration_test/run_sms_tests.sh.
-  # Not required yet: dialog driven tests can be flaky on shared runners.
   integration-android-sms:
     name: Integration Tests (Android Emulator, SMS and hint)
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    continue-on-error: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
