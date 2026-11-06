@@ -53,24 +53,8 @@ run_attempt() {
         signature="${line##*SMS_SIGNATURE=}"
         # Give the retriever time to start listening.
         sleep 4
-        # The retriever only sees messages that arrive after it has registered
-        # with Play services, which on a cold CI emulator can take longer than
-        # the sleep above. Keep resending until the test moves on (see below).
         # The console treats a newline as a new command, so keep it on one line.
-        (
-          for _ in 1 2 3 4 5 6; do
-            adb -s "$device" emu sms send 5551234 "<#> Your code is 123456 $signature" || true
-            sleep 8
-          done
-        ) >/dev/null 2>&1 &
-        resend_pid=$!
-        ;;
-      *"SMS User Consent API"*)
-        # The retriever test is done; stop resending so a late copy cannot be
-        # taken by the consent test, which listens for the same sender.
-        if [ -n "${resend_pid:-}" ]; then
-          kill "$resend_pid" 2>/dev/null || true
-        fi
+        adb -s "$device" emu sms send 5551234 "<#> Your code is 123456 $signature"
         ;;
       *HINT_READY*)
         # Dismiss the phone number hint dialog. Only press Back while the dialog
