@@ -65,7 +65,5 @@ validation, error handling and the cases where nothing can be found. Picking a s
 saving one and creating a passkey need a credential provider and a real user, check them manually
 on a device with Google Password Manager before a release.
 
-CI only runs the plain integration tests through the shared workflow. The SMS and hint tests are not
-run in CI: they need Google Play services and an emulator that boots reliably, which shared runners
-don't give (the job was removed after most runs hung before the first test). Run the script above
-before a release instead.
+CI runs the plain integration tests through the shared workflow and the script above in a separate,
+non-blocking job (`integration-android-sms` in `.github/workflows/ci.yml`).
