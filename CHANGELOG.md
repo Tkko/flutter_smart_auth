@@ -1,35 +1,40 @@
-#### 4.0.0-beta.4 · 5/11/2026
+#### 4.0.0 · 6/11/2026
 
-- Documentation: resized the donation badges in the README so they render at a sensible size on pub.dev
-
-#### 4.0.0-beta.3 · 5/11/2026
-
-- Documentation: redesigned README with a shared header and footer, documented `getAppSignature` and added a 4.x migration note
-- Aligned issue forms and the pull request template
-
-#### 4.0.0-beta.2 · 5/11/2026
-
-- Fixed analyzer warnings and linter rules across the plugin and example app
-- Added `@immutable` annotation to `SmartAuthResult`
-- Added `const` constructor to `SmartAuthSms`
-- Replaced `very_good_analysis` with `flutter_lints: ^6.0.0`
-- Aligned SDK constraints in example app to match minimum Flutter 3.44 / Dart 3.12 requirements
-
-#### 4.0.0-beta.1 · 2/11/2026
-
-**Breaking requirements** (the existing Dart API is unchanged)
+**Breaking requirements** (the existing Dart API is unchanged), see the [Migrating](README.md#migrating) section
 
 - Minimum Flutter 3.44 / Dart 3.12
 - Android: compileSdk 35 or above, the AGP, Gradle and Kotlin versions required by your Flutter version (see the README)
+- Raised the plugin `minSdkVersion` from 16 to 21, the minimum of `androidx.credentials`
+
+**New**
 
 - Added Credential Manager support for passwords and passkeys: `getCredential`, `createPasswordCredential`, `createPublicKeyCredential`, `prepareGetCredential`, `getPreparedCredential` and `clearCredentialState`
-- Added the missing `meta` dependency
-- Migrated Android to built-in Kotlin
-- Removed the Kotlin Gradle Plugin classpath from the plugin's `build.gradle` (AGP 9 support)
-- Raised the plugin `minSdkVersion` from 16 to 21, the minimum of `androidx.credentials`
+- Added `const` constructor to `SmartAuthSms` and the `@immutable` annotation to `SmartAuthResult`
+- Documentation: redesigned README, documented `getAppSignature`, added a 4.x migration note and the version requirements
+
+**Android**
+
+- Migrated Android to built-in Kotlin and removed the Kotlin Gradle Plugin classpath from the plugin's `build.gradle` (AGP 9 support)
 - Updated `androidx.credentials` from `1.5.0-beta01` to the stable `1.5.0`
-- README: clarified minimum versions ("or above"), documented the compileSdk 35 requirement and added a 2.x to 3.x migration guide
-- Fixed Android build: namespace, manifest and suspend-based Pigeon API
+- Added the missing `meta` dependency
+
+**Tooling**
+
+- Replaced `very_good_analysis` with `flutter_lints: ^6.0.0` and fixed the analyzer warnings
+- Aligned the example app's SDK constraints with Flutter 3.44 / Dart 3.12
+- More reliable SMS and phone number hint integration tests, CI path filters and Dependabot
+
+**Closed issues**
+
+- [#32](https://github.com/Tkko/flutter_smart_auth/issues/32) Ability to get saved password options: `getCredential`
+- [#33](https://github.com/Tkko/flutter_smart_auth/issues/33) Ability to save a credential: `createPasswordCredential` and `createPublicKeyCredential`
+- [#34](https://github.com/Tkko/flutter_smart_auth/issues/34) `prepareGetCredential`
+- [#44](https://github.com/Tkko/flutter_smart_auth/issues/44) Version requirements in docs
+- [#45](https://github.com/Tkko/flutter_smart_auth/issues/45) Migrate plugin to built-in Kotlin
+
+**Pull requests**
+
+[#47](https://github.com/Tkko/flutter_smart_auth/pull/47), [#49](https://github.com/Tkko/flutter_smart_auth/pull/49), [#50](https://github.com/Tkko/flutter_smart_auth/pull/50), [#53](https://github.com/Tkko/flutter_smart_auth/pull/53), [#54](https://github.com/Tkko/flutter_smart_auth/pull/54), [#62](https://github.com/Tkko/flutter_smart_auth/pull/62)
 
 #### 3.2.0 · 1/1/2025
 
