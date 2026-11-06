@@ -12,6 +12,13 @@
 - Added `const` constructor to `SmartAuthSms` and the `@immutable` annotation to `SmartAuthResult`
 - Documentation: redesigned README, documented `getAppSignature`, added a 4.x migration note and the version requirements
 
+**Fixes**
+
+- `removeSmsRetrieverApiListener` and `removeUserConsentApiListener` now finish a waiting SMS call as canceled instead of leaving its Future pending forever
+- Starting a new SMS call now finishes the previous waiting one as canceled instead of leaving it pending forever
+- `getSmsWithRetrieverApi` can now return `SmartAuthResult.canceled`
+- `requestPhoneNumberHint` and the SMS calls no longer share a result, so an SMS can't be returned as the phone number
+
 **Android**
 
 - Migrated Android to built-in Kotlin and removed the Kotlin Gradle Plugin classpath from the plugin's `build.gradle` (AGP 9 support)

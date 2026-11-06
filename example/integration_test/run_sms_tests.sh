@@ -19,6 +19,49 @@ package="dev.tornike.smart_auth_example"
 # healthy emulator needs a few seconds.
 startup_timeout="${STARTUP_TIMEOUT:-120}"
 attempts="${ATTEMPTS:-3}"
+sender="5551234"
+other_sender="5559876"
+
+# The console treats a newline as a new command, so keep messages on one line.
+send_sms() {
+  adb -s "$device" emu sms send "$1" "$2" </dev/null
+}
+
+# adb reads stdin, which here is the test output: without this it would swallow
+# the lines the loop below is waiting for.
+device_shell() {
+  adb -s "$device" shell "$@" </dev/null
+}
+
+# Taps a button of the consent dialog by its label.
+tap_dialog_button() {
+  device_shell uiautomator dump --windows /sdcard/ui.xml >/dev/null
+  local coords
+  coords=$(device_shell cat /sdcard/ui.xml \
+    | grep -o "text=\"$1\"[^>]*bounds=\"\[[0-9,]*\]\[[0-9,]*\]\"" \
+    | grep -o '\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]' | head -n 1 \
+    | sed 's/\]\[/,/; s/[][]//g' | tr ',' ' ' \
+    | awk '{print int(($1+$3)/2), int(($2+$4)/2)}' || true)
+  if [ -n "$coords" ]; then
+    device_shell input tap $coords
+  else
+    echo "Dialog button not found: $1"
+  fi
+}
+
+# Dismisses the phone number hint dialog. Only presses Back while the dialog
+# has focus: it can die on its own on CI emulators, and a stray Back would
+# then send the app to the background and stall the rest of the run.
+dismiss_hint() {
+  for _ in 1 2 3 4 5; do
+    if device_shell dumpsys window 2>/dev/null \
+      | grep -E 'mCurrentFocus|mFocusedWindow' | grep -q PhoneNumberHintActivity; then
+      device_shell input keyevent KEYCODE_BACK
+      break
+    fi
+    sleep 2
+  done
+}
 
 run_attempt() {
   local flag="$1"
@@ -53,37 +96,74 @@ run_attempt() {
         signature="${line##*SMS_SIGNATURE=}"
         # Give the retriever time to start listening.
         sleep 4
-        # The console treats a newline as a new command, so keep it on one line.
-        adb -s "$device" emu sms send 5551234 "<#> Your code is 123456 $signature"
+        send_sms "$sender" "<#> Your code is 123456 $signature"
+        ;;
+      *SMS_UNSIGNED_CHECK=*)
+        signature="${line##*SMS_UNSIGNED_CHECK=}"
+        sleep 4
+        send_sms "$sender" "<#> Your code is 111111"
+        sleep 3
+        send_sms "$sender" "<#> Your code is 222222 $signature"
         ;;
       *HINT_READY*)
-        # Dismiss the phone number hint dialog. Only press Back while the dialog
-        # has focus: it can die on its own on CI emulators, and a stray Back would
-        # then send the app to the background and stall the rest of the run.
         sleep 4
-        for _ in 1 2 3 4 5; do
-          if adb -s "$device" shell dumpsys window 2>/dev/null \
-            | grep -E 'mCurrentFocus|mFocusedWindow' | grep -q PhoneNumberHintActivity; then
-            adb -s "$device" shell input keyevent KEYCODE_BACK
-            break
-          fi
-          sleep 2
-        done
+        dismiss_hint
+        ;;
+      *HINT_SMS_READY=*)
+        signature="${line##*HINT_SMS_READY=}"
+        sleep 4
+        send_sms "$sender" "<#> Your code is 888888 $signature"
+        sleep 2
+        dismiss_hint
         ;;
       *SMS_CONSENT_READY*)
         sleep 2
-        adb -s "$device" emu sms send 5551234 "Your code is 654321"
-        # Accept the consent dialog.
+        send_sms "$sender" "Your code is 654321"
         sleep 3
-        adb -s "$device" shell uiautomator dump --windows /sdcard/ui.xml >/dev/null
-        coords=$(adb -s "$device" shell cat /sdcard/ui.xml \
-          | grep -o 'text="Allow"[^>]*bounds="\[[0-9,]*\]\[[0-9,]*\]"' \
-          | grep -o '\[[0-9]*,[0-9]*\]\[[0-9]*,[0-9]*\]' | head -n 1 \
-          | sed 's/\]\[/,/; s/[][]//g' | tr ',' ' ' \
-          | awk '{print int(($1+$3)/2), int(($2+$4)/2)}' || true)
-        if [ -n "$coords" ]; then
-          adb -s "$device" shell input tap $coords
-        fi
+        tap_dialog_button Allow
+        ;;
+      *SMS_CONSENT_DENY_READY*)
+        sleep 2
+        send_sms "$sender" "Your code is 333333"
+        sleep 3
+        tap_dialog_button Deny
+        ;;
+      *SMS_CONSENT_OTHER_SENDER_READY*)
+        sleep 2
+        send_sms "$other_sender" "Your code is 111111"
+        sleep 3
+        send_sms "$sender" "Your code is 444444"
+        sleep 3
+        tap_dialog_button Allow
+        ;;
+      *SMS_CONSENT_ANY_SENDER_READY*)
+        sleep 2
+        send_sms "$other_sender" "Your code is 555555"
+        sleep 3
+        tap_dialog_button Allow
+        ;;
+      *SMS_CONSENT_ROTATE_READY*)
+        sleep 2
+        send_sms "$sender" "Your code is 666666"
+        sleep 3
+        device_shell settings put system accelerometer_rotation 0
+        device_shell settings put system user_rotation 1
+        sleep 3
+        # Finish rotating before tapping: each rotation recreates the dialog,
+        # which can lose a tap that lands around the same time.
+        device_shell settings put system user_rotation 0
+        sleep 3
+        tap_dialog_button Allow
+        ;;
+      *SMS_CONSENT_BACKGROUND_READY*)
+        sleep 2
+        send_sms "$sender" "Your code is 777777"
+        sleep 3
+        device_shell input keyevent KEYCODE_HOME
+        sleep 2
+        device_shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/dev/null
+        sleep 3
+        tap_dialog_button Allow
         ;;
     esac
   done
@@ -102,7 +182,7 @@ for attempt in $(seq 1 "$attempts"); do
   fi
   rm -f "$hung"
   echo "Attempt $attempt of $attempts: the app did not start, trying again."
-  adb -s "$device" shell am force-stop "$package" >/dev/null 2>&1 || true
+  device_shell am force-stop "$package" >/dev/null 2>&1 || true
 done
 echo "The app did not start after $attempts attempts."
 exit 1

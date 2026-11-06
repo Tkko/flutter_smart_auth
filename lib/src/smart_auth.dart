@@ -55,6 +55,9 @@ class SmartAuth {
   /// the App signature [getAppSignature]in the text
   /// returns code if it matches with matcher
   /// More about SMS Retriever API https://developers.google.com/identity/sms-retriever/overview?hl=en
+  ///
+  /// Only one SMS call can wait at a time: starting another one finishes
+  /// this one as canceled.
   Future<SmartAuthResult<SmartAuthSms>> getSmsWithRetrieverApi({
     /// used to extract code from SMS
     String matcher = _defaultCodeMatcher,
@@ -63,6 +66,14 @@ class SmartAuth {
       final result = await _api.getSmsWithRetrieverApi();
       return SmartAuthResult.success(SmartAuthSms.fromSms(result, matcher));
     } catch (error) {
+      final isCanceled =
+          error is PlatformException &&
+          error.details is SmartAuthRequestCanceled;
+
+      if (isCanceled) {
+        debugPrint('Pinput/SmartAuth: ${error.message}');
+        return const SmartAuthResult.canceled();
+      }
       debugPrint('Pinput/SmartAuth: getSmsWithRetrieverApi failed: $error');
       return SmartAuthResult.failure(
         'Failed to get SMS with retriever API with error: $error',
@@ -74,6 +85,9 @@ class SmartAuth {
   /// Which shows confirmations dialog to user to
   /// confirm reading the SMS content
   /// returns code if it matches with matcher
+  ///
+  /// Only one SMS call can wait at a time: starting another one finishes
+  /// this one as canceled.
   Future<SmartAuthResult<SmartAuthSms>> getSmsWithUserConsentApi({
     /// used to extract code from SMS
     String matcher = _defaultCodeMatcher,
@@ -101,6 +115,7 @@ class SmartAuth {
   }
 
   /// Removes listener for [getSmsWithUserConsentApi]
+  /// A call that is still waiting for an SMS finishes as canceled.
   Future<SmartAuthResult<void>> removeUserConsentApiListener() async {
     try {
       await _api.removeUserConsentListener();
@@ -114,6 +129,7 @@ class SmartAuth {
   }
 
   /// Removes listener for [getSmsWithRetrieverApi]
+  /// A call that is still waiting for an SMS finishes as canceled.
   Future<SmartAuthResult<void>> removeSmsRetrieverApiListener() async {
     try {
       await _api.removeSmsRetrieverListener();
@@ -176,6 +192,10 @@ class SmartAuth {
   }
 
   /// Saves a password to the Credential Manager.
+  ///
+  /// Needs a credential provider on the device, such as Google Password
+  /// Manager with a signed-in Google account. Without one this fails with
+  /// `TYPE_NO_CREATE_OPTIONS`.
   Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
   createPasswordCredential({
     required String id,
@@ -204,6 +224,10 @@ class SmartAuth {
   /// in the WebAuthn JSON format.
   /// The registration response to send to your server is in
   /// [SmartAuthCreateCredentialResponse.registrationResponseJson].
+  ///
+  /// Needs a credential provider on the device, such as Google Password
+  /// Manager with a signed-in Google account. Without one this fails with
+  /// `TYPE_NO_CREATE_OPTIONS`.
   Future<SmartAuthResult<SmartAuthCreateCredentialResponse>>
   createPublicKeyCredential({
     required String requestJson,
