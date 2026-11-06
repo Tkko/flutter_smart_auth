@@ -44,6 +44,8 @@ tap_dialog_button() {
     | awk '{print int(($1+$3)/2), int(($2+$4)/2)}' || true)
   if [ -n "$coords" ]; then
     device_shell input tap $coords
+  else
+    echo "Dialog button not found: $1"
   fi
 }
 
@@ -147,8 +149,11 @@ run_attempt() {
         device_shell settings put system accelerometer_rotation 0
         device_shell settings put system user_rotation 1
         sleep 3
-        tap_dialog_button Allow
+        # Finish rotating before tapping: each rotation recreates the dialog,
+        # which can lose a tap that lands around the same time.
         device_shell settings put system user_rotation 0
+        sleep 3
+        tap_dialog_button Allow
         ;;
       *SMS_CONSENT_BACKGROUND_READY*)
         sleep 2
