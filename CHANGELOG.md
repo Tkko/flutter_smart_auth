@@ -1,3 +1,12 @@
+#### Unreleased
+
+**Fixes**
+
+- `removeSmsRetrieverApiListener` and `removeUserConsentApiListener` now finish a waiting SMS call as canceled instead of leaving its Future pending forever
+- Starting a new SMS call now finishes the previous waiting one as canceled instead of leaving it pending forever
+- `getSmsWithRetrieverApi` can now return `SmartAuthResult.canceled`
+- `requestPhoneNumberHint` and the SMS calls no longer share a result, so an SMS can't be returned as the phone number
+
 #### 4.0.0 · 6/11/2026
 
 **Breaking requirements** (the existing Dart API is unchanged), see the [Migrating](README.md#migrating) section

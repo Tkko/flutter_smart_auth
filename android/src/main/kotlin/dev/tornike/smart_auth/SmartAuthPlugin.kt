@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.*
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.core.content.ContextCompat
@@ -24,9 +26,11 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     SmartAuthApi {
     private lateinit var mContext: Context
     private lateinit var credentialManager: CredentialManagerHelper
+    private val mainHandler = Handler(Looper.getMainLooper())
     private var mActivity: Activity? = null
     private var mBinding: ActivityPluginBinding? = null
-    private var pendingResult: ((Result<String>) -> Unit)? = null
+    private var pendingSmsResult: ((Result<String>) -> Unit)? = null
+    private var pendingHintResult: ((Result<String>) -> Unit)? = null
     private var smsReceiver: SmsBroadcastReceiver? = null
     private var consentReceiver: ConsentBroadcastReceiver? = null
 
@@ -80,11 +84,11 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
 
 
     override suspend fun getSmsWithRetrieverApi(): String = suspendCancellableCoroutine { cont ->
-        unregisterAllReceivers()
-        pendingResult = { cont.resumeWith(it) }
+        cancelPendingSmsRequest()
+        pendingSmsResult = { cont.resumeWith(it) }
         cont.invokeOnCancellation {
-            consumePendingResult()
-            removeSmsRetrieverListener()
+            consumeSmsResult()
+            unregisterSmsReceiver()
         }
         smsReceiver = SmsBroadcastReceiver()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
@@ -101,11 +105,11 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
 
     override suspend fun getSmsWithUserConsentApi(phoneNumber: String?): String =
         suspendCancellableCoroutine { cont ->
-        unregisterAllReceivers()
-        pendingResult = { cont.resumeWith(it) }
+        cancelPendingSmsRequest()
+        pendingSmsResult = { cont.resumeWith(it) }
         cont.invokeOnCancellation {
-            consumePendingResult()
-            removeUserConsentListener()
+            consumeSmsResult()
+            unregisterConsentReceiver()
         }
         consentReceiver = ConsentBroadcastReceiver()
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
@@ -121,17 +125,22 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     }
 
 
+    // The SMS calls are suspend functions, which start on a later main thread
+    // tick. Queue the removal behind them, otherwise a call made right before
+    // it would start after the removal and never finish.
     override fun removeSmsRetrieverListener() {
-        if (smsReceiver != null) {
-            unregisterReceiver(smsReceiver)
-            smsReceiver = null
+        mainHandler.post {
+            if (smsReceiver != null) {
+                cancelPendingSmsRequest()
+            }
         }
     }
 
     override fun removeUserConsentListener() {
-        if (consentReceiver != null) {
-            unregisterReceiver(consentReceiver)
-            consentReceiver = null
+        mainHandler.post {
+            if (consentReceiver != null) {
+                cancelPendingSmsRequest()
+            }
         }
     }
 
@@ -150,9 +159,10 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
             )
             return@suspendCancellableCoroutine
         }
-        pendingResult = { cont.resumeWith(it) }
+        ignoreIllegalState { consumeHintResult()?.invoke(Result.failure(hintCanceledError())) }
+        pendingHintResult = { cont.resumeWith(it) }
         cont.invokeOnCancellation {
-            consumePendingResult()
+            consumeHintResult()
         }
         val hintRequest = GetPhoneNumberHintIntentRequest.builder().build()
 
@@ -174,12 +184,12 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                 } catch (e: Exception) {
                     val message = "Failed to start phone number hint intent: ${e.message}"
                     Log.e(PLUGIN_TAG, message)
-                    consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                    consumeHintResult()?.invoke(Result.failure(Exception(message)))
                 }
             } else {
                 val message = "Activity was detached before launching phone number hint intent."
                 Log.e(PLUGIN_TAG, message)
-                consumePendingResult()?.invoke(
+                consumeHintResult()?.invoke(
                     Result.failure(
                         FlutterError(
                             "NO_ACTIVITY",
@@ -192,7 +202,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
         }.addOnFailureListener { exception ->
             val message = "Failed to get phone number hint intent: ${exception.message}"
             Log.e(PLUGIN_TAG, message)
-            consumePendingResult()?.invoke(Result.failure(Exception(message)))
+            consumeHintResult()?.invoke(Result.failure(Exception(message)))
         }
     }
 
@@ -213,11 +223,39 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
 
     override suspend fun clearCredentialState() = credentialManager.clearCredentialState()
 
-    private fun consumePendingResult(): ((Result<String>) -> Unit)? {
-        val result = pendingResult
-        pendingResult = null
+    private fun consumeSmsResult(): ((Result<String>) -> Unit)? {
+        val result = pendingSmsResult
+        pendingSmsResult = null
         return result
     }
+
+    private fun consumeHintResult(): ((Result<String>) -> Unit)? {
+        val result = pendingHintResult
+        pendingHintResult = null
+        return result
+    }
+
+    /** Stops listening and finishes a waiting SMS call, so its Future doesn't hang. */
+    private fun cancelPendingSmsRequest() {
+        unregisterAllReceivers()
+        ignoreIllegalState {
+            consumeSmsResult()?.invoke(
+                Result.failure(
+                    FlutterError(
+                        "SMS_REQUEST_CANCELED",
+                        "SMS request was canceled.",
+                        SmartAuthRequestCanceled()
+                    )
+                )
+            )
+        }
+    }
+
+    private fun hintCanceledError() = FlutterError(
+        "PHONE_NUMBER_HINT_CANCELED",
+        "User canceled phone number hint request.",
+        SmartAuthRequestCanceled()
+    )
 
     /// Callbacks
     private fun onSmsConsentRequest(resultCode: Int, data: Intent?) {
@@ -225,7 +263,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
             val message = data.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
             if (message == null) {
                 ignoreIllegalState {
-                    consumePendingResult()?.invoke(
+                    consumeSmsResult()?.invoke(
                         Result.failure(
                             Exception("Failed to get SMS with user consent.")
                         )
@@ -233,13 +271,13 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                 }
                 return
             }
-            ignoreIllegalState { consumePendingResult()?.invoke(Result.success(message)) }
+            ignoreIllegalState { consumeSmsResult()?.invoke(Result.success(message)) }
             return
         }
 
         if (resultCode == RESULT_CANCELED) {
             ignoreIllegalState {
-                consumePendingResult()?.invoke(
+                consumeSmsResult()?.invoke(
                     Result.failure(
                         FlutterError(
                             "USER_CONSENT_CANCELED",
@@ -253,7 +291,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
         }
 
         ignoreIllegalState {
-            consumePendingResult()?.invoke(
+            consumeSmsResult()?.invoke(
                 Result.failure(
                     Exception("Failed to get SMS with user consent.")
                 )
@@ -267,13 +305,13 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
             try {
                 val phoneNumber = Identity.getSignInClient(mContext).getPhoneNumberFromIntent(data)
                 ignoreIllegalState {
-                    consumePendingResult()?.invoke(Result.success(phoneNumber))
+                    consumeHintResult()?.invoke(Result.success(phoneNumber))
                 }
             } catch (e: Exception) {
                 val message = "Failed to get phone number from intent: ${e.message}"
                 Log.e(PLUGIN_TAG, message)
                 ignoreIllegalState {
-                    consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                    consumeHintResult()?.invoke(Result.failure(Exception(message)))
                 }
             }
             return
@@ -281,13 +319,9 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
 
         if (resultCode == RESULT_CANCELED) {
             ignoreIllegalState {
-                consumePendingResult()?.invoke(
+                consumeHintResult()?.invoke(
                     Result.failure(
-                        FlutterError(
-                            "PHONE_NUMBER_HINT_CANCELED",
-                            "User canceled phone number hint request.",
-                            SmartAuthRequestCanceled()
-                        )
+                        hintCanceledError()
                     )
                 )
             }
@@ -297,7 +331,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
         val message = "Failed to get phone number hint with resultCode: $resultCode"
         Log.e(PLUGIN_TAG, message)
         ignoreIllegalState {
-            consumePendingResult()?.invoke(
+            consumeHintResult()?.invoke(
                 Result.failure(
                     FlutterError(
                         "PHONE_NUMBER_HINT_FAILED", message, null
@@ -317,13 +351,28 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     private fun dispose() {
         unregisterAllReceivers()
         credentialManager.dispose()
-        consumePendingResult()
+        consumeSmsResult()
+        consumeHintResult()
         detachActivity()
     }
 
     private fun unregisterAllReceivers() {
-        removeSmsRetrieverListener();
-        removeUserConsentListener();
+        unregisterSmsReceiver()
+        unregisterConsentReceiver()
+    }
+
+    private fun unregisterSmsReceiver() {
+        if (smsReceiver != null) {
+            unregisterReceiver(smsReceiver)
+            smsReceiver = null
+        }
+    }
+
+    private fun unregisterConsentReceiver() {
+        if (consentReceiver != null) {
+            unregisterReceiver(consentReceiver)
+            consentReceiver = null
+        }
     }
 
 
@@ -350,7 +399,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     inner class SmsBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
-                removeSmsRetrieverListener()
+                unregisterSmsReceiver()
                 if (intent.extras != null && intent.extras!!.containsKey(SmsRetriever.EXTRA_STATUS)) {
                     val extras = intent.extras!!
                     val smsRetrieverStatus = extras.get(SmsRetriever.EXTRA_STATUS) as Status
@@ -359,7 +408,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                             val smsContent = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
                             if (smsContent != null) {
                                 ignoreIllegalState {
-                                    consumePendingResult()?.invoke(
+                                    consumeSmsResult()?.invoke(
                                         Result.success(smsContent)
                                     )
                                 }
@@ -368,7 +417,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                                     "Retrieved SMS is null, check if SMS contains correct app signature"
                                 Log.e(PLUGIN_TAG, message)
                                 ignoreIllegalState {
-                                    consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                    consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                                 }
                             }
                         }
@@ -378,7 +427,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                                 "SMS Retriever API timed out, check if SMS contains correct app signature"
                             Log.e(PLUGIN_TAG, message)
                             ignoreIllegalState {
-                                consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                             }
                         }
 
@@ -387,7 +436,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                                 "SMS Retriever API failed with status code: ${smsRetrieverStatus.statusCode}, check if SMS contains correct app signature"
                             Log.e(PLUGIN_TAG, message)
                             ignoreIllegalState {
-                                consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                             }
                         }
                     }
@@ -396,7 +445,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                         "SMS Retriever API failed with no status code, check if SMS contains correct app signature"
                     Log.e(PLUGIN_TAG, message)
                     ignoreIllegalState {
-                        consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                        consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                     }
                 }
             }
@@ -410,7 +459,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
     inner class ConsentBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
-                removeUserConsentListener()
+                unregisterConsentReceiver()
                 if (intent.extras != null && intent.extras!!.containsKey(SmsRetriever.EXTRA_STATUS)) {
                     val extras = intent.extras!!
                     val smsRetrieverStatus = extras.get(SmsRetriever.EXTRA_STATUS) as Status
@@ -429,14 +478,14 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                                         "ConsentBroadcastReceiver error: Can't start consent intent. consentIntent or mActivity is null"
                                     Log.e(PLUGIN_TAG, message)
                                     ignoreIllegalState {
-                                        consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                        consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                                     }
                                 }
                             } catch (e: ActivityNotFoundException) {
                                 val message = "ConsentBroadcastReceiver error: $e"
                                 Log.e(PLUGIN_TAG, message)
                                 ignoreIllegalState {
-                                    consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                    consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                                 }
                             }
                         }
@@ -445,7 +494,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                             val message = "ConsentBroadcastReceiver Timeout"
                             Log.e(PLUGIN_TAG, message)
                             ignoreIllegalState {
-                                consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                             }
                         }
 
@@ -454,7 +503,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                                 "ConsentBroadcastReceiver failed with status code: ${smsRetrieverStatus.statusCode}"
                             Log.e(PLUGIN_TAG, message)
                             ignoreIllegalState {
-                                consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                                consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                             }
                         }
 
@@ -463,7 +512,7 @@ class SmartAuthPlugin : FlutterPlugin, ActivityAware, PluginRegistry.ActivityRes
                     val message = "ConsentBroadcastReceiver failed with no status code"
                     Log.e(PLUGIN_TAG, message)
                     ignoreIllegalState {
-                        consumePendingResult()?.invoke(Result.failure(Exception(message)))
+                        consumeSmsResult()?.invoke(Result.failure(Exception(message)))
                     }
 
                 }
