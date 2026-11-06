@@ -260,6 +260,19 @@ void main() {
       expect(result.requireData.code, '123456');
       expect(result.requireData.sms, contains(signature));
     }, skip: !smsTests);
+
+    testWidgets('ignores a message without the app signature', (tester) async {
+      final signature = (await smartAuth.getAppSignature()).requireData;
+      // ignore: avoid_print for testing
+      print('SMS_UNSIGNED_CHECK=$signature');
+
+      final result = await smartAuth.getSmsWithRetrieverApi().timeout(
+        const Duration(seconds: 60),
+      );
+
+      expect(result.hasData, isTrue, reason: '${result.error}');
+      expect(result.requireData.code, '222222');
+    }, skip: !smsTests);
   });
 
   group('SMS User Consent API', () {
@@ -272,6 +285,140 @@ void main() {
 
       expect(result.hasData, isTrue, reason: '${result.error}');
       expect(result.requireData.code, '654321');
+    }, skip: !smsTests);
+
+    testWidgets('is reported as canceled when the user denies', (tester) async {
+      // ignore: avoid_print for testing
+      print('SMS_CONSENT_DENY_READY');
+      final result = await smartAuth
+          .getSmsWithUserConsentApi(senderPhoneNumber: _sender)
+          .timeout(const Duration(seconds: 60));
+
+      expect(result.isCanceled, isTrue, reason: '${result.error}');
+    }, skip: !smsTests);
+
+    testWidgets('ignores a message from another sender', (tester) async {
+      // ignore: avoid_print for testing
+      print('SMS_CONSENT_OTHER_SENDER_READY');
+      final result = await smartAuth
+          .getSmsWithUserConsentApi(senderPhoneNumber: _sender)
+          .timeout(const Duration(seconds: 60));
+
+      expect(result.hasData, isTrue, reason: '${result.error}');
+      expect(result.requireData.code, '444444');
+    }, skip: !smsTests);
+
+    testWidgets('accepts any sender when none is given', (tester) async {
+      // ignore: avoid_print for testing
+      print('SMS_CONSENT_ANY_SENDER_READY');
+      final result = await smartAuth.getSmsWithUserConsentApi().timeout(
+        const Duration(seconds: 60),
+      );
+
+      expect(result.hasData, isTrue, reason: '${result.error}');
+      expect(result.requireData.code, '555555');
+    }, skip: !smsTests);
+
+    testWidgets('survives a rotation while the dialog is open', (tester) async {
+      // ignore: avoid_print for testing
+      print('SMS_CONSENT_ROTATE_READY');
+      final result = await smartAuth
+          .getSmsWithUserConsentApi(senderPhoneNumber: _sender)
+          .timeout(const Duration(seconds: 60));
+
+      expect(result.hasData, isTrue, reason: '${result.error}');
+      expect(result.requireData.code, '666666');
+    }, skip: !smsTests);
+
+    testWidgets('survives the app going to the background', (tester) async {
+      // ignore: avoid_print for testing
+      print('SMS_CONSENT_BACKGROUND_READY');
+      final result = await smartAuth
+          .getSmsWithUserConsentApi(senderPhoneNumber: _sender)
+          .timeout(const Duration(seconds: 60));
+
+      expect(result.hasData, isTrue, reason: '${result.error}');
+      expect(result.requireData.code, '777777');
+    }, skip: !smsTests);
+  });
+
+  group('Phone Number Hint with an SMS listener', () {
+    testWidgets('keeps the two results apart', (tester) async {
+      final signature = (await smartAuth.getAppSignature()).requireData;
+      final sms = smartAuth.getSmsWithRetrieverApi();
+      // ignore: avoid_print for testing
+      print('HINT_SMS_READY=$signature');
+      // See the Phone Number Hint group for why this uses runAsync.
+      final hint = (await tester.runAsync(
+        () => smartAuth.requestPhoneNumberHint().timeout(
+          const Duration(seconds: 60),
+        ),
+      ))!;
+
+      expect(hint.hasData, isFalse, reason: 'hint got: ${hint.data}');
+
+      final result = await sms.timeout(const Duration(seconds: 30));
+
+      expect(result.hasData, isTrue, reason: '${result.error}');
+      expect(result.requireData.code, '888888');
+    }, skip: !hintTests || !smsTests);
+  });
+
+  // No SMS is sent here. These stay last: a request that is never answered
+  // stays registered with Play services for 5 minutes, and a stale consent
+  // request would open a second dialog in the tests above.
+  group('pending SMS calls', () {
+    const timeout = Duration(seconds: 10);
+
+    tearDown(() async {
+      await smartAuth.removeSmsRetrieverApiListener();
+      await smartAuth.removeUserConsentApiListener();
+    });
+
+    testWidgets('removeSmsRetrieverApiListener finishes the call', (
+      tester,
+    ) async {
+      final pending = smartAuth.getSmsWithRetrieverApi();
+      await smartAuth.removeSmsRetrieverApiListener();
+
+      final result = await pending.timeout(timeout);
+
+      expect(result.isCanceled, isTrue, reason: '${result.error}');
+    }, skip: !smsTests);
+
+    testWidgets('removeUserConsentApiListener finishes the call', (
+      tester,
+    ) async {
+      final pending = smartAuth.getSmsWithUserConsentApi();
+      await smartAuth.removeUserConsentApiListener();
+
+      final result = await pending.timeout(timeout);
+
+      expect(result.isCanceled, isTrue, reason: '${result.error}');
+    }, skip: !smsTests);
+
+    testWidgets('a second retriever call finishes the first', (tester) async {
+      final first = smartAuth.getSmsWithRetrieverApi();
+      final second = smartAuth.getSmsWithRetrieverApi();
+
+      final result = await first.timeout(timeout);
+
+      expect(result.isCanceled, isTrue, reason: '${result.error}');
+      await smartAuth.removeSmsRetrieverApiListener();
+      await second.timeout(timeout);
+    }, skip: !smsTests);
+
+    testWidgets('a consent call finishes a pending retriever call', (
+      tester,
+    ) async {
+      final first = smartAuth.getSmsWithRetrieverApi();
+      final second = smartAuth.getSmsWithUserConsentApi();
+
+      final result = await first.timeout(timeout);
+
+      expect(result.isCanceled, isTrue, reason: '${result.error}');
+      await smartAuth.removeUserConsentApiListener();
+      await second.timeout(timeout);
     }, skip: !smsTests);
   });
 }
