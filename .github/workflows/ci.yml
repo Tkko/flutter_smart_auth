@@ -69,8 +69,12 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: example
+          # Play Store updates Play services a few minutes after boot. The update
+          # kills the Play services processes, which closes the consent dialog
+          # and drops the SMS retriever registration mid-test, so disable it first.
           script: >-
             bash -o pipefail -c '
+            adb -s emulator-5554 shell pm disable-user --user 0 com.android.vending;
             timeout --signal=KILL 15m bash integration_test/run_sms_tests.sh emulator-5554 2>&1 | tee "$RUNNER_TEMP/sms-tests.log";
             status=$?;
             if [ "$status" -ne 0 ]; then
