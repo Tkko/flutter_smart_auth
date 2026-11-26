@@ -1,3 +1,9 @@
+#### 4.0.1 · 26/11/2026
+
+**Fixes**
+
+- Replaced the deprecated `package:flutter/cupertino.dart` import with `package:flutter/foundation.dart`, which fixes the pub.dev static analysis score on Flutter 3.50
+
 #### 4.0.0 · 6/11/2026
 
 **Breaking requirements** (the existing Dart API is unchanged), see the [Migrating](README.md#migrating) section

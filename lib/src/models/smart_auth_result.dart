@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// The state of the result returned from SmartAuth methods
 enum SmartAuthResultState { success, failure, canceled }
